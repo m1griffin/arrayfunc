@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -432,30 +432,39 @@ double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed 
 	Py_ssize_t x; 
 	float partialsum = 0.0;
 
+	*errflag = 0;
 
 #ifdef AF_HASSIMD_X86
-	// SIMD version. Only use this if overflow checking is disabled.
-	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
-		return asum_float_simd(arraylen, data);
-	}
-#endif
-
-	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+	// SIMD version. 
+	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			return asum_float_simd(arraylen, data);
+		} else {
+			partialsum = asum_float_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
-			if (!isfinite(partialsum)) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Non-SIMD version.
+		// Overflow checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
+			}
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
+				if (!isfinite(partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				}
 			}
 		}
+#ifdef AF_HASSIMD_X86
 	}
+#endif
 
 	return (double) partialsum;
 }
@@ -476,30 +485,39 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 	Py_ssize_t x; 
 	double partialsum = 0.0;
 
+	*errflag = 0;
 
 #ifdef AF_HASSIMD_X86
-	// SIMD version. Only use this if overflow checking is disabled.
-	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
-		return asum_double_simd(arraylen, data);
-	}
-#endif
-
-	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+	// SIMD version. 
+	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			return asum_double_simd(arraylen, data);
+		} else {
+			partialsum = asum_double_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
-			if (!isfinite(partialsum)) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Non-SIMD version.
+		// Overflow checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
+			}
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
+				if (!isfinite(partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				}
 			}
 		}
+#ifdef AF_HASSIMD_X86
 	}
+#endif
 
 	return partialsum;
 }

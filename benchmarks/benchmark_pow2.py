@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 ##############################################################################
 # Project:  arrayfunc
-# Module:   benchmark_pow.py
+# Module:   benchmark_pow2.py
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
@@ -65,7 +65,7 @@ def InitOptionData(arraycode, arraysize, funcname):
 
 	# Function ldexp needs a specific array type as the second parameter.
 	if funcname == 'ldexp':
-		ydata = [0,1,2]
+		ydata = [0]
 		optiondata.ldexp_y = int(ydata[-1])
 	else:
 		optiondata.ldexp_y = None
@@ -78,7 +78,7 @@ def InitOptionData(arraycode, arraysize, funcname):
 
 	
 	# Used for compress.
-	if 'pow' == 'compress':
+	if 'pow2' == 'compress':
 		optiondata.compdata = array.array(arraycode, [1,0,1,0])
 		optiondata.pycomp = array.array(arraycode, (x for x,y in zip(itertools.cycle(optiondata.compdata), itertools.repeat(0, arraysize))))
 	else:
@@ -86,7 +86,7 @@ def InitOptionData(arraycode, arraysize, funcname):
 		optiondata.pycomp = None
 
 	# Used for cycle.
-	if 'pow' == 'cycle':
+	if 'pow2' == 'cycle':
 		optiondata.startcycle = comptype(arraycode, 0)
 		optiondata.endcycle = comptype(arraycode, 127)
 	else:
@@ -94,7 +94,7 @@ def InitOptionData(arraycode, arraysize, funcname):
 		optiondata.endcycle = None
 
 	# Used for invert.
-	if 'pow' == 'invert':
+	if 'pow2' == 'invert':
 		optiondata.invertmaxval = allinvertlimits[arraycode]
 		if arraycode in ('b', 'h', 'i', 'l', 'q'):
 			optiondata.invertop = invertpysigned
@@ -127,9 +127,9 @@ def InitDataArrays(arraycode, arraysize):
 
 	# Ensure the data is in the right format for the array type.
 	if arraycode in ('f', 'd'):
-		xdata = [float(x) for x in [0,1,2,3,4,5,6,7,8,9]]
+		xdata = [float(x) for x in [2]]
 	else:
-		xdata = [int(x) for x in [0,1,2,3,4,5,6,7,8,9]]
+		xdata = [int(x) for x in [2]]
 
 	arraydata.datax = array.array(arraycode, (x for x,y in zip(itertools.cycle(xdata), itertools.repeat(0, arraysize))))
 	assert len(arraydata.datax) == arraysize, 'datax is not expected length %d' % len(arraydata.datax)
@@ -137,7 +137,7 @@ def InitDataArrays(arraycode, arraysize):
 	arraydata.arraylength = len(arraydata.datax)
 
 	# Y data.
-	ydata = [0,1,2]
+	ydata = [0]
 	if len(ydata) > 0:
 		yvalue = abs(ydata[-1])
 		if arraycode in ('f', 'd'):
@@ -148,7 +148,7 @@ def InitDataArrays(arraycode, arraysize):
 		arraydata.yvalue = None
 
 	# Z data.
-	zdata = []
+	zdata = [0]
 	if len(zdata) > 0:
 		zvalue = abs(zdata[-1])
 		if arraycode in ('f', 'd'):
@@ -247,13 +247,13 @@ def BenchmarkPython(pyitercounts, arraycode, arraysize, arraydata, optiondata):
 	# Time for python.
 	starttime = time.perf_counter()
 
-	if True:
+	if False:
 		for x in range(pyitercounts):
 			for i in range(arraylength):
-				dataout[i] = datax[i] ** yvalue
+				result = [pow(x, 2) for x in datax]
 	else:
 		for x in range(pyitercounts):
-			dataout[i] = datax[i] ** yvalue
+			result = [pow(x, 2) for x in datax]
 
 	endtime = time.perf_counter()
 
@@ -288,7 +288,7 @@ def BenchmarkAF(afitercounts, arraycode, arraydata, optiondata):
 	# Time for arrayfunc version.
 	starttime = time.perf_counter()
 	for i in range(afitercounts):
-		arrayfunc.pow(datax, yvalue, dataout)
+		arrayfunc.pow2(datax, dataout)
 	endtime = time.perf_counter()
 
 	aftime = (endtime - starttime) / afitercounts
@@ -321,7 +321,7 @@ def BenchmarkAFErrTrueSimdTrue(afitercounts, arraycode, arraydata, optiondata):
 	# Time for arrayfunc version.
 	starttime = time.perf_counter()
 	for i in range(afitercounts):
-		arrayfunc.pow(datax, yvalue, dataout, matherrors=True)
+		arrayfunc.pow2(datax, dataout, matherrors=True)
 	endtime = time.perf_counter()
 
 	aftime = (endtime - starttime) / afitercounts
@@ -355,7 +355,7 @@ def BenchmarkAFErrFalseSimdTrue(afitercounts, arraycode, arraydata, optiondata):
 	# Time for arrayfunc version.
 	starttime = time.perf_counter()
 	for i in range(afitercounts):
-		arrayfunc.pow(datax, yvalue, dataout)
+		arrayfunc.pow2(datax, dataout)
 	endtime = time.perf_counter()
 
 	aftime = (endtime - starttime) / afitercounts
@@ -389,7 +389,7 @@ def BenchmarkAFErrTrueSimdFalse(afitercounts, arraycode, arraydata, optiondata):
 	# Time for arrayfunc version.
 	starttime = time.perf_counter()
 	for i in range(afitercounts):
-		arrayfunc.pow(datax, yvalue, dataout, matherrors=True)
+		arrayfunc.pow2(datax, dataout, matherrors=True)
 	endtime = time.perf_counter()
 
 	aftime = (endtime - starttime) / afitercounts
@@ -444,7 +444,7 @@ RunTimeTarget = CmdArgs.runtimetarget
 ##############################################################################
 
 # Run the benchmarks.
-funcname = 'pow'
+funcname = 'pow2'
 supportedarrays = ['b', 'B', 'h', 'H', 'i', 'I', 'l', 'L', 'q', 'Q', 'f', 'd']
 
 
@@ -492,7 +492,7 @@ HasSIMDOption = len(SIMDArrays) > 0
 # Note: Need double quotes around the equation because some functions contain
 # a string with single quotes, and this would cause a conflict if we used single
 # quotes to enclose this.
-HasMathErrorOption = 'matherrors' in "arrayfunc.pow(datax, yvalue, dataout, matherrors=True)"
+HasMathErrorOption = 'matherrors' in "arrayfunc.pow2(datax, dataout, matherrors=True)"
 
 
 ##############################################################################

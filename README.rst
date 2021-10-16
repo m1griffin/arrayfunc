@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 7.1.0 for 2021-10-01
+:Version: 7.2.0 for 2021-10-14
 :Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -118,6 +118,8 @@ Mathematical operator functions
         mul x * y
         neg -x
         pow x**y or math.pow(x, y)
+       pow2 x * x or math.pow(x, 2)
+       pow3 x * x * x or math.pow(x, 3)
         sub x - y
       abs\_ abs(x)
 =========== ===============================================
@@ -297,14 +299,14 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                      Bits      Compiler        Python Version Tested
 ===================== ========  =============== =========================
 Ubuntu 20.04 LTS       64 bit    GCC               3.8
-Ubuntu 21.04           64 bit    GCC               3.9
+Ubuntu 21.10           64 bit    GCC               3.9
 Debian 11              32 bit    GCC               3.9
 Debian 11              64 bit    GCC               3.9
 OpenSuse 15.3          64 bit    GCC               3.6
 Centos 8.4             64 bit    GCC               3.6
 FreeBSD 13             64 bit    LLVM              3.8
-OpenBSD 6.9            64 bit    LLVM              3.8
-MS Windows 10          64 bit    MS VS C 2015      3.9
+OpenBSD 7.0            64 bit    LLVM              3.8
+MS Windows 10          64 bit    MS VS C 2015      3.10
 Raspbian (RPi 3)       32 bit    GCC               3.7
 Ubuntu 20.04 (RPi 4)   64 bit    GCC               3.8
 ===================== ========  =============== =========================
@@ -351,6 +353,17 @@ setup.py directly is no longer done.
 
 Release History
 ===============
+* 7.2.0 - Performance improvements in asum and pow. Asum will now use error
+          checking with floating point SIMD on x86_64 by default. Pow has
+          special cases for powers of 2 and 3 on integer arrays which allow
+          for much greater performance. Pow will now raise a value error
+          exception if an attempt to raise to a negative number. This makes it
+          it more compatible with Python. New functions pow2 and pow3 added
+          which raise array values to powers of 2 and 3 respectively. These
+          have additional optimisations beyond pow, particularly with floating
+          point arrays. Benchmarks for add, floordiv, mod, mul, pow, sub, and
+          truediv have been changed to make them run the expanded range of
+          tests much faster. 
 * 7.1.0 - This is a bugfix release to correct mod, mul, and pow. This affects
           integer overflow checking at extremes, particularly with the greatest
           magnitude negative number on signed arrays. Certain combinations of

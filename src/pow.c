@@ -43,10 +43,72 @@
 
 /*--------------------------------------------------------------------------- */
 
+#define SCHAR_POW2MAX 11
+#define SCHAR_POW2MIN -11 
+#define UCHAR_POW2MAX 15
+
+#define SSHORT_POW2MAX 181
+#define SSHORT_POW2MIN -181 
+#define USHORT_POW2MAX 255
+
+#define SINT_POW2MAX 46340
+#define SINT_POW2MIN -46340
+#define UINT_POW2MAX 65535
+
+// Account for 64 bit versus 32 bit word sizes.
+#if LONG_MAX == LLONG_MAX
+
+#define SLINT_POW2MAX 3037000499L
+#define SLINT_POW2MIN -3037000499L
+#define ULINT_POW2MAX 4294967295UL
+
+#else
+
+#define SLINT_POW2MAX 46340
+#define SLINT_POW2MIN -46340
+#define ULINT_POW2MAX 65535
+
+#endif
+
+#define SLLINT_POW2MAX 3037000499LL
+#define SLLINT_POW2MIN -3037000499LL
+#define ULLINT_POW2MAX 4294967295ULL
+
+
+#define SCHAR_POW3MAX 5
+#define SCHAR_POW3MIN -5 
+#define UCHAR_POW3MAX 6
+
+#define SSHORT_POW3MAX 31
+#define SSHORT_POW3MIN -32 
+#define USHORT_POW3MAX 40
+
+#define SINT_POW3MAX 1290
+#define SINT_POW3MIN -1290
+#define UINT_POW3MAX 1625
+
+// Account for 64 bit versus 32 bit word sizes.
+#if LONG_MAX == LLONG_MAX
+
+#define SLINT_POW3MAX 2097151
+#define SLINT_POW3MIN -2097152
+#define ULINT_POW3MAX 2642245
+
+#else
+
+#define SLINT_POW3MAX 1290
+#define SLINT_POW3MIN -1290
+#define ULINT_POW3MAX 1625
+
+#endif
+
+#define SLLINT_POW3MAX 2097151
+#define SLLINT_POW3MIN -2097152
+#define ULLINT_POW3MAX 2642245
+
 
 
 /*--------------------------------------------------------------------------- */
-
 // Note: The guard calculations for negative need to use abs(x) instead of -x
 // because of problems with Microsoft MSVS 2010. MSVS was confused by negating
 // a negative number with minimum integers (e.g. INT_MIN) and producing a
@@ -115,7 +177,6 @@ signed char arith_pow_signed_char(signed char x, signed char y, char *errflag) {
 }
 
 
-
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -128,23 +189,66 @@ signed char arith_pow_signed_char(signed char x, signed char y, char *errflag) {
 // param_arr_num_none
 signed int pow_signed_char_1(Py_ssize_t arraylen, signed char *data1, signed char param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_signed_char(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SCHAR_POW2MAX) || (data1[x] < SCHAR_POW2MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SCHAR_POW3MAX) || (data1[x] < SCHAR_POW3MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_signed_char(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_char(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -157,22 +261,66 @@ signed int pow_signed_char_2(Py_ssize_t arraylen, signed char *data1, signed cha
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_signed_char(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SCHAR_POW2MAX) || (data1[x] < SCHAR_POW2MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SCHAR_POW3MAX) || (data1[x] < SCHAR_POW3MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_signed_char(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
 
 
 // param_num_arr_none
@@ -275,7 +423,7 @@ signed int pow_signed_char_6(Py_ssize_t arraylen, signed char *data1, signed cha
 }
 
 
-
+/*--------------------------------------------------------------------------- */
 // Return x raised to the power of y.
 unsigned char arith_pow_unsigned_char(unsigned char x, unsigned char y, char *errflag) {
 	unsigned char i, z, ovtmp1;
@@ -301,7 +449,6 @@ unsigned char arith_pow_unsigned_char(unsigned char x, unsigned char y, char *er
 	return z;
 }
 
-/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
@@ -316,23 +463,64 @@ unsigned char arith_pow_unsigned_char(unsigned char x, unsigned char y, char *er
 // param_arr_num_none
 signed int pow_unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UCHAR_POW2MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UCHAR_POW3MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -345,22 +533,67 @@ signed int pow_unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, unsign
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UCHAR_POW2MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UCHAR_POW3MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
+
 
 
 // param_num_arr_none
@@ -463,9 +696,7 @@ signed int pow_unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, unsign
 }
 
 
-
 /*--------------------------------------------------------------------------- */
-
 // Note: The guard calculations for negative need to use abs(x) instead of -x
 // because of problems with Microsoft MSVS 2010. MSVS was confused by negating
 // a negative number with minimum integers (e.g. INT_MIN) and producing a
@@ -536,7 +767,6 @@ signed short arith_pow_signed_short(signed short x, signed short y, char *errfla
 }
 
 
-
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -549,23 +779,66 @@ signed short arith_pow_signed_short(signed short x, signed short y, char *errfla
 // param_arr_num_none
 signed int pow_signed_short_1(Py_ssize_t arraylen, signed short *data1, signed short param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_signed_short(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SSHORT_POW2MAX) || (data1[x] < SSHORT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SSHORT_POW3MAX) || (data1[x] < SSHORT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_signed_short(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_short(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -578,22 +851,66 @@ signed int pow_signed_short_2(Py_ssize_t arraylen, signed short *data1, signed s
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_signed_short(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SSHORT_POW2MAX) || (data1[x] < SSHORT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SSHORT_POW3MAX) || (data1[x] < SSHORT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_signed_short(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
 
 
 // param_num_arr_none
@@ -696,7 +1013,7 @@ signed int pow_signed_short_6(Py_ssize_t arraylen, signed short *data1, signed s
 }
 
 
-
+/*--------------------------------------------------------------------------- */
 // Return x raised to the power of y.
 unsigned short arith_pow_unsigned_short(unsigned short x, unsigned short y, char *errflag) {
 	unsigned short i, z, ovtmp1;
@@ -722,7 +1039,6 @@ unsigned short arith_pow_unsigned_short(unsigned short x, unsigned short y, char
 	return z;
 }
 
-/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
@@ -737,23 +1053,64 @@ unsigned short arith_pow_unsigned_short(unsigned short x, unsigned short y, char
 // param_arr_num_none
 signed int pow_unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > USHORT_POW2MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > USHORT_POW3MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -766,22 +1123,67 @@ signed int pow_unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, unsi
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > USHORT_POW2MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > USHORT_POW3MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
+
 
 
 // param_num_arr_none
@@ -884,9 +1286,7 @@ signed int pow_unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1, unsi
 }
 
 
-
 /*--------------------------------------------------------------------------- */
-
 // Note: The guard calculations for negative need to use abs(x) instead of -x
 // because of problems with Microsoft MSVS 2010. MSVS was confused by negating
 // a negative number with minimum integers (e.g. INT_MIN) and producing a
@@ -955,7 +1355,6 @@ signed int arith_pow_signed_int(signed int x, signed int y, char *errflag) {
 }
 
 
-
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -968,23 +1367,66 @@ signed int arith_pow_signed_int(signed int x, signed int y, char *errflag) {
 // param_arr_num_none
 signed int pow_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_signed_int(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SINT_POW2MAX) || (data1[x] < SINT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SINT_POW3MAX) || (data1[x] < SINT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_signed_int(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_int(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -997,22 +1439,66 @@ signed int pow_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int p
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_signed_int(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SINT_POW2MAX) || (data1[x] < SINT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SINT_POW3MAX) || (data1[x] < SINT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_signed_int(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
 
 
 // param_num_arr_none
@@ -1115,7 +1601,7 @@ signed int pow_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *
 }
 
 
-
+/*--------------------------------------------------------------------------- */
 // Return x raised to the power of y.
 unsigned int arith_pow_unsigned_int(unsigned int x, unsigned int y, char *errflag) {
 	unsigned int i, z, ovtmp1;
@@ -1141,7 +1627,6 @@ unsigned int arith_pow_unsigned_int(unsigned int x, unsigned int y, char *errfla
 	return z;
 }
 
-/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
@@ -1156,23 +1641,64 @@ unsigned int arith_pow_unsigned_int(unsigned int x, unsigned int y, char *errfla
 // param_arr_num_none
 signed int pow_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UINT_POW2MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UINT_POW3MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1185,22 +1711,67 @@ signed int pow_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UINT_POW2MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > UINT_POW3MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
+
 
 
 // param_num_arr_none
@@ -1303,9 +1874,7 @@ signed int pow_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 
-
 /*--------------------------------------------------------------------------- */
-
 // Note: The guard calculations for negative need to use abs(x) instead of -x
 // because of problems with Microsoft MSVS 2010. MSVS was confused by negating
 // a negative number with minimum integers (e.g. INT_MIN) and producing a
@@ -1390,7 +1959,6 @@ signed long arith_pow_signed_long(signed long x, signed long y, char *errflag) {
 }
 
 
-
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -1403,23 +1971,66 @@ signed long arith_pow_signed_long(signed long x, signed long y, char *errflag) {
 // param_arr_num_none
 signed int pow_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed long param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_signed_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLINT_POW2MAX) || (data1[x] < SLINT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLINT_POW3MAX) || (data1[x] < SLINT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_signed_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1432,22 +2043,66 @@ signed int pow_signed_long_2(Py_ssize_t arraylen, signed long *data1, signed lon
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_signed_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLINT_POW2MAX) || (data1[x] < SLINT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLINT_POW3MAX) || (data1[x] < SLINT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_signed_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
 
 
 // param_num_arr_none
@@ -1550,7 +2205,7 @@ signed int pow_signed_long_6(Py_ssize_t arraylen, signed long *data1, signed lon
 }
 
 
-
+/*--------------------------------------------------------------------------- */
 // Return x raised to the power of y.
 unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *errflag) {
 	unsigned long i, z, ovtmp1;
@@ -1576,7 +2231,6 @@ unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *er
 	return z;
 }
 
-/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
@@ -1591,23 +2245,64 @@ unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *er
 // param_arr_num_none
 signed int pow_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, unsigned long param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULINT_POW2MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULINT_POW3MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1620,22 +2315,67 @@ signed int pow_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, unsign
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULINT_POW2MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULINT_POW3MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
+
 
 
 // param_num_arr_none
@@ -1738,9 +2478,7 @@ signed int pow_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, unsign
 }
 
 
-
 /*--------------------------------------------------------------------------- */
-
 // Note: The guard calculations for negative need to use abs(x) instead of -x
 // because of problems with Microsoft MSVS 2010. MSVS was confused by negating
 // a negative number with minimum integers (e.g. INT_MIN) and producing a
@@ -1816,7 +2554,6 @@ signed long long arith_pow_signed_long_long(signed long long x, signed long long
 }
 
 
-
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -1829,23 +2566,66 @@ signed long long arith_pow_signed_long_long(signed long long x, signed long long
 // param_arr_num_none
 signed int pow_signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, signed long long param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLLINT_POW2MAX) || (data1[x] < SLLINT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLLINT_POW3MAX) || (data1[x] < SLLINT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1858,22 +2638,66 @@ signed int pow_signed_long_long_2(Py_ssize_t arraylen, signed long long *data1, 
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLLINT_POW2MAX) || (data1[x] < SLLINT_POW2MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > SLLINT_POW3MAX) || (data1[x] < SLLINT_POW3MIN)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
 
 
 // param_num_arr_none
@@ -1976,7 +2800,7 @@ signed int pow_signed_long_long_6(Py_ssize_t arraylen, signed long long *data1, 
 }
 
 
-
+/*--------------------------------------------------------------------------- */
 // Return x raised to the power of y.
 unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned long long y, char *errflag) {
 	unsigned long long i, z, ovtmp1;
@@ -2002,7 +2826,6 @@ unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned l
 	return z;
 }
 
-/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
@@ -2017,23 +2840,64 @@ unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned l
 // param_arr_num_none
 signed int pow_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long *data1, unsigned long long param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULLINT_POW2MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULLINT_POW3MAX) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -2046,22 +2910,67 @@ signed int pow_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long *dat
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULLINT_POW2MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > ULLINT_POW3MAX) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
+
+
 
 
 // param_num_arr_none
@@ -2872,11 +3781,6 @@ static PyObject *py_pow(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Signal the errors.
-	if (resultcode == ARR_ERR_ZERODIV) {
-		ErrMsgZeroDiv();
-		return NULL;
-	}
-
 	if (resultcode == ARR_ERR_ARITHMETIC) {
 		ErrMsgArithCalc();
 		return NULL;
@@ -2884,6 +3788,11 @@ static PyObject *py_pow(PyObject *self, PyObject *args, PyObject *keywds) {
 
 	if (resultcode == ARR_ERR_OVFL) {
 		ErrMsgArithOverflowCalc();
+		return NULL;
+	}
+
+	if (resultcode == ARR_ERR_VALUE_ERR) {
+		ErrMsgParameterNotValidforthisOperation();
 		return NULL;
 	}
 
@@ -2912,7 +3821,7 @@ or                      [x ** y for x, y in zip(array1, array2)] \n\
 \n\
 ======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      OverflowError, ArithmeticError \n\
+Exceptions raised:      OverflowError, ArithmeticError, ValueError \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\

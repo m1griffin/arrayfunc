@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 7.0.0 for 2021-09-07
+:Version: 7.2.0 for 2021-10-14
 :Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.6 or later
@@ -867,14 +867,14 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                      Bits      Compiler        Python Version Tested
 ===================== ========  =============== =========================
 Ubuntu 20.04 LTS       64 bit    GCC               3.8
-Ubuntu 21.04           64 bit    GCC               3.9
+Ubuntu 21.10           64 bit    GCC               3.9
 Debian 11              32 bit    GCC               3.9
 Debian 11              64 bit    GCC               3.9
 OpenSuse 15.3          64 bit    GCC               3.6
 Centos 8.4             64 bit    GCC               3.6
 FreeBSD 13             64 bit    LLVM              3.8
-OpenBSD 6.9            64 bit    LLVM              3.8
-MS Windows 10          64 bit    MS VS C 2015      3.9
+OpenBSD 7.0            64 bit    LLVM              3.8
+MS Windows 10          64 bit    MS VS C 2015      3.10
 Raspbian (RPi 3)       32 bit    GCC               3.7
 Ubuntu 20.04 (RPi 4)   64 bit    GCC               3.8
 ===================== ========  =============== =========================

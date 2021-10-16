@@ -31,6 +31,398 @@ import codegen_common
 
 # ==============================================================================
 
+# Data generators. These are used to create test data algorithmically. These will
+# vary depending on the operation being performed.
+
+
+# truediv =============================================================
+
+datafilters = { 'truediv' : '''
+
+########################################################
+def inttruediv(x, y):
+	"""Perform the math operation. This needs to be specially handled
+	for truediv on large signed integer arrays. This is because of a 
+	combination of factors. Python will produce a floating point result, 
+	but we we want an integer result when using integer arrays. If we 
+	simply convert the result back to integer then we lose precision on
+	large integers, introducing errors. If we try to emulate it using
+	floor division, then when using mixed positive and negative inputs
+	the result is rounded away from zero, producing an incorrect result.
+	So, we need to take the absolute value, then do floor division, then
+	put the correct sign back into the result.
+	"""
+	# This is intended to catch template errors and should never 
+	# occur in normal usage. 
+
+	# For true division on integer arrays.
+	# For when signs are opposite in signed arrays.
+	if ((x < 0) ^ (y < 0)):
+		return -(abs(x) // abs(y))
+	else:
+		return x // y
+
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for truediv.
+	"""
+	# Truediv needs special handling for integer because the C function does 
+	# not do actual truediv for integer.
+	checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and (inttruediv(x, y) <= maxint) and (inttruediv(x, y) >= minint))]
+	return checkedvalues
+
+''',
+
+# add =============================================================
+
+	'add' : '''
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for add.
+	"""
+	checkedvalues = [(x,y) for x,y in opvalues if ((x + y) <= maxint) and ((x + y) >= minint)]
+	return checkedvalues
+
+''',
+
+
+# floordiv =============================================================
+
+	'floordiv' : '''
+
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for floordiv.
+	"""
+	# Avoid division by zero
+	checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and ((x // y) <= maxint) and ((x // y) >= minint))]
+	return checkedvalues
+
+''',
+
+# mod =============================================================
+
+	'mod' : '''
+
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for mod.
+	"""
+	# Avoid division by zero
+	checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and ((x % y) <= maxint) and ((x % y) >= minint))]
+	return checkedvalues
+
+''',
+
+# mul =============================================================
+
+	'mul' : '''
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for mul.
+	"""
+	checkedvalues = [(x,y) for x,y in opvalues if ((x * y) <= maxint) and ((x * y) >= minint)]
+	return checkedvalues
+
+''',
+
+
+# pow =============================================================
+
+	'pow' : '''
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for pow.
+	"""
+	if typecode in ('f', 'd'):
+		checkedvalues = [(x, y) for x,y in opvalues if ((not((x == 0) and (y < 0))) and (minint <= (x**y) <= maxint))]
+	else:
+		checkedvalues = [(x, y) for x,y in opvalues if (y >= 0) and (minint <= (x**y) <= maxint)]
+	return checkedvalues
+
+''',
+
+
+# sub =============================================================
+
+	'sub' : '''
+
+########################################################
+def filtertestdata(opvalues, minint, maxint, typecode):
+	"""Filter the test data for combinations that might cause errors.
+	This version is for sub.
+	"""
+	checkedvalues = [(x,y) for x,y in opvalues if ((x - y) <= maxint) and ((x - y) >= minint)]
+	return checkedvalues
+
+''',
+
+}
+
+# ===
+
+
+# Used for everything except pow. 
+gendata_general = '''
+
+########################################################
+def gendata_special(minint, maxint, typecode):
+	""" Generate data for special cases which might cause problems. 
+	For integers these will be minimum and maximum values, as well as around 
+	the zero point.
+	"""
+	# Make sure that we have coverage for data around the maximum, minimum, and zero
+	# points, which we might otherwise not have with larger data sizes.
+	halfpoint = (maxint + minint) // 2
+	specialvals = [minint, minint + 1, minint + 2, minint + 3, 
+				maxint - 3, maxint - 2, maxint - 1, maxint,
+				halfpoint - 3, halfpoint - 2, halfpoint - 1, halfpoint, 
+				halfpoint + 1, halfpoint + 2, halfpoint + 3, halfpoint + 4]
+
+	# Create combinations of all of these values.
+	opvalues = list(itertools.product(specialvals, specialvals))
+
+	# Filter out values which might cause errors.
+	checkedvalues = filtertestdata(opvalues, minint, maxint, typecode)
+
+	checkedvalues.sort()
+
+	return checkedvalues
+
+
+
+########################################################
+def gendata_int(minint, maxint, typecode):
+	"""Generate data for general testing. This does not worry about edge case
+	data. Edge cases must be created and tested separately. This function 
+	generates a wide selection of data over the numeric range. 
+	"""
+	# This will generate a selection of data spread over most of the integer 
+	# while giving the same amount of data for each data type.
+	intrange = maxint - minint 
+	stepcount = intrange // 256
+	stepcount = max(stepcount, 1)
+	
+	spreaddata = list(range(minint, maxint + 1, stepcount))
+
+	# Make sure we have a good selection of smaller values as well.
+	if (maxint > 256):
+		if minint < 0:
+			mindata = -128
+			maxdata = 127
+		else:
+			mindata = 0
+			maxdata = 255
+
+		spreaddata.extend(range(mindata, maxdata, 3))
+		# Remove duplicates.
+		spreaddata = list(set(spreaddata))
+
+	# Sort the data out in order.
+	spreaddata.sort()
+
+	# Trim down the size of the sample.
+	selectedspread = spreaddata[::3]
+
+	# Create combinations of all of these values.
+	opvalues = list(itertools.product(selectedspread, selectedspread))
+
+	# Filter out values which might cause errors.
+	checkedvalues = filtertestdata(opvalues, minint, maxint, typecode)
+
+	# Sort the data out in order.
+	checkedvalues.sort()
+
+	# Now pick a smaller and more reasonable size selection over the full range.
+	skipsize = len(checkedvalues) // 256
+	skipsize = max(skipsize, 1)
+	selectedvals = checkedvalues[::skipsize]
+
+	return selectedvals
+
+'''
+
+# Used only for pow.
+gendata_pow = '''
+
+########################################################
+def gendata_specialpow(minint, maxint, typecode):
+	""" Generate data for special cases which might cause problems. 
+	This one handles the data for pow only.
+	For integers these will be minimum and maximum values, as well as around 
+	the zero point.
+	"""
+	halfpoint = (maxint + minint) // 2
+	basevals = [minint, minint + 1, minint + 2, minint + 3, 
+				maxint - 3, maxint - 2, maxint - 1, maxint,
+				halfpoint - 3, halfpoint - 2, halfpoint - 1, halfpoint, 
+				halfpoint + 1, halfpoint + 2, halfpoint + 3, halfpoint + 4]
+
+	# Raise to the power of 0 or 1.
+	zerovals = [(x,0) for x in basevals]
+	onevals = [(x,1) for x in basevals]
+
+	# Raise 1 or zero to a power. Make sure we don't have negative powers.
+	zerovals2 = [(0,x) for x in basevals if x >= 0]
+	onevals2 = [(1,x) for x in basevals if x >= 0]
+
+	# Raise some simple values to some common powers.
+	if minint < 0:
+		minstart = -3
+	else:
+		minstart = 0
+	simplerange = list(range(minstart, 4))
+	simplevals = list(itertools.product(simplerange, [0, 1, 2, 3, 4]))
+
+	# These pairs were found to cause problems with some edge cases.
+	# They all produce maximum negative integer for certain array types.
+	# They represent tests for a variety of array types and have to be
+	# filtered for each array code. 
+	limitpairs = [(-2, 7), (-2, 15), (-8, 5), (-32, 3), (-2, 31),
+		(-2, 63), (-8, 21), (-127, 9), (-512, 7), (-2097152, 3)]
+
+	# Combine them all together.
+	allvals = zerovals + onevals + zerovals2 + onevals2 + simplevals + limitpairs
+
+	# Now filter them.
+	checkedvalues = filtertestdata(allvals, minint, maxint, typecode)
+	
+	return checkedvalues
+
+
+########################################################
+def gendata_pow(minint, maxint, typecode):
+	"""Generate data for general testing. This is specifically for pow as
+	that operation has special requirements. 
+	"""
+	# We need two values for lval ** rval. The left hand one can be no bigger
+	# than the square root of the maximum value in order to fit within the
+	# data range (lval ** 2).
+	lval = int(math.sqrt(maxint))
+
+	stepcount = lval // 256
+	stepcount = max(stepcount, 1)
+
+	if minint < 0:
+		lvalstart = -lval
+	else:
+		lvalstart = 0
+	lvalspread = list(range(lvalstart, lval, stepcount))
+
+	# Make sure we have a good selection of smaller values as well.
+	if (maxint > 32768):
+		if minint < 0:
+			mindata = -128
+			maxdata = 127
+		else:
+			mindata = 0
+			maxdata = 255
+
+		lvalspread.extend(range(mindata, maxdata, 3))
+		# Remove duplicates.
+		lvalspread = list(set(lvalspread))
+
+	lvalspread.sort()
+
+	# Take a few values which we will add back in later.
+	lvalcentre = len(lvalspread) // 2
+	extralvals = lvalspread[2:4] + lvalspread[-4:-2] + lvalspread[lvalcentre : lvalcentre + 2]
+
+	# The right hand one (power to raise by) can be no bigger than 'x' where
+	# 2 ** x. and the result is the maximum integer value.
+	raisevals = {127 : 7, 255 : 8, 32767 : 15, 65535 : 16, 
+		2147483647 : 31, 4294967295 : 32, 
+		9223372036854775807 : 63, 18446744073709551615 : 64}
+	rval = raisevals[maxint]
+
+	# We start the range at 2 because 0 and 1 are trivial and we don't want
+	# too many of them in the data mix.
+	rvalspread = list(range(2, rval))
+
+
+	# Create the combinations
+	opvalues = list(itertools.product(lvalspread, rvalspread))
+
+	# Filter out the values which would go out of range.
+	checkedvalues = filtertestdata(opvalues, minint, maxint, typecode)
+	
+
+	# Sort the data out in order.
+	checkedvalues.sort()
+
+	# Now pick a smaller and more reasonable size selection over the full range.
+	skipsize = len(checkedvalues) // 256
+	skipsize = max(skipsize, 1)
+	selectedvals = checkedvalues[::skipsize]
+
+	# Create the additional values involving the trivial cases of raise
+	# to the power of 0 or 1.
+	additionalvals = list(itertools.product(extralvals, [0, 1]))
+	selectedvals.extend(additionalvals)
+
+	selectedvals.sort()
+
+	return selectedvals
+
+'''
+
+# Used for everything including pow.
+gendata_fullrange = '''
+
+########################################################
+def gendata_fullrange(minint, maxint, typecode):
+	"""Generate data for general testing. Generate all combinations of data
+	that do not result in an overflow. This should only be used for small integers
+	as otherwise the amount of data generated is excessive.
+	This version does handle pow (**) as well as other operations.
+	"""
+	spreaddata = list(range(minint, maxint + 1, 1))
+
+	# Create combinations of all of these values.
+	opvalues = list(itertools.product(spreaddata, spreaddata))
+
+	# Filter out values which might cause errors.
+	checkedvalues = filtertestdata(opvalues, minint, maxint, typecode)
+
+	# Sort the data out in order.
+	checkedvalues.sort()
+
+	return checkedvalues
+
+
+
+########################################################
+def groupdata(datasample, desiredlen):
+	"""This takes the data pairs and groups them together such that there is a 
+	sequence and a value (e.g. ([1,2,3,4}, 9) ). The sequence groups together 
+	all the values which are compatible with the value in this operation. If 
+	the sequence is shorter than the desired length it is repeated as many 
+	times as necessary to pad it out to the desired length.
+	"""
+	# This helps pad out the data for pairs which have sequences shorter than desired.
+	padder = lambda x : x if len(x) > desiredlen else (x * (desiredlen // len(x))) + x[: desiredlen % len(x)]
+	# Group the samples.
+	return [(padder([i for i,j in x]),y) for y,x in itertools.groupby(datasample, lambda k : k[1])]
+
+
+'''
+
+
+
+# ==============================================================================
+
 # This template is for operators (e.g. +, -, /, *, etc.).
 test_op_templ = '''
 
@@ -80,272 +472,73 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 				raise self.failureException('%%d != %%d at index %%d' %% (expecteditem, dataoutitem, index))
 
 
-	########################################################
-	def inttruediv(self, x, y):
-		"""Perform the math operation. This needs to be specially handled
-		for truediv on large signed integer arrays. This is because of a 
-		combination of factors. Python will produce a floating point result, 
-		but we we want an integer result when using integer arrays. If we 
-		simply convert the result back to integer then we lose precision on
-		large integers, introducing errors. If we try to emulate it using
-		floor division, then when using mixed positive and negative inputs
-		the result is rounded away from zero, producing an incorrect result.
-		So, we need to take the absolute value, then do floor division, then
-		put the correct sign back into the result.
-		"""
-		# This is intended to catch template errors and should never 
-		# occur in normal usage. 
 
-		# For true division on integer arrays.
-		# For when signs are opposite in signed arrays.
-		if ((x < 0) ^ (y < 0)):
-			return -(abs(x) // abs(y))
+	########################################################
+	@classmethod
+	def setUpClass(cls):
+
+		# For operations that support SIMD, this is intended to allow 
+		# selecting data sets that fit evenly in the SIMD register width,
+		# and also data sets that don't, and so require the non-SIMD
+		# clean-up code to be exercised.
+		# Since SIMD registers can be 256 bits wide (although not all
+		# platforms, we want at least that much data for byte arrays.
+		cls.simdincr = 256 // 8
+		if '%(arrayevenodd)s' == 'even':
+			cls.testdatasize = cls.simdincr * 4
+		if '%(arrayevenodd)s' == 'odd':
+			cls.testdatasize = (cls.simdincr * 4) - 1
+
+
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if '%(typecode)s' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif '%(typecode)s' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
 		else:
-			return x // y
+			minval = arrayfunc.arraylimits.%(typelabel)s_min
+			maxval = arrayfunc.arraylimits.%(typelabel)s_max
 
 
-	########################################################
-	def filtertestdata(self, opvalues, minint, maxint, opname):
-		"""Filter the test data for combinations that might cause errors.
-		Filtering for pow is handled elsewhere.
-		"""
-		# Avoid division by zero
-		if opname == 'floordiv':
-			checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and ((x // y) <= maxint) and ((x // y) >= minint))]
-		elif opname == 'mod':
-			checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and ((x %% y) <= maxint) and ((x %% y) >= minint))]
-		# Truediv needs special handling for integer because the C function does 
-		# not do actual truediv for integer.
-		elif opname == 'truediv':
-			checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and (self.inttruediv(x, y) <= maxint) and (self.inttruediv(x, y) >= minint))]
-		elif opname == 'pow':
-			if '%(typecode)s' in ('f', 'd'):
-				checkedvalues = [(x, y) for x,y in opvalues if ((not((x == 0) and (y < 0))) and (minint <= (x**y) <= maxint))]
-			else:
-				checkedvalues = [(x, y) for x,y in opvalues if (y >= 0) and (minint <= (x**y) <= maxint)]
-		# Anything else. Note that since code generation is template driven the function used
-		# here may not be valid if one of the other cases above is used.
+		# Generate the test data for this set of tests.
+		tdata = gendata_%(datagenerator)s(minval, maxval, '%(typecode)s')
+
+		# If floating point, convert the data to the correct type.
+		if '%(typecode)s' in ('f', 'd'):
+			testdata = [(float(x), float(y)) for x,y in tdata]
 		else:
-			checkedvalues = [(x,y) for x,y in opvalues if (%(operatorfunc)s(x, y) <= maxint) and (%(operatorfunc)s(x, y) >= minint)]
-
-		return checkedvalues
+			testdata = tdata
 
 
-
-	########################################################
-	def gendata_special(self, minint, maxint, opname):
-		""" Generate data for special cases which might cause problems. 
-		For integers these will be minimum and maximum values, as well as around 
-		the zero point.
-		"""
-		# Make sure that we have coverage for data around the maximum, minimum, and zero
-		# points, which we might otherwise not have with larger data sizes.
-		halfpoint = (maxint + minint) // 2
-		specialvals = [minint, minint + 1, minint + 2, minint + 3, 
-					maxint - 3, maxint - 2, maxint - 1, maxint,
-					halfpoint - 3, halfpoint - 2, halfpoint - 1, halfpoint, 
-					halfpoint + 1, halfpoint + 2, halfpoint + 3, halfpoint + 4]
-
-		# Create combinations of all of these values.
-		opvalues = list(itertools.product(specialvals, specialvals))
-
-		# Filter out values which might cause errors.
-		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
-
-		checkedvalues.sort()
-
-		return checkedvalues
+		# And separate the data pairs. 
+		# This is used for array-array
+		cls.datax = [x for x,y in testdata]
+		cls.datay = [y for x,y in testdata]
 
 
-	########################################################
-	def gendata_specialpow(self, minint, maxint, opname):
-		""" Generate data for special cases which might cause problems. 
-		This one handles the data for pow only.
-		For integers these will be minimum and maximum values, as well as around 
-		the zero point.
-		"""
-		halfpoint = (maxint + minint) // 2
-		basevals = [minint, minint + 1, minint + 2, minint + 3, 
-					maxint - 3, maxint - 2, maxint - 1, maxint,
-					halfpoint - 3, halfpoint - 2, halfpoint - 1, halfpoint, 
-					halfpoint + 1, halfpoint + 2, halfpoint + 3, halfpoint + 4]
 
-		# Raise to the power of 0 or 1.
-		zerovals = [(x,0) for x in basevals]
-		onevals = [(x,1) for x in basevals]
+		# Group the data samples so we have sequences to fill arrays and
+		# individual values to use to perform operations on them.
+		# This version provides (sequence, value) e.g. ([1,2,3] , 9)
+		# This is used for array-num
+		datasample = testdata
+		datasample.sort(key = lambda x : x[1])
+		cls.groupeddatax = groupdata(datasample, cls.testdatasize)
 
-		# Raise 1 or zero to a power. Make sure we don't have negative powers.
-		zerovals2 = [(0,x) for x in basevals if x >= 0]
-		onevals2 = [(1,x) for x in basevals if x >= 0]
-
-		# Raise some simple values to some common powers.
-		if minint < 0:
-			minstart = -3
-		else:
-			minstart = 0
-		simplerange = list(range(minstart, 4))
-		simplevals = list(itertools.product(simplerange, [0, 1, 2, 3, 4]))
-
-		# These pairs were found to cause problems with some edge cases.
-		# They all produce maximum negative integer for certain array types.
-		# They represent tests for a variety of array types and have to be
-		# filtered for each array code. 
-		limitpairs = [(-2, 7), (-2, 15), (-8, 5), (-32, 3), (-2, 31),
-			(-2, 63), (-8, 21), (-127, 9), (-512, 7), (-2097152, 3)]
-
-		# Combine them all together.
-		allvals = zerovals + onevals + zerovals2 + onevals2 + simplevals + limitpairs
-
-		# Now filter them.
-		checkedvalues = self.filtertestdata(allvals, minint, maxint, opname)
 		
-		return checkedvalues
+		# Swap the elements around so we can group them the other way.
+		# This version provides (value, sequence) e.g. (9, [1,2,3])
+		# This is used for num-array
+		datasampy = [(y,x) for x,y in testdata]
+		datasampy.sort(key = lambda x : x[1])
 
-
-	########################################################
-	def gendata_pow(self, minint, maxint, opname):
-		"""Generate data for general testing. This is specifically for pow as
-		that operation has special requirements. 
-		"""
-		# We need two values for lval ** rval. The left hand one can be no bigger
-		# than the square root of the maximum value in order to fit within the
-		# data range (lval ** 2).
-		lval = int(math.sqrt(maxint))
-
-		stepcount = lval // 256
-		stepcount = max(stepcount, 1)
-
-		if minint < 0:
-			lvalstart = -lval
-		else:
-			lvalstart = 0
-		lvalspread = list(range(lvalstart, lval, stepcount))
-
-		# Make sure we have a good selection of smaller values as well.
-		if (maxint > 32768):
-			if minint < 0:
-				mindata = -128
-				maxdata = 127
-			else:
-				mindata = 0
-				maxdata = 255
-
-			lvalspread.extend(range(mindata, maxdata, 3))
-			# Remove duplicates.
-			lvalspread = list(set(lvalspread))
-
-		lvalspread.sort()
-
-		# Take a few values which we will add back in later.
-		lvalcentre = len(lvalspread) // 2
-		extralvals = lvalspread[2:4] + lvalspread[-4:-2] + lvalspread[lvalcentre : lvalcentre + 2]
-
-		# The right hand one (power to raise by) can be no bigger than 'x' where
-		# 2 ** x. and the result is the maximum integer value.
-		raisevals = {127 : 7, 255 : 8, 32767 : 15, 65535 : 16, 
-			2147483647 : 31, 4294967295 : 32, 
-			9223372036854775807 : 63, 18446744073709551615 : 64}
-		rval = raisevals[maxint]
-
-		# We start the range at 2 because 0 and 1 are trivial and we don't want
-		# too many of them in the data mix.
-		rvalspread = list(range(2, rval))
-
-
-		# Create the combinations
-		opvalues = list(itertools.product(lvalspread, rvalspread))
-
-		# Filter out the values which would go out of range.
-		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
-		
-
-		# Sort the data out in order.
-		checkedvalues.sort()
-
-		# Now pick a smaller and more reasonable size selection over the full range.
-		skipsize = len(checkedvalues) // 256
-		skipsize = max(skipsize, 1)
-		selectedvals = checkedvalues[::skipsize]
-
-		# Create the additional values involving the trivial cases of raise
-		# to the power of 0 or 1.
-		additionalvals = list(itertools.product(extralvals, [0, 1]))
-		selectedvals.extend(additionalvals)
-
-		selectedvals.sort()
-
-		return selectedvals
-
-
-	########################################################
-	def gendata_int(self, minint, maxint, opname):
-		"""Generate data for general testing. This does not worry about edge case
-		data. Edge cases must be created and tested separately. This function 
-		generates a wide selection of data over the numeric range. 
-		"""
-		# This will generate a selection of data spread over most of the integer 
-		# while giving the same amount of data for each data type.
-		intrange = maxint - minint 
-		stepcount = intrange // 256
-		stepcount = max(stepcount, 1)
-		
-		spreaddata = list(range(minint, maxint + 1, stepcount))
-
-		# Make sure we have a good selection of smaller values as well.
-		if (maxint > 256):
-			if minint < 0:
-				mindata = -128
-				maxdata = 127
-			else:
-				mindata = 0
-				maxdata = 255
-
-			spreaddata.extend(range(mindata, maxdata, 3))
-			# Remove duplicates.
-			spreaddata = list(set(spreaddata))
-
-		# Sort the data out in order.
-		spreaddata.sort()
-
-		# Trim down the size of the sample.
-		selectedspread = spreaddata[::3]
-
-		# Create combinations of all of these values.
-		opvalues = list(itertools.product(selectedspread, selectedspread))
-
-		# Filter out values which might cause errors.
-		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
-
-		# Sort the data out in order.
-		checkedvalues.sort()
-
-		# Now pick a smaller and more reasonable size selection over the full range.
-		skipsize = len(checkedvalues) // 256
-		skipsize = max(skipsize, 1)
-		selectedvals = checkedvalues[::skipsize]
-
-		return selectedvals
-
-
-	########################################################
-	def gendata_fullrange(self, minint, maxint, opname):
-		"""Generate data for general testing. Generate all combinations of data
-		that do not result in an overflow. This should only be used for small integers
-		as otherwise the amount of data generated is excessive.
-		This version does handle pow (**) as well as other operations.
-		"""
-		spreaddata = list(range(minint, maxint + 1, 1))
-
-		# Create combinations of all of these values.
-		opvalues = list(itertools.product(spreaddata, spreaddata))
-
-		# Filter out values which might cause errors.
-		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
-
-		# Sort the data out in order.
-		checkedvalues.sort()
-
-		return checkedvalues
+		grptmp = groupdata(datasampy, cls.testdatasize)
+		# Swap them back so they are the way we expect them.
+		cls.groupeddatay = [(y,x) for x,y in grptmp]
 
 
 
@@ -367,47 +560,17 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 			self.addTypeEqualityFunc(list, self.IntListassertEqual)
 
 
-		# For operations that support SIMD, this is intended to allow 
-		# selecting data sets that fit evenly in the SIMD register width,
-		# and also data sets that don't, and so require the non-SIMD
-		# clean-up code to be exercised.
-		# Since SIMD registers can be 256 bits wide (although not all
-		# platforms, we want at least that much data for byte arrays.
-		self.simdincr = 256 // 8
-		if '%(arrayevenodd)s' == 'even':
-			self.testdatasize = self.simdincr * 4
-		if '%(arrayevenodd)s' == 'odd':
-			self.testdatasize = (self.simdincr * 4) - 1
 
-
-		# For floating point values limit the test values to within
-		# the range of precision so that we don't create artificial 
-		# test errors due to problems related to numerical resolution.
-		if '%(typecode)s' == 'f':
-			minval = arrayfunc.arraylimits.h_min
-			maxval = arrayfunc.arraylimits.h_max
-		elif '%(typecode)s' == 'd':
-			minval = arrayfunc.arraylimits.i_min
-			maxval = arrayfunc.arraylimits.i_max
-		else:
-			minval = arrayfunc.arraylimits.%(typelabel)s_min
-			maxval = arrayfunc.arraylimits.%(typelabel)s_max
-
-
-		# Generate the test data for this set of tests.
-		tdata = self.gendata_%(datagenerator)s(minval, maxval, '%(funclabel)s')
-
-		# If floating point, convert the data to the correct type.
-		if '%(typecode)s' in ('f', 'd'):
-			testdata = [(float(x), float(y)) for x,y in tdata]
-		else:
-			testdata = tdata
-
-
-		# And separate the data pairs. 
-		self.datax = [x for x,y in testdata]
-		self.datay = [y for x,y in testdata]
-
+		# Make the data we want to use in the tests accessible with shorter labels.
+		# This first line gives us a reference to the class containing these tests
+		# as we need this to get at data created by setUpClass.
+		classref = self.__class__
+		self.groupeddatax = classref.groupeddatax
+		self.groupeddatay = classref.groupeddatay
+		self.datax = classref.datax
+		self.datay = classref.datay
+		self.simdincr = classref.simdincr
+		
 
 
 	########################################################
@@ -429,13 +592,13 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_none_a1(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 
 				arrayfunc.%(funcname)s(data1, testvaly)
 
@@ -447,13 +610,13 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_none_a2(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 
 				arrayfunc.%(funcname)s(data1, testvaly, matherrors=True)
 
@@ -465,15 +628,15 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_none_a3(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testvaly, maxlen=limited)
@@ -486,15 +649,15 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_none_a4(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testvaly, matherrors=True, maxlen=limited)
@@ -508,14 +671,14 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_array_b1(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 
 				arrayfunc.%(funcname)s(data1, testvaly, dataout)
 
@@ -527,14 +690,14 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_array_b2(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 
 				arrayfunc.%(funcname)s(data1, testvaly, dataout, matherrors=True)
 
@@ -546,16 +709,16 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_array_b3(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testvaly, dataout, maxlen=limited)
@@ -568,16 +731,16 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_array_num_array_b4(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testdatax, testvaly in self.groupeddatax:
+			with self.subTest(msg='Failed with parameter', testval = (testdatax, testvaly)):
 
-				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatax)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(x, testvaly) for x in testdatax]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testvaly, dataout, matherrors=True, maxlen=limited)
@@ -591,13 +754,13 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_none_c1(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 
 				arrayfunc.%(funcname)s(testvalx, data1)
 
@@ -609,13 +772,13 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_none_c2(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 
 				arrayfunc.%(funcname)s(testvalx, data1, matherrors=True)
 
@@ -627,15 +790,15 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_none_c3(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(testvalx, data1, maxlen=limited)
@@ -648,15 +811,15 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_none_c4(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(testvalx, data1, matherrors=True, maxlen=limited)
@@ -670,14 +833,14 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_array_d1(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 
 				arrayfunc.%(funcname)s(testvalx, data1, dataout)
 
@@ -689,14 +852,14 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_array_d2(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				# Only need to calculate one value as they are all the same.
-				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				expected = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 
 				arrayfunc.%(funcname)s(testvalx, data1, dataout, matherrors=True)
 
@@ -708,16 +871,16 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_array_d3(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(testvalx, data1, dataout, maxlen=limited)
@@ -730,16 +893,16 @@ class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typel
 	def test_%(funclabel)s_basic_num_array_array_d4(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testvalx, testvaly in zip(self.datax, self.datay):
-			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
+		for testvalx, testdatay in self.groupeddatay:
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testdatay)):
 
-				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
+				data1 = array.array('%(typecode)s', testdatay)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				# Only need to calculate one value as they are all the same.
-				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
+				# Calculate the expected result.
+				pydataout = [%(operatorfunc)s(testvalx, y) for y in testdatay]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(testvalx, data1, dataout, matherrors=True, maxlen=limited)
@@ -5307,19 +5470,8 @@ class overflow_signed_negy_%(typelabel)s(unittest.TestCase):
 		arrayfunc.pow(self.datax1, 1)
 
 		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
+		with self.assertRaises(ValueError):
 			arrayfunc.pow(self.datax2, -1)
-
-
-	########################################################
-	def test_pow_array_num_none_a2(self):
-		"""Test pow as *array-num-none* for x ** -1 with matherrors=True  - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.pow(self.datax1, 1, matherrors=True)
-
-		# This is the actual test. There should be no exception on math error.
-		arrayfunc.pow(self.datax2, -1, matherrors=True)
 
 
 	########################################################
@@ -5330,19 +5482,8 @@ class overflow_signed_negy_%(typelabel)s(unittest.TestCase):
 		arrayfunc.pow(self.datax1, 1, self.dataout)
 
 		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
+		with self.assertRaises(ValueError):
 			arrayfunc.pow(self.datax2, -1, self.dataout)
-
-
-	########################################################
-	def test_pow_array_num_array_b2(self):
-		"""Test pow as *array-num-array* for x ** -1 with matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.pow(self.datax1, 1, self.dataout, matherrors=True)
-
-		# This is the actual test. There should be no exception on math errors.
-		arrayfunc.pow(self.datax2, -1, self.dataout, matherrors=True)
 
 
 	########################################################
@@ -6066,6 +6207,23 @@ for func in funclist:
 		f.write(codegen_common.HeaderTemplate % headerdate)
 
 
+		# Insert the helper functions that are not array type dependent.
+		# This filters test data based on the operation being performed.
+		f.write(datafilters[funcname])
+
+
+		# Generate the data for the general tests. These functions are
+		# called by a number of different classes. 
+		# The pow function uses a special version which is different from the rest.
+		if funcname == 'pow':
+			f.write(gendata_pow)
+		else:
+			f.write(gendata_general)
+
+		# This generates all possible data combinations for 8 bit arrays.
+		f.write(gendata_fullrange)
+
+
 		# Check each array type.
 		for functype in codegen_common.arraycodes:
 
@@ -6131,7 +6289,7 @@ for func in funclist:
 			if (pyoperator == '/') and (functype in codegen_common.intarrays):
 				funcdata['typeconv1'] = 'list(map(int,'
 				funcdata['typeconv2'] = '))'
-				funcdata['operatorfunc'] = 'self.inttruediv'
+				funcdata['operatorfunc'] = 'inttruediv'
 			else:
 				funcdata['typeconv1'] = ''
 				funcdata['typeconv2'] = ''

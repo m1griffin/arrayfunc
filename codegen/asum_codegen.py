@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ asum_head = """//---------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -190,30 +190,39 @@ double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed in
 	Py_ssize_t x; 
 	%(arraytype)s partialsum = 0.0;
 
+	*errflag = 0;
 
 #ifdef AF_HASSIMD_X86
-	// SIMD version. Only use this if overflow checking is disabled.
-	if (ignoreerrors && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
-		return asum_%(funcmodifier)s_simd(arraylen, data);
-	}
-#endif
-
-	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+	// SIMD version. 
+	if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			return asum_%(funcmodifier)s_simd(arraylen, data);
+		} else {
+			partialsum = asum_%(funcmodifier)s_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
-			if (!isfinite(partialsum)) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Non-SIMD version.
+		// Overflow checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
+			}
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
+				if (!isfinite(partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				}
 			}
 		}
+#ifdef AF_HASSIMD_X86
 	}
+#endif
 
 	return %(returnmodifier)spartialsum;
 }
@@ -228,11 +237,10 @@ simdsupport = """
 /* For array code: %(arraycode)s
    arraylen = The length of the data array.
    data = The input data array.
-   errflag = Set to true if an overflow error occured in integer operations.
-   ignoreerrors = If true, arithmetic overflow checking is disabled.
-   nosimd = If true, disable SIMD.
+   errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
+// Version without error checking.
 #ifdef AF_HASSIMD_X86
 double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) { 
 
@@ -267,6 +275,58 @@ double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) {
 	// Add the values within the left over elements at the end of the array.
 	for (x = alignedlength; x < arraylen; x++) {
 		partialsum = partialsum + data[x];
+	}
+
+
+	return %(returnmodifier)spartialsum;
+}
+
+/*--------------------------------------------------------------------------- */
+
+// Version with error checking.
+double asum_%(funcmodifier)s_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag) { 
+
+	// array index counter. 
+	Py_ssize_t x, alignedlength; 
+	unsigned int y;
+	%(arraytype)s partialsum = 0.0;
+
+	%(arraytype)s sumvals[%(simdwidth)s];
+	%(simdattr)s sumslice, dataslice;
+
+
+	*errflag = 0;
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Initialise the sum values.
+	sumslice = (%(simdattr)s) %(simdload)s(data);
+
+	// Use SIMD.
+	for (x = %(simdwidth)s; x < alignedlength; x += %(simdwidth)s) {
+		dataslice = (%(simdattr)s) %(simdload)s(&data[x]);
+		sumslice = %(simdop)s(sumslice, dataslice);
+	}
+
+	// Add up the values within the slice.
+	%(simdstore)s(sumvals, (%(simdattr)s) sumslice);
+	for (y = 0; y < %(simdwidth)s; y++) {
+		partialsum = partialsum + sumvals[y];
+	}
+
+
+	// Add the values within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		partialsum = partialsum + data[x];
+	}
+
+	// If an error occured resulting in NaN or INF anywhere in the course of
+	// the calculation it should have propagated through to the end and we will
+	// find it here at the end.
+	if (!isfinite(partialsum)) {
+		*errflag = ARR_ERR_OVFL;
 	}
 
 

@@ -48,6 +48,8 @@ extensions = [
 	('floordiv', ['src/floordiv.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('mod', ['src/mod.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('pow', ['src/pow.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('pow2', ['src/pow2.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('pow3', ['src/pow3.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
 	('eq', ['src/eq.c', 'src/eq_simd_x86.c', 'src/eq_simd_armv7.c', 'src/eq_simd_armv8.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('ne', ['src/ne.c', 'src/ne_simd_x86.c', 'src/ne_simd_armv7.c', 'src/ne_simd_armv8.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -197,7 +199,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '7.1.0',
+	version = '7.2.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',

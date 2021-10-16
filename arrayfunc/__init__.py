@@ -46,6 +46,8 @@ from arrayfunc.truediv import truediv
 from arrayfunc.floordiv import floordiv
 from arrayfunc.mod import mod
 from arrayfunc.pow import pow
+from arrayfunc.pow2 import pow2
+from arrayfunc.pow3 import pow3
 
 from arrayfunc.eq import eq
 from arrayfunc.ne import ne

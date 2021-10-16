@@ -84,10 +84,72 @@ mathops_head = """//------------------------------------------------------------
 
 # ==============================================================================
 
-# For signed and unsigned integer.
-ops_pow_int = """
+# For signed integer.
+ops_pow_int_signed = """
 
-%(powtemplate)s
+/*--------------------------------------------------------------------------- */
+// Note: The guard calculations for negative need to use abs(x) instead of -x
+// because of problems with Microsoft MSVS 2010. MSVS was confused by negating
+// a negative number with minimum integers (e.g. INT_MIN) and producing a
+// positive result.
+
+// Return x raised to the power of y.
+%(arraytype)s arith_pow_%(funcmodifier)s(%(arraytype)s x, %(arraytype)s y, char *errflag) {
+	%(arraytype)s i, z, ovtmp1, ovtmp2;
+	z = 1;
+	*errflag = 0;
+
+	// We don't allow negative powers for integers.
+	if (y < 0) {
+		*errflag = ARR_ERR_VALUE_ERR;
+		return z;
+	}
+
+	// Next we need to deal with a series of special cases.
+
+	// Special case for raise to the power of zero.
+	if (y == 0) { return 1; }
+
+	// We need this special case to avoid dividing by zero.
+	if (x == 0) { return 0; }
+
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == %(intminvalue)s) && (y == 1)) { return %(intminvalue)s; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y %% 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+%(powoverflowspecialcase)s
+	if (x > 0) {
+		ovtmp1 = %(intmaxvalue)s / x;
+		for (i = 0; i < y; i++) {
+			if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
+			z = z * x;
+		}
+	} else {
+		ovtmp1 = %(intmaxvalue)s / %(abs)s(x);
+		ovtmp2 = %(intminvalue)s / %(abs)s(x);
+		for (i = 0; i < y; i++) {
+			if ((z > ovtmp1) || (z < ovtmp2)) {*errflag = ARR_ERR_OVFL; return z;}
+			z = z * x;
+		}
+	}
+	return z;
+}
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -101,23 +163,66 @@ ops_pow_int = """
 // param_arr_num_none
 signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
+
 	// array index counter.
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > %(pow2max)s) || (data1[x] < %(pow2min)s)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > %(pow3max)s) || (data1[x] < %(pow3min)s)) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -130,23 +235,249 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 	Py_ssize_t x;
 	char errflag = 0;
 
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > %(pow2max)s) || (data1[x] < %(pow2min)s)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if ((data1[x] > %(pow3max)s) || (data1[x] < %(pow3min)s)) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
 		}
+
 	} else {
-	// Math error checking enabled.
+		// Ignore errors. We only do this with the non-optimised version. 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
-			if (errflag != 0) return ARR_ERR_OVFL;
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
 
+"""
+
+
+# For unsigned integer.
+ops_pow_int_unsigned = """
+
+/*--------------------------------------------------------------------------- */
+// Return x raised to the power of y.
+%(arraytype)s arith_pow_%(funcmodifier)s(%(arraytype)s x, %(arraytype)s y, char *errflag) {
+	%(arraytype)s i, z, ovtmp1;
+	z = 1;
+	*errflag = 0;
+
+	// Special case for raise to the power of zero.
+	if (y == 0) { return 1; }
+
+	// We need this special case to avoid dividing by zero.
+	if (x == 0) {return 0;}
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	ovtmp1 = %(intmaxvalue)s / x;
+	for (i = 0; i < y; i++) {
+		if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
+		z = z * x;
+	}
+	return z;
+}
+
+
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   ignoreerrors = If true, disable arithmetic math error checking (default is false).
+*/
+// param_arr_num_none
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+
+
+	// array index counter.
+	Py_ssize_t x;
+	char errflag = 0;
+
+
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				// Since this effectively changes nothing, we can do nothing.
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > %(pow2max)s) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > %(pow3max)s) { return ARR_ERR_OVFL; }
+					data1[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				// Math error checking enabled.
+				for (x = 0; x < arraylen; x++) {
+					data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
+		}
+
+	} else {
+		// Ignore errors. We only do this with the non-optimised version. 
+		for (x = 0; x < arraylen; x++) {
+			data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+		}
+	}
+
+	return ARR_NO_ERR;
+
+}
+
+
+// param_arr_num_arr
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+	char errflag = 0;
+
+	// Negative powers are not allowed.
+	if (param < 0) { return ARR_ERR_VALUE_ERR; }
+
+	if (!ignoreerrors) {
+		switch (param) {
+			// Anything to the power of 0 is one.
+			case 0 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = 1;
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 1.
+			case 1 : { 
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 2.
+			case 2 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > %(pow2max)s) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// Special optimized version for powers of 3.
+			case 3 : { 
+				for (x = 0; x < arraylen; x++) {
+					if (data1[x] > %(pow3max)s) { return ARR_ERR_OVFL; }
+					data3[x] = data1[x] * data1[x] * data1[x];
+				}
+				break;
+			}
+
+			// General algorithm which covers all other powers.
+			default : {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+					if (errflag != 0) { return ARR_ERR_OVFL; }
+				}
+				break;
+			}
+		}
+
+	} else {
+		// Ignore errors. We only do this with the non-optimised version. 
+		for (x = 0; x < arraylen; x++) {
+			data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
+		}
+	}
+
+	return ARR_NO_ERR;
+
+}
+
+
+"""
+
+
+# For signed and unsigned integer. This covers the configurations not 
+# covered by the other templates. These do not have optimised versions.
+ops_pow_int = """
 
 // param_num_arr_none
 signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
@@ -409,110 +740,6 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 # ==============================================================================
 
-# These are used for the pow function only.
-
-powtemplatesigned = """
-/*--------------------------------------------------------------------------- */
-
-// Note: The guard calculations for negative need to use abs(x) instead of -x
-// because of problems with Microsoft MSVS 2010. MSVS was confused by negating
-// a negative number with minimum integers (e.g. INT_MIN) and producing a
-// positive result.
-
-// Return x raised to the power of y.
-%(arraytype)s arith_pow_%(funcmodifier)s(%(arraytype)s x, %(arraytype)s y, char *errflag) {
-	%(arraytype)s i, z, ovtmp1, ovtmp2;
-	z = 1;
-	*errflag = 0;
-
-	// We don't allow negative powers for integers.
-	if (y < 0) {
-		*errflag = ARR_ERR_VALUE_ERR;
-		return z;
-	}
-
-	// Next we need to deal with a series of special cases.
-
-	// Special case for raise to the power of zero.
-	if (y == 0) { return 1; }
-
-	// We need this special case to avoid dividing by zero.
-	if (x == 0) { return 0; }
-
-	// This special case handles limitations of the algorithm with
-	// the minimum integer. 
-	if ((x == %(intminvalue)s) && (y == 1)) { return %(intminvalue)s; }
-
-	// Special case for base of 1. This helps in instances with 
-	// very large powers where otherwise the algorithm will grind
-	// away for a long time before returning.
-	if (x == 1) { return 1; }
-
-	// Same as above, but for -1. We have to account for odd and even powers.
-	if (x == -1) {
-		// Odd if there is a remainder.
-		if (y %% 2) { 
-			return -1; 
-		} else {
-			return 1;
-		}
-	}
-
-%(powoverflowspecialcase)s
-	if (x > 0) {
-		ovtmp1 = %(intmaxvalue)s / x;
-		for (i = 0; i < y; i++) {
-			if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
-			z = z * x;
-		}
-	} else {
-		ovtmp1 = %(intmaxvalue)s / %(abs)s(x);
-		ovtmp2 = %(intminvalue)s / %(abs)s(x);
-		for (i = 0; i < y; i++) {
-			if ((z > ovtmp1) || (z < ovtmp2)) {*errflag = ARR_ERR_OVFL; return z;}
-			z = z * x;
-		}
-	}
-	return z;
-}
-
-"""
-
-
-powtemplateunsigned = """
-// Return x raised to the power of y.
-%(arraytype)s arith_pow_%(funcmodifier)s(%(arraytype)s x, %(arraytype)s y, char *errflag) {
-	%(arraytype)s i, z, ovtmp1;
-	z = 1;
-	*errflag = 0;
-
-	// Special case for raise to the power of zero.
-	if (y == 0) { return 1; }
-
-	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
-
-	// Special case for base of 1. This helps in instances with 
-	// very large powers where otherwise the algorithm will grind
-	// away for a long time before returning.
-	if (x == 1) { return 1; }
-
-	ovtmp1 = %(intmaxvalue)s / x;
-	for (i = 0; i < y; i++) {
-		if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
-		z = z * x;
-	}
-	return z;
-}
-
-/*--------------------------------------------------------------------------- */
-"""
-
-
-# ==============================================================================
-
-# ==============================================================================
-
 # This is the set of function calls used to call each operator function.
 opscall = """
 		// %(funcmodifier)s
@@ -593,11 +820,6 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// Signal the errors.
-	if (resultcode == ARR_ERR_ZERODIV) {
-		ErrMsgZeroDiv();
-		return NULL;
-	}
-
 	if (resultcode == ARR_ERR_ARITHMETIC) {
 		ErrMsgArithCalc();
 		return NULL;
@@ -605,6 +827,11 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 	if (resultcode == ARR_ERR_OVFL) {
 		ErrMsgArithOverflowCalc();
+		return NULL;
+	}
+
+	if (resultcode == ARR_ERR_VALUE_ERR) {
+		ErrMsgParameterNotValidforthisOperation();
 		return NULL;
 	}
 
@@ -797,22 +1024,156 @@ absfunc = {
 
 # ==============================================================================
 
+# Limits to squares and cubes for overflow detection for each integer types.
+# POW2MAX and POW2MIN refer to the maximum and mininum value which can be
+# raised to the power of 2 without overflowing for that array type.
+# POW3MAX and POW3MIN are the corresponding versions for raising to
+# the power of 3.
+
+pow_limits_definitions = '''
+#define SCHAR_POW2MAX 11
+#define SCHAR_POW2MIN -11 
+#define UCHAR_POW2MAX 15
+
+#define SSHORT_POW2MAX 181
+#define SSHORT_POW2MIN -181 
+#define USHORT_POW2MAX 255
+
+#define SINT_POW2MAX 46340
+#define SINT_POW2MIN -46340
+#define UINT_POW2MAX 65535
+
+// Account for 64 bit versus 32 bit word sizes.
+#if LONG_MAX == LLONG_MAX
+
+#define SLINT_POW2MAX 3037000499L
+#define SLINT_POW2MIN -3037000499L
+#define ULINT_POW2MAX 4294967295UL
+
+#else
+
+#define SLINT_POW2MAX 46340
+#define SLINT_POW2MIN -46340
+#define ULINT_POW2MAX 65535
+
+#endif
+
+#define SLLINT_POW2MAX 3037000499LL
+#define SLLINT_POW2MIN -3037000499LL
+#define ULLINT_POW2MAX 4294967295ULL
+
+
+#define SCHAR_POW3MAX 5
+#define SCHAR_POW3MIN -5 
+#define UCHAR_POW3MAX 6
+
+#define SSHORT_POW3MAX 31
+#define SSHORT_POW3MIN -32 
+#define USHORT_POW3MAX 40
+
+#define SINT_POW3MAX 1290
+#define SINT_POW3MIN -1290
+#define UINT_POW3MAX 1625
+
+// Account for 64 bit versus 32 bit word sizes.
+#if LONG_MAX == LLONG_MAX
+
+#define SLINT_POW3MAX 2097151
+#define SLINT_POW3MIN -2097152
+#define ULINT_POW3MAX 2642245
+
+#else
+
+#define SLINT_POW3MAX 1290
+#define SLINT_POW3MIN -1290
+#define ULINT_POW3MAX 1625
+
+#endif
+
+#define SLLINT_POW3MAX 2097151
+#define SLLINT_POW3MIN -2097152
+#define ULLINT_POW3MAX 2642245
+
+'''
+
+# Maximum and minimum limits for raising integers to powers of 2 or 3.
+pow2_limits_max = {
+	'b' : 'SCHAR_POW2MAX',
+	'B' : 'UCHAR_POW2MAX',
+	'h' : 'SSHORT_POW2MAX',
+	'H' : 'USHORT_POW2MAX',
+	'i' : 'SINT_POW2MAX',
+	'I' : 'UINT_POW2MAX',
+	'l' : 'SLINT_POW2MAX',
+	'L' : 'ULINT_POW2MAX',
+	'q' : 'SLLINT_POW2MAX',
+	'Q' : 'ULLINT_POW2MAX',
+	'f' : '',
+	'd' : '',
+}
+
+pow2_limits_min = {
+	'b' : 'SCHAR_POW2MIN',
+	'B' : '0',
+	'h' : 'SSHORT_POW2MIN',
+	'H' : '0',
+	'i' : 'SINT_POW2MIN',
+	'I' : '0',
+	'l' : 'SLINT_POW2MIN',
+	'L' : '0',
+	'q' : 'SLLINT_POW2MIN',
+	'Q' : '0',
+	'f' : '',
+	'd' : '',
+}
+
+pow3_limits_max = {
+	'b' : 'SCHAR_POW3MAX',
+	'B' : 'UCHAR_POW3MAX',
+	'h' : 'SSHORT_POW3MAX',
+	'H' : 'USHORT_POW3MAX',
+	'i' : 'SINT_POW3MAX',
+	'I' : 'UINT_POW3MAX',
+	'l' : 'SLINT_POW3MAX',
+	'L' : 'ULINT_POW3MAX',
+	'q' : 'SLLINT_POW3MAX',
+	'Q' : 'ULLINT_POW3MAX',
+	'f' : '',
+	'd' : '',
+}
+
+pow3_limits_min = {
+	'b' : 'SCHAR_POW3MIN',
+	'B' : '0',
+	'h' : 'SSHORT_POW3MIN',
+	'H' : '0',
+	'i' : 'SINT_POW3MIN',
+	'I' : '0',
+	'l' : 'SLINT_POW3MIN',
+	'L' : '0',
+	'q' : 'SLLINT_POW3MIN',
+	'Q' : '0',
+	'f' : '',
+	'd' : '',
+}
+
+# ==============================================================================
+
 
 # Create the source code based on templates.
 funcname = 'pow'
 filename = funcname + '.c'
 pyoperator = '**'
-copname = '/'
 
-c_operator_i = 'arith_pow_int-type'
-c_operator_f = 'powf'
-c_operator_d = 'pow'
+
+# Select the correct function for floating point.
+copnamefloat = {'f' : 'powf', 'd' : 'pow'}
 
 
 # This code generator script does not use data read from the spreadsheet.
 arraytypesdocs = 'si,ui,f'
 opcodedocs = 'x**y or math.pow(x, y)'
-matherrorsdocs = 'OverflowError,ArithmeticError'
+matherrorsdocs = 'OverflowError,ArithmeticError,ValueError'
 
 # These are the templates for each type specific operation. 
 float_template = ops_pow_float
@@ -825,7 +1186,6 @@ with open(filename, 'w') as f:
 
 	funcdata = {'funclabel' : funcname, 
 				'includeoptions' : '',
-				'copname' : copname,
 				'nosimddecl' : '',
 				'nosimdparam' : '',
 				}
@@ -833,7 +1193,8 @@ with open(filename, 'w') as f:
 	f.write(mathops_head % funcdata)
 	opscalltext = []
 
-		
+
+	f.write(pow_limits_definitions)
 
 	# Check each array type.
 	for arraycode in codegen_common.arraycodes:
@@ -845,38 +1206,41 @@ with open(filename, 'w') as f:
 		funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
 		funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
 
+		# Integer overflow limits for raising to the power of 2 or 3.
+		funcdata['pow2max'] = pow2_limits_max[arraycode]
+		funcdata['pow2min'] = pow2_limits_min[arraycode]
+		funcdata['pow3max'] = pow3_limits_max[arraycode]
+		funcdata['pow3min'] = pow3_limits_min[arraycode]
 
-		if arraycode == 'd':
-			ops_calc = float_template
-			funcdata['copname'] = c_operator_d
-		elif arraycode == 'f':
-			ops_calc = float_template
-			funcdata['copname'] = c_operator_f
-		elif arraycode in codegen_common.unsignedint:
-			ops_calc = uint_template
-			funcdata['copname'] = c_operator_i
-		elif arraycode in codegen_common.signedint:
-			ops_calc = int_template
-			funcdata['copname'] = c_operator_i
-		else:
-			print('Error - Unsupported array code.', arraycode)
-
-		# This is used for pow only.
+		# Integer absolute value function depends on array type.
 		funcdata['abs'] = absfunc[arraycode]
 
 		# This handles special cases with signed integers.
 		if arraycode in powoverflowspecialcase:
 			funcdata['powoverflowspecialcase'] = powoverflowspecialcase[arraycode]
 
-		# This is for pow and inserts some of the data so far back into the 
-		# dictionary to be added in again.
-		if arraycode in codegen_common.unsignedint:
-			 funcdata['powtemplate'] = powtemplateunsigned % funcdata
-		elif arraycode in codegen_common.signedint:
-			 funcdata['powtemplate'] = powtemplatesigned % funcdata
 
+		# Handle integer arrays.
+		if arraycode in codegen_common.intarrays:
+			# First two equation forms for signed int.
+			if arraycode in codegen_common.signedint:
+				f.write(ops_pow_int_signed % funcdata)
+			# First two equation forms for unsigned int.
+			elif arraycode in codegen_common.unsignedint:
+				f.write(ops_pow_int_unsigned % funcdata)
+			else:
+				print('Error - Unsupported array code.', arraycode)
 
-		f.write(ops_calc % funcdata)
+			# Remaining equation forms for both signed and unsigned int.
+			f.write(ops_pow_int % funcdata)
+
+		# Handle float arrays.
+		elif arraycode in codegen_common.floatarrays:
+			funcdata['copname'] = copnamefloat[arraycode]
+			f.write(float_template % funcdata)
+		else:
+			print('Error - Unsupported array code.', arraycode)
+
 
 		# This is the call to the functions for this array type. This
 		# is inserted into another template below.

@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      02-Jan-2020.
+// Ver:      14-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -46,11 +46,10 @@
 /* For array code: f
    arraylen = The length of the data array.
    data = The input data array.
-   errflag = Set to true if an overflow error occured in integer operations.
-   ignoreerrors = If true, arithmetic overflow checking is disabled.
-   nosimd = If true, disable SIMD.
+   errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
+// Version without error checking.
 #ifdef AF_HASSIMD_X86
 double asum_float_simd(Py_ssize_t arraylen, float *data) { 
 
@@ -90,6 +89,58 @@ double asum_float_simd(Py_ssize_t arraylen, float *data) {
 
 	return (double) partialsum;
 }
+
+/*--------------------------------------------------------------------------- */
+
+// Version with error checking.
+double asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag) { 
+
+	// array index counter. 
+	Py_ssize_t x, alignedlength; 
+	unsigned int y;
+	float partialsum = 0.0;
+
+	float sumvals[FLOATSIMDSIZE];
+	v4sf sumslice, dataslice;
+
+
+	*errflag = 0;
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+
+	// Initialise the sum values.
+	sumslice = (v4sf) __builtin_ia32_loadups(data);
+
+	// Use SIMD.
+	for (x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
+		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
+		sumslice = __builtin_ia32_addps(sumslice, dataslice);
+	}
+
+	// Add up the values within the slice.
+	__builtin_ia32_storeups(sumvals, (v4sf) sumslice);
+	for (y = 0; y < FLOATSIMDSIZE; y++) {
+		partialsum = partialsum + sumvals[y];
+	}
+
+
+	// Add the values within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		partialsum = partialsum + data[x];
+	}
+
+	// If an error occured resulting in NaN or INF anywhere in the course of
+	// the calculation it should have propagated through to the end and we will
+	// find it here at the end.
+	if (!isfinite(partialsum)) {
+		*errflag = ARR_ERR_OVFL;
+	}
+
+
+	return (double) partialsum;
+}
 #endif
 /*--------------------------------------------------------------------------- */
 
@@ -97,11 +148,10 @@ double asum_float_simd(Py_ssize_t arraylen, float *data) {
 /* For array code: d
    arraylen = The length of the data array.
    data = The input data array.
-   errflag = Set to true if an overflow error occured in integer operations.
-   ignoreerrors = If true, arithmetic overflow checking is disabled.
-   nosimd = If true, disable SIMD.
+   errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
+// Version without error checking.
 #ifdef AF_HASSIMD_X86
 double asum_double_simd(Py_ssize_t arraylen, double *data) { 
 
@@ -136,6 +186,58 @@ double asum_double_simd(Py_ssize_t arraylen, double *data) {
 	// Add the values within the left over elements at the end of the array.
 	for (x = alignedlength; x < arraylen; x++) {
 		partialsum = partialsum + data[x];
+	}
+
+
+	return partialsum;
+}
+
+/*--------------------------------------------------------------------------- */
+
+// Version with error checking.
+double asum_double_simd_ovfl(Py_ssize_t arraylen, double *data, signed int *errflag) { 
+
+	// array index counter. 
+	Py_ssize_t x, alignedlength; 
+	unsigned int y;
+	double partialsum = 0.0;
+
+	double sumvals[DOUBLESIMDSIZE];
+	v2df sumslice, dataslice;
+
+
+	*errflag = 0;
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
+
+	// Initialise the sum values.
+	sumslice = (v2df) __builtin_ia32_loadupd(data);
+
+	// Use SIMD.
+	for (x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
+		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
+		sumslice = __builtin_ia32_addpd(sumslice, dataslice);
+	}
+
+	// Add up the values within the slice.
+	__builtin_ia32_storeupd(sumvals, (v2df) sumslice);
+	for (y = 0; y < DOUBLESIMDSIZE; y++) {
+		partialsum = partialsum + sumvals[y];
+	}
+
+
+	// Add the values within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		partialsum = partialsum + data[x];
+	}
+
+	// If an error occured resulting in NaN or INF anywhere in the course of
+	// the calculation it should have propagated through to the end and we will
+	// find it here at the end.
+	if (!isfinite(partialsum)) {
+		*errflag = ARR_ERR_OVFL;
 	}
 
 

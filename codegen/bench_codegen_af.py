@@ -1214,6 +1214,34 @@ benchfuncs = [
 	'arraysreq' : "('dataout')",
 	},
 
+	{'funcname' : 'pow2',
+	'test_op_x' : '[2]', 
+	'test_op_y' : '[0]',
+	'test_op_z' : '[0]',
+	'pyequ' : 'result = [pow(x, 2) for x in datax]',
+	'arrayfuncequ' : 'arrayfunc.pow2(datax, dataout)',
+	'afequerrtruenosimdtrue' : 'arrayfunc.pow2(datax, dataout, matherrors=True)',
+	'afequerrtruenosimdfalse' : 'arrayfunc.pow2(datax, dataout, matherrors=True)',
+	'afequerrfalsenosimdtrue' : 'arrayfunc.pow2(datax, dataout)',
+	'compval' : 0,
+	'arraysreq' : "('dataout')",
+	},
+
+
+	{'funcname' : 'pow3',
+	'test_op_x' : '[2]', 
+	'test_op_y' : '[0]',
+	'test_op_z' : '[0]',
+	'pyequ' : 'result = [pow(x, 3) for x in datax]',
+	'arrayfuncequ' : 'arrayfunc.pow3(datax, dataout)',
+	'afequerrtruenosimdtrue' : 'arrayfunc.pow3(datax, dataout, matherrors=True)',
+	'afequerrtruenosimdfalse' : 'arrayfunc.pow3(datax, dataout, matherrors=True)',
+	'afequerrfalsenosimdtrue' : 'arrayfunc.pow3(datax, dataout)',
+	'compval' : 0,
+	'arraysreq' : "('dataout')",
+	},
+
+
 ]
 
 # ==============================================================================
