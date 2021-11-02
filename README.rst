@@ -353,6 +353,7 @@ setup.py directly is no longer done.
 
 Release History
 ===============
+* 8.0.1 - Technical bump to version number to include update information.
 * 8.0.0 - Performance improvements in add, sub, mul, neg, abs, ceil, floor, 
           trunc, sqrt, degrees, radians. Asum will now use error checking 
           with floating point SIMD by default where available. Benchmarks
