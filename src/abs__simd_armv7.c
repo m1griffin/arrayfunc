@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     08-Oct-2019
-// Ver:      06-Sep-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -82,7 +82,7 @@ int8x8_t initvec_signed_char(signed char initval) {
 void abs__signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -96,18 +96,18 @@ void abs__signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s8( &data[index]);
+		datasliceleft = vld1_s8( &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = vabs_s8(datasliceleft);
 		// Store the result.
-		vst1_s8( &data[index],  datasliceleft);
+		vst1_s8( &data[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -119,7 +119,7 @@ void abs__signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 void abs__signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -133,18 +133,18 @@ void abs__signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s8( &data[index]);
+		datasliceleft = vld1_s8( &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = vabs_s8(datasliceleft);
 		// Store the result.
-		vst1_s8( &dataout[index],  datasliceleft);
+		vst1_s8( &dataout[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -162,7 +162,7 @@ void abs__signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char
 char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -181,9 +181,9 @@ char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s8( &data[index]);
+		datasliceleft = vld1_s8( &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -201,13 +201,13 @@ char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 		datasliceleft = vmax_s8(datasliceleft, datasliceright);
 
 		// Store the result.
-		vst1_s8( &data[index],  datasliceleft);
+		vst1_s8( &data[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_char(data[index]) ) {return ARR_ERR_OVFL;}
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_char(data[x]) ) {return ARR_ERR_OVFL;}
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -219,7 +219,7 @@ char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 char abs__signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed char *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -238,9 +238,9 @@ char abs__signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s8( &data[index]);
+		datasliceleft = vld1_s8( &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -258,13 +258,13 @@ char abs__signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed
 		datasliceleft = vmax_s8(datasliceleft, datasliceright);
 
 		// Store the result.
-		vst1_s8( &dataout[index],  datasliceleft);
+		vst1_s8( &dataout[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_char(data[index]) ) {return ARR_ERR_OVFL;}
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_char(data[x]) ) {return ARR_ERR_OVFL;}
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -307,7 +307,7 @@ int16x4_t initvec_signed_short(signed short initval) {
 void abs__signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -321,18 +321,18 @@ void abs__signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s16( &data[index]);
+		datasliceleft = vld1_s16( &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = vabs_s16(datasliceleft);
 		// Store the result.
-		vst1_s16( &data[index],  datasliceleft);
+		vst1_s16( &data[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -344,7 +344,7 @@ void abs__signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 void abs__signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed short *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -358,18 +358,18 @@ void abs__signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed sh
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s16( &data[index]);
+		datasliceleft = vld1_s16( &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = vabs_s16(datasliceleft);
 		// Store the result.
-		vst1_s16( &dataout[index],  datasliceleft);
+		vst1_s16( &dataout[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -387,7 +387,7 @@ void abs__signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed sh
 char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -406,9 +406,9 @@ char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s16( &data[index]);
+		datasliceleft = vld1_s16( &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -426,13 +426,13 @@ char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 		datasliceleft = vmax_s16(datasliceleft, datasliceright);
 
 		// Store the result.
-		vst1_s16( &data[index],  datasliceleft);
+		vst1_s16( &data[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_short(data[index]) ) {return ARR_ERR_OVFL;}
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_short(data[x]) ) {return ARR_ERR_OVFL;}
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -444,7 +444,7 @@ char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 char abs__signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed short *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -463,9 +463,9 @@ char abs__signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, sign
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1_s16( &data[index]);
+		datasliceleft = vld1_s16( &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -483,15 +483,212 @@ char abs__signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, sign
 		datasliceleft = vmax_s16(datasliceleft, datasliceright);
 
 		// Store the result.
-		vst1_s16( &dataout[index],  datasliceleft);
+		vst1_s16( &dataout[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_short(data[index]) ) {return ARR_ERR_OVFL;}
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_short(data[x]) ) {return ARR_ERR_OVFL;}
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
+	return 0;
+
+}
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+*/
+// param_arr_none
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+void abs__float_1_simd(Py_ssize_t arraylen, float *data) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	float32x2_t datasliceleft;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1_f32( &data[x]);
+		// The actual SIMD operation. 
+		datasliceleft = vabs_f32(datasliceleft);
+		// Store the result.
+		vst1_f32( &data[x], datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = fabsf(data[x]);
+	}
+
+}
+
+
+
+// param_arr_arr
+void abs__float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	float32x2_t datasliceleft;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1_f32( &data[x]);
+		// The actual SIMD operation. 
+		datasliceleft = vabs_f32(datasliceleft);
+		// Store the result.
+		vst1_f32( &dataout[x], datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = fabsf(data[x]);
+	}
+
+}
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   Returns 1 if overflow occurred, else returns 0.
+*/
+// param_arr_none
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+char abs__float_1_simd_ovfl(Py_ssize_t arraylen, float *data) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	float32x2_t datasliceleft, checkslice;
+
+	float checkvecresults[FLOATSIMDSIZE];
+	float checksliceinit[FLOATSIMDSIZE] = {0.0};
+
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = vld1_f32( checksliceinit);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1_f32( &data[x]);
+		// The actual SIMD operation. 
+		datasliceleft = vabs_f32(datasliceleft);
+		// Store the result.
+		vst1_f32( &data[x], datasliceleft);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = vmul_f32(checkslice, datasliceleft);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	vst1_f32( checkvecresults, checkslice);
+	for (x = 0; x < FLOATSIMDSIZE; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = fabsf(data[x]);
+		if (!isfinite(data[x])) {return 1;}
+	}
+
+	// Everything was OK.
+	return 0;
+
+}
+
+
+
+// param_arr_arr
+char abs__float_2_simd_ovfl(Py_ssize_t arraylen, float *data, float *dataout) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	float32x2_t datasliceleft, checkslice;
+
+	float checkvecresults[FLOATSIMDSIZE];
+	float checksliceinit[FLOATSIMDSIZE] = {0.0};
+
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = vld1_f32( checksliceinit);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1_f32( &data[x]);
+		// The actual SIMD operation. 
+		datasliceleft = vabs_f32(datasliceleft);
+		// Store the result.
+		vst1_f32( &dataout[x], datasliceleft);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = vmul_f32(checkslice, datasliceleft);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	vst1_f32( checkvecresults, checkslice);
+	for (x = 0; x < FLOATSIMDSIZE; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = fabsf(data[x]);
+		if (!isfinite(dataout[x])) {return 1;}
+	}
+
+	// Everything was OK.
 	return 0;
 
 }

@@ -2866,30 +2866,43 @@ signed int add_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float para
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	signed int errorstate;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_float_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+			errorstate = add_float_1_simd_ovfl(arraylen, data1, param);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+				if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 // param_arr_num_arr
 signed int add_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float param, float *data3, unsigned int ignoreerrors) {
@@ -2897,30 +2910,43 @@ signed int add_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float para
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	signed int errorstate;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_float_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+			errorstate = add_float_2_simd_ovfl(arraylen, data1, param, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 // param_num_arr_none
 signed int add_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data2, unsigned int ignoreerrors) {
@@ -2928,30 +2954,43 @@ signed int add_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	signed int errorstate;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_float_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+			errorstate = add_float_3_simd_ovfl(arraylen, param, data2);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+				if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 // param_num_arr_arr
 signed int add_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data2, float *data3, unsigned int ignoreerrors) {
@@ -2959,31 +2998,42 @@ signed int add_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	signed int errorstate;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_float_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+			errorstate = add_float_4_simd_ovfl(arraylen, param, data2, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
-
 
 
 // param_arr_arr_none
@@ -2992,27 +3042,39 @@ signed int add_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	signed int errorstate;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_float_5_simd(arraylen, data1, data2);
-			return ARR_NO_ERR;
+		} else {
+			errorstate = add_float_5_simd_ovfl(arraylen, data1, data2);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+				if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
-			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
@@ -3023,30 +3085,43 @@ signed int add_float_6(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	signed int errorstate;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_float_6_simd(arraylen, data1, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+			errorstate = add_float_6_simd_ovfl(arraylen, data1, data2, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -3063,30 +3138,43 @@ signed int add_double_1(Py_ssize_t arraylen, int nosimd, double *data1, double p
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			add_double_1_simd(arraylen, data1, param);
+		} else {
+			errorstate = add_double_1_simd_ovfl(arraylen, data1, param);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
+		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+				if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
-			add_double_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
-		}
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 // param_arr_num_arr
 signed int add_double_2(Py_ssize_t arraylen, int nosimd, double *data1, double param, double *data3, unsigned int ignoreerrors) {
@@ -3094,30 +3182,43 @@ signed int add_double_2(Py_ssize_t arraylen, int nosimd, double *data1, double p
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			add_double_2_simd(arraylen, data1, param, data3);
+		} else {
+			errorstate = add_double_2_simd_ovfl(arraylen, data1, param, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
+		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
-			add_double_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
-		}
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 // param_num_arr_none
 signed int add_double_3(Py_ssize_t arraylen, int nosimd, double param, double *data2, unsigned int ignoreerrors) {
@@ -3125,30 +3226,43 @@ signed int add_double_3(Py_ssize_t arraylen, int nosimd, double param, double *d
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			add_double_3_simd(arraylen, param, data2);
+		} else {
+			errorstate = add_double_3_simd_ovfl(arraylen, param, data2);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
+		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+				if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
-			add_double_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
-		}
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 // param_num_arr_arr
 signed int add_double_4(Py_ssize_t arraylen, int nosimd, double param, double *data2, double *data3, unsigned int ignoreerrors) {
@@ -3156,31 +3270,42 @@ signed int add_double_4(Py_ssize_t arraylen, int nosimd, double param, double *d
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			add_double_4_simd(arraylen, param, data2, data3);
+		} else {
+			errorstate = add_double_4_simd_ovfl(arraylen, param, data2, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
+		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
-			add_double_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
-		}
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
-
 
 
 // param_arr_arr_none
@@ -3189,27 +3314,39 @@ signed int add_double_5(Py_ssize_t arraylen, int nosimd, double *data1, double *
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			add_double_5_simd(arraylen, data1, data2);
+		} else {
+			errorstate = add_double_5_simd_ovfl(arraylen, data1, data2);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
+		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+				if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
-			add_double_5_simd(arraylen, data1, data2);
-			return ARR_NO_ERR;
-		}
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
-			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
@@ -3220,30 +3357,43 @@ signed int add_double_6(Py_ssize_t arraylen, int nosimd, double *data1, double *
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			add_double_6_simd(arraylen, data1, data2, data3);
+		} else {
+			errorstate = add_double_6_simd_ovfl(arraylen, data1, data2, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
+		}
+
+	} else {
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
-			add_double_6_simd(arraylen, data1, data2, data3);
-			return ARR_NO_ERR;
-		}
+	}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
 
 /*--------------------------------------------------------------------------- */
 

@@ -605,13 +605,13 @@ class factorial_error_%(typelabel)s(unittest.TestCase):
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
+funcname = 'factorial'
+func = opdata[funcname]
 
-# Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_factorial']
-
+pyoperator = 'math.factorial'
+test_op_x = '0,1,2,3,4,5'
 
 # ==============================================================================
 
@@ -621,60 +621,57 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+filenamebase = 'test_' + funcname
+filename = filenamebase + '.py'
+headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
 
-	funcname = func['funcname']
-	filenamebase = 'test_' + funcname
-	filename = filenamebase + '.py'
-	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
+# Add additional header data.
+headerdate['modulename'] = modulename
+headerdate['arrayimport'] = arrayimport
 
-	# Add additional header data.
-	headerdate['modulename'] = modulename
-	headerdate['arrayimport'] = arrayimport
-
-	with open(filename, 'w') as f:
-		# The copyright header.
-		f.write(codegen_common.HeaderTemplate % headerdate)
+with open(filename, 'w') as f:
+	# The copyright header.
+	f.write(codegen_common.HeaderTemplate % headerdate)
 
 
-		for functype in codegen_common.intarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
-				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : func['test_op_x']}
-			f.write(test_template_factorial % funcdata)
+	for functype in codegen_common.intarrays:
+		funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'pyoperator' : pyoperator,
+			'typelabel' : functype, 'typecode' : functype, 'test_op_x' : test_op_x}
+		f.write(test_template_factorial % funcdata)
 
 
-			# Test for invalid parameters. One template should work for all 
-			# functions of this style.
-			f.write(param_invalid_template % funcdata)
+		# Test for invalid parameters. One template should work for all 
+		# functions of this style.
+		f.write(param_invalid_template % funcdata)
 
-			# Test for invalid optional parameters such as matherrors and maxlen.
-			f.write(param_invalid_opt_template % funcdata)
+		# Test for invalid optional parameters such as matherrors and maxlen.
+		f.write(param_invalid_opt_template % funcdata)
 
-		# Test to see that calls using unsupported arrays fail.
-		for functype in codegen_common.floatarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
-				'typelabel' : functype, 'typecode' : functype}
-			# Make sure we don't send negative numbers to unsigned arrays.
-			# For signed arrays, we don't care what the sign is because the
-			# test will simply raise an exception based on array type anyway.
-			funcdata['test_op_x'] = ','.join([str(abs(float(x))) for x in func['test_op_x'].split(',')])
+	# Test to see that calls using unsupported arrays fail.
+	for functype in codegen_common.floatarrays:
+		funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
+			'typelabel' : functype, 'typecode' : functype}
+		# Make sure we don't send negative numbers to unsigned arrays.
+		# For signed arrays, we don't care what the sign is because the
+		# test will simply raise an exception based on array type anyway.
+		funcdata['test_op_x'] = ','.join([str(abs(float(x))) for x in test_op_x.split(',')])
 
-			f.write(test_template_invalidarray % funcdata)
+		f.write(test_template_invalidarray % funcdata)
 
 
 
-		for functype in codegen_common.signedint:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
-				'typelabel' : functype, 'typecode' : functype}
-			f.write(factorial_negative_template % funcdata)
+	for functype in codegen_common.signedint:
+		funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
+			'typelabel' : functype, 'typecode' : functype}
+		f.write(factorial_negative_template % funcdata)
 
-		for functype in codegen_common.intarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
-				'typelabel' : functype, 'typecode' : functype}
-			f.write(factorial_ovfl_template % funcdata)
+	for functype in codegen_common.intarrays:
+		funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
+			'typelabel' : functype, 'typecode' : functype}
+		f.write(factorial_ovfl_template % funcdata)
 
 
-		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
+	f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 # ==============================================================================
 

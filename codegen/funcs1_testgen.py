@@ -889,15 +889,16 @@ test_templates = {'nan_data_error_noparam_template' : nan_data_error_noparam_tem
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
 
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-funclist = [x for x in oplist if x['test_op_templ'] in ('test_template_noparams', 'test_template_noparams_1simd')]
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('test_op_templ') in ('test_template_noparams', 'test_template_noparams_1simd')]
 
 # Create a list of names which support SIMD.
-havesimd = [x['funcname'] for x in funclist if x['test_op_templ'] == 'test_template_noparams_1simd']
+havesimd = [x for x,y in funclist if y.get('test_op_templ') == 'test_template_noparams_1simd']
+
 
 # ==============================================================================
 
@@ -912,9 +913,8 @@ nanfunclabel = ['nan', 'inf', 'ninf']
 nantestlabel = ['nan', 'inf', '-inf']
 
 
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
@@ -986,7 +986,7 @@ for func in funclist:
 			testtemplate = test_templates[func[templatename]]
 
 			for functype in codegen_common.floatarrays:
-				funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+				funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 						'pyoperator' : func['pyoperator'], 'typelabel' : functype, 
 						'typecode' : functype, 'test_op_x' : func['test_op_x'],
 						'testarray' : testarray, 'testlabel' : testlabel}

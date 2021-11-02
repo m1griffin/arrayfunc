@@ -486,7 +486,7 @@ class %(funclabel)s_invalidarray_%(typecode)s(unittest.TestCase):
 # matherrors checking is turned off, the results are checked.
 nan_data_errorchecked_noparam_template = '''
 ##############################################################################
-class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typecode)s(unittest.TestCase):
+class %(funclabel)s_nandata_exceptions_%(testarray)s_%(arrayevenodd)s_arraysize_%(typecode)s(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -512,11 +512,30 @@ class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typecode)s(unittest.TestC
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('%(typecode)s', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if '%(arrayevenodd)s' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('%(typecode)s', [math.inf] * 10)
-		self.datanan = array.array('%(typecode)s', [math.nan] * 10)
-		self.dataninf = array.array('%(typecode)s', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('%(typecode)s', outdata)
+
+		self.datainf = array.array('%(typecode)s', infdata)
+		self.datanan = array.array('%(typecode)s', nandata)
+		self.dataninf = array.array('%(typecode)s', ninfdata)
 
 
 	########################################################
@@ -661,13 +680,10 @@ test_templates = {'nan_data_errorchecked_noparam_template' : nan_data_errorcheck
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
-
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_uniop']
-
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('test_op_templ') == 'test_template_uniop']
 
 # ==============================================================================
 
@@ -714,9 +730,8 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
@@ -732,7 +747,7 @@ for func in funclist:
 
 		# Test for basic operation.
 		for funcdata in makedata():
-			funcdata['funclabel'] = func['funcname']
+			funcdata['funclabel'] = funcname
 			funcdata['funcname'] = funcname
 			funcdata['pyoperator'] = func['pyoperator']
 
@@ -743,7 +758,7 @@ for func in funclist:
 		# Check parameters.
 		for typecode in supportedarrays:
 
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
 				'typecode' : typecode, 'test_op_x' : func['test_op_x']}
 
 			# Convert the numeric literals to the appropriate type for the array.
@@ -771,7 +786,7 @@ for func in funclist:
 
 		# Test to see that calls using unsupported arrays fail.
 		for functype in unsupportedarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 				'typecode' : functype}
 			# Make sure we don't send negative numbers to unsigned arrays.
 			# For signed arrays, we don't care what the sign is because the
@@ -785,7 +800,7 @@ for func in funclist:
 
 
 		for functype in codegen_common.signedint:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 				'typecode' : functype}
 			f.write(param_overflow_minval_template % funcdata)
 			
@@ -797,14 +812,21 @@ for func in funclist:
 			testtemplate = test_templates[func[templatename]]
 
 			for functype in codegen_common.floatarrays:
-				funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+				funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 						'pyoperator' : func['pyoperator'], 	'typecode' : functype, 
 						'test_op_x' : func['test_op_x'],
-						'testarray' : testarray, 'testlabel' : testlabel}
+						'testarray' : testarray, 'testlabel' : testlabel,
+						'arrayevenodd' : 'even'}
+				# Even data, fits in SIMD registers.
+				f.write(testtemplate % funcdata)
+
+				# Odd data, tests clean-up code.
+				funcdata['arrayevenodd'] = 'odd'
 				f.write(testtemplate % funcdata)
 
 
 		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
+
 
 # ==============================================================================
 

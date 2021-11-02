@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 ##############################################################################
 # Project:  arrayfunc
-# Purpose:  Generate the C code for math functions which accept a single 
-#			parameter.
+# Purpose:  Generate the C code for math functions which accept two 
+#			parameters.
 # Language: Python 3.4
-# Date:     08-Dec-2017
+# Date:     30-Dec-2017
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import codegen_common
 
 # ==============================================================================
 
-mathfunc1_template = """//------------------------------------------------------------------------------
+mathfunc2_head = """//------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   %(funclabel)s.c
 // Purpose:  Calculate the %(funclabel)s of values in an array.
@@ -41,7 +41,7 @@ mathfunc1_template = """//------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -68,19 +68,30 @@ mathfunc1_template = """//------------------------------------------------------
 #include <math.h>
 
 #include "arrayerrs.h"
+
 #include "arrayparams_base.h"
 
-#include "arrayparams_one.h"
+#include "%(arrayparamsheader)s.h"
+
+/*--------------------------------------------------------------------------- */
+"""
+
+# ==============================================================================
+
+# ==============================================================================
 
 
+# For ldexp only. 
+mathfunc_ldexp_calc = """
 /*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data arrays.
    data = The input data array.
+   exp = The exponent to be applied to each array element.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hasoutputarray = If true, the output goes into the second array.
+   hassecondarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int ldexp_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed long long exp, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hassecondarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -88,25 +99,25 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout,
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hasoutputarray) {		
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = %(floatfunc)s;
+		if (hassecondarray) {		
+			for(x = 0; x < arraylen; x++) {
+				dataout[x] = %(cfuncname)s(data[x], exp);
 			}
 		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = %(floatfunc)s;
+			for(x = 0; x < arraylen; x++) {
+				data[x] = %(cfuncname)s(data[x], exp);
 			}
 		}
 	} else {
 	// Math error checking enabled.
-		if (hasoutputarray) {		
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = %(floatfunc)s;
+		if (hassecondarray) {		
+			for(x = 0; x < arraylen; x++) {
+				dataout[x] = %(cfuncname)s(data[x], exp);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = %(floatfunc)s;
+			for(x = 0; x < arraylen; x++) {
+				data[x] = %(cfuncname)s(data[x], exp);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
@@ -115,66 +126,29 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout,
 	return ARR_NO_ERR;
 
 }
-
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hasoutputarray = If true, the output goes into the second array.
-*/
-signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
-	// array index counter.
-	Py_ssize_t x;
+"""
 
-
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		if (hasoutputarray) {
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = %(doublefunc)s;
-			}
-		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = %(doublefunc)s;
-			}
-		}
-	} else {
-	// Math error checking enabled.
-		if (hasoutputarray) {
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = %(doublefunc)s;
-				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
-			}
-		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = %(doublefunc)s;
-				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
-			}
-		}
-	}
-	return ARR_NO_ERR;
-
-}
-
+mathfunc2_ldexp_params = """
 /*--------------------------------------------------------------------------- */
 
 /* The wrapper to the underlying C function */
-static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keywds) {
+static PyObject *py_ldexp(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// The error code returned by the function.
 	signed int resultcode = -1;
 
-	// This is used to hold the parsed parameters.
-	struct args_params_1 arraydata = ARGSINIT_ONE;
+
+	// This is used to return the parsed parameters.
+	struct args_params_ldexp arraydata = ARGSINIT_SPECIAL;
+
 
 	// -----------------------------------------------------
 
-
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, 1, "%(funclabel)s");
+	arraydata = getparams_ldexp(self, args, keywds);
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -182,21 +156,22 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		return NULL;
 	}
 
+
 	// Call the C function.
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = %(funclabel)s_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = ldexp_float(arraydata.arraylength, arraydata.array1.f, arraydata.exp, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hassecondarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = %(funclabel)s_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = ldexp_double(arraydata.arraylength, arraydata.array1.d, arraydata.exp, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hassecondarray);
 			break;
 		}
 		// We don't know this code.
 		default: {
-			releasebuffers_one(arraydata);
+			releasebuffers_twobuff(arraydata.pybuffer1, arraydata.pybuffer2, arraydata.hassecondarray);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
@@ -204,7 +179,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 	}
 
 	// Release the buffers. 
-	releasebuffers_one(arraydata);
+	releasebuffers_twobuff(arraydata.pybuffer1, arraydata.pybuffer2, arraydata.hassecondarray);
 
 
 	// Signal the errors.
@@ -224,33 +199,35 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 /* The module doc string */
-PyDoc_STRVAR(%(funclabel)s__doc__,
+PyDoc_STRVAR(ldexp__doc__,
 "%(funclabel)s \\n\\
 _____________________________ \\n\\
 \\n\\
 Calculate %(funclabel)s over the values in an array.  \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          [%(opcodedocs)s for x in array1] \\n\\
+Equivalent to:          %(opcodedocs)s \\n\\
 Array types supported:  %(supportedarrays)s \\n\\
 Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\
 \\n\\
 Call formats: \\n\\
 \\n\\
-    %(funclabel)s(array1) \\n\\
-    %(funclabel)s(array1, outparray) \\n\\
-    %(funclabel)s(array1, maxlen=y) \\n\\
-    %(funclabel)s(array1, matherrors=False)) \\n\\
+    %(funclabel)s(array1, exp) \\n\\
+    %(funclabel)s(array1, exp, outparray) \\n\\
+    %(funclabel)s(array1, exp, maxlen=y) \\n\\
+    %(funclabel)s(array1, exp, matherrors=False)) \\n\\
 \\n\\
-* array1 - The first input data array to be examined. If no output \\n\\
-  array is provided the results will overwrite the input data. \\n\\
-* outparray - The output array. This parameter is optional. \\n\\
+* array1 - The first input data array to be examined. If no output  \\n\\
+  array is provided the results will overwrite the input data.  \\n\\
+* exp - The exponent to apply to the input array. This must be an \\n\\
+  integer. \\n\\
+* outparray - The output array. This parameter is optional.  \\n\\
 * maxlen - Limit the length of the array used. This must be a valid  \\n\\
-  positive integer. If a zero or negative length, or a value which is \\n\\
-  greater than the actual length of the array is specified, this \\n\\
-  parameter is ignored. \\n\\
-* matherrors - If true, arithmetic error checking is disabled. The \\n\\
+  positive integer. If a zero or negative length, or a value which is  \\n\\
+  greater than the actual length of the array is specified, this  \\n\\
+  parameter is ignored.  \\n\\
+* matherrors - If true, arithmetic error checking is disabled. The  \\n\\
   default is false. \\n\\
 ");
 
@@ -258,27 +235,27 @@ Call formats: \\n\\
 /*--------------------------------------------------------------------------- */
 
 /* A list of all the methods defined by this module. 
- "%(funclabel)s" is the name seen inside of Python. 
- "py_%(funclabel)s" is the name of the C function handling the Python call. 
+ "ldexp" is the name seen inside of Python. 
+ "py_ldexp" is the name of the C function handling the Python call. 
  "METH_VARGS" tells Python how to call the handler. 
  The {NULL, NULL} entry indicates the end of the method definitions. */
-static PyMethodDef %(funclabel)s_methods[] = {
-	{"%(funclabel)s",  (PyCFunction)py_%(funclabel)s, METH_VARARGS | METH_KEYWORDS, %(funclabel)s__doc__}, 
+static PyMethodDef ldexp_methods[] = {
+	{"ldexp",  (PyCFunction)py_ldexp, METH_VARARGS | METH_KEYWORDS, ldexp__doc__}, 
 	{NULL, NULL, 0, NULL}
 };
 
 
-static struct PyModuleDef %(funclabel)smodule = {
+static struct PyModuleDef ldexpmodule = {
     PyModuleDef_HEAD_INIT,
-    "%(funclabel)s",
+    "ldexp",
     NULL,
     -1,
-    %(funclabel)s_methods
+    ldexp_methods
 };
 
-PyMODINIT_FUNC PyInit_%(funclabel)s(void)
+PyMODINIT_FUNC PyInit_ldexp(void)
 {
-    return PyModule_Create(&%(funclabel)smodule);
+    return PyModule_Create(&ldexpmodule);
 };
 
 /*--------------------------------------------------------------------------- */
@@ -288,51 +265,46 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 # ==============================================================================
 
-# This provides tje correct template for the C library function or
-# C operator equation for the appropriate style of function.
-cfunctmpl = '%(c_operator)s(data[x])'
-
-
-# ==============================================================================
-
-
 # Read in the op codes.
 opdata = codegen_common.ReadINI('affuncdata.ini')
 
-# Filter out the desired math functions.
-funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('c_code_template') == 'template_mathfunc_1']
+funcname = 'ldexp'
+func = opdata[funcname]
+
 
 # ==============================================================================
 
-for funcname, func in funclist:
 
-	filename = funcname + '.c'
+arrayparamsheader = 'arrayparams_special'
+
+func_calc = mathfunc_ldexp_calc
+func_params = mathfunc2_ldexp_params
 
 
-	c_code_template = func['c_code_template']
-
-
-	# Get the correct C template for the calculation, filled out for the appropriate type. 
-	floatfunc = cfunctmpl % {'c_operator' : func['c_operator_f']}
-	doublefunc = cfunctmpl % {'c_operator' : func['c_operator_d']}
+# Create the source code based on templates.
+filename = funcname + '.c'
+with open(filename, 'w') as f:
+	funcdata = {'funclabel' : funcname}
+	f.write(mathfunc2_head % {'funclabel' : funcname, 'arrayparamsheader' : arrayparamsheader})
+	for arraycode in codegen_common.floatarrays:
+		funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode]
+		funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
+		if arraycode == 'f':
+			funcdata['cfuncname'] = func['c_operator_f']
+		else:
+			 funcdata['cfuncname'] = func['c_operator_d']
+		f.write(func_calc % funcdata)
 
 
 	supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-	funcdata = {'funclabel' : funcname, 
-			'funcfloatname' : func['c_operator_f'], 
-			'funcdoublename' : func['c_operator_d'],
-			'floatfunc' : floatfunc, 
-			'doublefunc' : doublefunc,
+	f.write(func_params % {'funclabel' : funcname, 
 			'opcodedocs' : func['opcodedocs'], 
 			'supportedarrays' : supportedarrays,
-			'matherrors' : ', '.join(func['matherrors'].split(',')),
-			}	
+			'matherrors' : ', '.join(func['matherrors'].split(','))})
 
-
-	with open(filename, 'w') as f:
-		f.write(mathfunc1_template % funcdata)
 
 
 # ==============================================================================
+
 

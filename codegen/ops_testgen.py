@@ -6171,16 +6171,16 @@ operatorfunc = {
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
 
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['test_op_templ'] in ['test_template_op', 'test_template_op_simd']]
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('test_op_templ') in ['test_template_op', 'test_template_op_simd']]
 
 # Create a list of names which support SIMD.
-havesimd = [x['funcname'] for x in funclist if x['test_op_templ'] == 'test_template_op_simd']
+havesimd = [x for x,y in funclist if y.get('test_op_templ') == 'test_template_op_simd']
+
 
 # ==============================================================================
 
@@ -6190,9 +6190,8 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
@@ -6274,7 +6273,7 @@ for func in funclist:
 
 
 			pyoperator = func['pyoperator']
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : pyoperator,
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'pyoperator' : pyoperator,
 				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : test_op_x,
 				'test_op_y' : test_op_y, 'zero_const' : zero_const, 
 				'incvalue' : incvalue, 'decvalue' : decvalue,
@@ -6423,7 +6422,7 @@ for func in funclist:
 			# NaN, Inf tests are for floating point only.
 			if functype in codegen_common.floatarrays:
 				# NaN, inf, -inf tests.
-				funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+				funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 					'pyoperator' : func['pyoperator'], 
 					'typelabel' : functype, 'typecode' : functype, 'test_op_x' : test_op_x,
 					'test_op_y' : test_op_y

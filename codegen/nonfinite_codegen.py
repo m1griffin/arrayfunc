@@ -286,17 +286,15 @@ helpequivalent = {'isinf' : 'any([isinf(x) for x in array1])',
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
-
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('c_code_template') == 'template_mathfuncnan']
 
-funclist = [x for x in oplist if x['c_code_template'] == 'template_mathfuncnan']
 
 # ==============================================================================
 
-for func in funclist:
-	funcname = func['funcname']
+for funcname, func in funclist:
 
 	filename = funcname + '.c'
 

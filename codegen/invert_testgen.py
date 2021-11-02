@@ -421,13 +421,10 @@ def makedata():
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
-
-# Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_invert']
-
+funcname = 'invert'
+func = opdata[funcname]
 
 # ==============================================================================
 
@@ -437,54 +434,51 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+filenamebase = 'test_' + funcname
+filename = filenamebase + '.py'
+headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
 
-	funcname = func['funcname']
-	filenamebase = 'test_' + funcname
-	filename = filenamebase + '.py'
-	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
+# Add additional header data.
+headerdate['modulename'] = modulename
+headerdate['arrayimport'] = arrayimport
 
-	# Add additional header data.
-	headerdate['modulename'] = modulename
-	headerdate['arrayimport'] = arrayimport
-
-	with open(filename, 'w') as f:
-		# The copyright header.
-		f.write(codegen_common.HeaderTemplate % headerdate)
+with open(filename, 'w') as f:
+	# The copyright header.
+	f.write(codegen_common.HeaderTemplate % headerdate)
 
 
-		# Test for basic operation.
-		for funcdata in makedata():
-			funcdata['funclabel'] = func['funcname']
-			funcdata['funcname'] = funcname
-			funcdata['pyoperator'] = func['pyoperator']
+	# Test for basic operation.
+	for funcdata in makedata():
+		funcdata['funclabel'] = funcname
+		funcdata['funcname'] = funcname
+		funcdata['pyoperator'] = func['pyoperator']
 
-			f.write(test_template_invert % funcdata)
+		f.write(test_template_invert % funcdata)
 
-			#####
+		#####
 
-		for functype in codegen_common.intarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
-				'typecode' : functype, 'test_op_x' : func['test_op_x']}
+	for functype in codegen_common.intarrays:
+		funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
+			'typecode' : functype, 'test_op_x' : func['test_op_x']}
 
-			# Test for invalid parameters. One template should work for all 
-			# functions of this style.
-			f.write(param_invalid_template % funcdata)
+		# Test for invalid parameters. One template should work for all 
+		# functions of this style.
+		f.write(param_invalid_template % funcdata)
 
-			# Test for invalid optional parameters such as maxlen.
-			f.write(param_invalid_opt_template % funcdata)
+		# Test for invalid optional parameters such as maxlen.
+		f.write(param_invalid_opt_template % funcdata)
 
 
-		# Test to see that calls using unsupported arrays fail.
-		for functype in codegen_common.floatarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'typecode' : functype}
-			funcdata['test_op_x'] = ','.join([str(abs(float(x))) for x in func['test_op_x'].split(',')])
+	# Test to see that calls using unsupported arrays fail.
+	for functype in codegen_common.floatarrays:
+		funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'typecode' : functype}
+		funcdata['test_op_x'] = ','.join([str(abs(float(x))) for x in func['test_op_x'].split(',')])
 
-			f.write(test_template_invalidarray % funcdata)
+		f.write(test_template_invalidarray % funcdata)
 
 
 
-		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
+	f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 # ==============================================================================
 

@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     22-Mar-2019
-// Ver:      06-Sep-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -79,7 +79,7 @@ v16qi initvec_signed_char(signed char initval) {
 void abs__signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -93,18 +93,18 @@ void abs__signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_pabsb128(datasliceleft);
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &data[index],  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &data[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -116,7 +116,7 @@ void abs__signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 void abs__signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -130,18 +130,18 @@ void abs__signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_pabsb128(datasliceleft);
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &dataout[index],  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &dataout[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -159,7 +159,7 @@ void abs__signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char
 char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -178,9 +178,9 @@ char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -198,13 +198,13 @@ char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 		datasliceleft = __builtin_ia32_pmaxsb128(datasliceleft, datasliceright);
 
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &data[index],  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &data[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_char(data[index]) ) {return ARR_ERR_OVFL;}
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_char(data[x]) ) {return ARR_ERR_OVFL;}
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -216,7 +216,7 @@ char abs__signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
 char abs__signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed char *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -235,9 +235,9 @@ char abs__signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -255,13 +255,13 @@ char abs__signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed
 		datasliceleft = __builtin_ia32_pmaxsb128(datasliceleft, datasliceright);
 
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &dataout[index],  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &dataout[x],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_char(data[index]) ) {return ARR_ERR_OVFL;}
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_char(data[x]) ) {return ARR_ERR_OVFL;}
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -304,7 +304,7 @@ v8hi initvec_signed_short(signed short initval) {
 void abs__signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -318,18 +318,18 @@ void abs__signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_pabsw128(datasliceleft);
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &data[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &data[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -341,7 +341,7 @@ void abs__signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 void abs__signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed short *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -355,18 +355,18 @@ void abs__signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed sh
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_pabsw128(datasliceleft);
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &dataout[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &dataout[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -384,7 +384,7 @@ void abs__signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed sh
 char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -403,9 +403,9 @@ char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -423,13 +423,13 @@ char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 		datasliceleft = __builtin_ia32_pmaxsw128(datasliceleft, datasliceright);
 
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &data[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &data[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_short(data[index]) ) {return ARR_ERR_OVFL;}
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_short(data[x]) ) {return ARR_ERR_OVFL;}
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -441,7 +441,7 @@ char abs__signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
 char abs__signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed short *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -460,9 +460,9 @@ char abs__signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, sign
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -480,13 +480,13 @@ char abs__signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, sign
 		datasliceleft = __builtin_ia32_pmaxsw128(datasliceleft, datasliceright);
 
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &dataout[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &dataout[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_short(data[index]) ) {return ARR_ERR_OVFL;}
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_short(data[x]) ) {return ARR_ERR_OVFL;}
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -529,7 +529,7 @@ v4si initvec_signed_int(signed int initval) {
 void abs__signed_int_1_simd(Py_ssize_t arraylen, signed int *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -543,18 +543,18 @@ void abs__signed_int_1_simd(Py_ssize_t arraylen, signed int *data) {
 	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_pabsd128(datasliceleft);
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &data[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &data[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -566,7 +566,7 @@ void abs__signed_int_1_simd(Py_ssize_t arraylen, signed int *data) {
 void abs__signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -580,18 +580,18 @@ void abs__signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *d
 	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[x]);
 		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_pabsd128(datasliceleft);
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &dataout[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &dataout[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 }
@@ -609,7 +609,7 @@ void abs__signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *d
 char abs__signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -628,9 +628,9 @@ char abs__signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data) {
 	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -648,13 +648,13 @@ char abs__signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data) {
 		datasliceleft = __builtin_ia32_pmaxsd128(datasliceleft, datasliceright);
 
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &data[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &data[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_int(data[index]) ) {return ARR_ERR_OVFL;}
-		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_int(data[x]) ) {return ARR_ERR_OVFL;}
+		data[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;
@@ -666,7 +666,7 @@ char abs__signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data) {
 char abs__signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed int *dataout) {
 
 	// array index counter. 
-	Py_ssize_t index; 
+	Py_ssize_t x; 
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
@@ -685,9 +685,9 @@ char abs__signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed i
 	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[x]);
 
 		// Check for overflow. 
 		// Do an equal compare operation.
@@ -705,13 +705,13 @@ char abs__signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed i
 		datasliceleft = __builtin_ia32_pmaxsd128(datasliceleft, datasliceright);
 
 		// Store the result.
-		__builtin_ia32_storedqu((char *)  &dataout[index], (v16qi)  datasliceleft);
+		__builtin_ia32_storedqu((char *)  &dataout[x], (v16qi)  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for (index = alignedlength; index < arraylen; index++) {
-		if ( minval_loop_willoverflow_signed_int(data[index]) ) {return ARR_ERR_OVFL;}
-		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	for (x = alignedlength; x < arraylen; x++) {
+		if ( minval_loop_willoverflow_signed_int(data[x]) ) {return ARR_ERR_OVFL;}
+		dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 	}
 
 	return 0;

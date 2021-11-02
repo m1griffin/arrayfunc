@@ -898,6 +898,7 @@ pyequ = {'test_template_noparams' : 'dataout[i] = %(pyop)s(datax[i])',
 	'test_template_op' : 'dataout[i] = datax[i] %(pyop)s yvalue',
 	'test_template_op_simd' : 'dataout[i] = datax[i] %(pyop)s yvalue',
 	'test_template_fma' : 'dataout[i] = datax[i] * yvalue + zvalue',
+	'test_template_pow23' : 'dataout[i] = datax[i] %(pyop)s',
 }
 
 
@@ -917,6 +918,7 @@ arrayfuncequ = {'test_template_noparams' : 'arrayfunc.%s(datax, dataout)',
 	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout)',
 	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout)',
 	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout)',
+	'test_template_pow23' : 'arrayfunc.%s(datax, dataout)',
 }
 
 
@@ -936,7 +938,7 @@ afequerrtruenosimdtrue = {'test_template_noparams' : 'arrayfunc.%s(datax, dataou
 	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
 	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True, nosimd=True)',
 	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout, matherrors=True)',
-	
+	'test_template_pow23' : 'arrayfunc.%s(datax, dataout, matherrors=True)',
 }
 
 
@@ -956,7 +958,7 @@ afequerrtruenosimdfalse = {'test_template_noparams' : 'arrayfunc.%s(datax, datao
 	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
 	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
 	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout, matherrors=True)',
-	
+	'test_template_pow23' : 'arrayfunc.%s(datax, dataout, matherrors=True)',
 }
 
 # This defines code form of the benchmark equations where matherrors = False and nosimd = True.
@@ -975,7 +977,7 @@ afequerrfalsenosimdtrue = {'test_template_noparams' : 'arrayfunc.%s(datax, datao
 	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout)',
 	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout, nosimd=True)',
 	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout)',
-	
+	'test_template_pow23' : 'arrayfunc.%s(datax, dataout)',
 }
 
 # This defines how may arrays are used. This will allow avoiding initialising
@@ -995,7 +997,7 @@ arraysreq = {'test_template_noparams' : "('dataout')",
 	'test_template_op' : "('dataout')",
 	'test_template_op_simd' : "('dataout')",
 	'test_template_fma' : "('dataout')",
-
+	'test_template_pow23' : "('dataout')",
 }
 
 # ==============================================================================
@@ -1334,14 +1336,15 @@ for benchdata in benchfuncs:
 
 # ==============================================================================
 
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
-# Read the operator and function definition data.
-csvdata = codegen_common.ReadCSVData('funcs.csv')
+# Convert the data to dictionaries.
+funclist = [(x,dict(y)) for x,y in opdata.items() if x != 'DEFAULT']
 
-# This part handles functions defined by the spreadsheet templates.
-for funcsdata in csvdata:
+# This part handles functions defined by the config file templates.
+for funcname, funcsdata in funclist:
 
-	funcname = funcsdata['funcname']
 	filename = 'benchmark_%s.py' % funcname
 
 	print(funcname)
@@ -1374,7 +1377,7 @@ for funcsdata in csvdata:
 		'floatarrays' : floatarrays,
 
 
-		'funcname' : funcsdata['funcname'],
+		'funcname' : funcname,
 		'test_op_x' : '[' + funcsdata['test_op_x'] + ']', 
 		'test_op_y' : '[' + funcsdata['test_op_y'] + ']',
 		'test_op_z' : '[' + funcsdata['test_op_z'] + ']',
@@ -1383,10 +1386,10 @@ for funcsdata in csvdata:
 		'floatarrays' : floatarrays,
 		'unsignedint' : unsignedint,
 		'pyequ' : pyequ[funcsdata['test_op_templ']] % {'pyop' : funcsdata['pyoperator']},
-		'arrayfuncequ' : arrayfuncequ[funcsdata['test_op_templ']] % funcsdata['funcname'],
-		'afequerrtruenosimdtrue' : afequerrtruenosimdtrue[funcsdata['test_op_templ']] % funcsdata['funcname'],
-		'afequerrtruenosimdfalse' : afequerrtruenosimdfalse[funcsdata['test_op_templ']] % funcsdata['funcname'],
-		'afequerrfalsenosimdtrue' : afequerrfalsenosimdtrue[funcsdata['test_op_templ']] % funcsdata['funcname'],
+		'arrayfuncequ' : arrayfuncequ[funcsdata['test_op_templ']] % funcname,
+		'afequerrtruenosimdtrue' : afequerrtruenosimdtrue[funcsdata['test_op_templ']] % funcname,
+		'afequerrtruenosimdfalse' : afequerrtruenosimdfalse[funcsdata['test_op_templ']] % funcname,
+		'afequerrfalsenosimdtrue' : afequerrfalsenosimdtrue[funcsdata['test_op_templ']] % funcname,
 		'singledatafunc' : True,
 		'compval' : 0,
 		'arraysreq' : arraysreq[funcsdata['test_op_templ']],

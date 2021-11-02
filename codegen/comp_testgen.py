@@ -1145,13 +1145,10 @@ def makedata(funcname):
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
-
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_comp']
-
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('test_op_templ') == 'test_template_comp']
 
 # ==============================================================================
 
@@ -1161,9 +1158,8 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '14-Feb-2018', funcname)
@@ -1200,7 +1196,7 @@ for func in funclist:
 
 
 
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 					'pyoperator' : func['pyoperator'], 
 					'typelabel' : functype, 'typecode' : functype, 
 					'test_op_x' : test_op_x, 'test_op_y' : test_op_y,
@@ -1265,7 +1261,7 @@ for func in funclist:
 			if functype in codegen_common.floatarrays:
 
 				# NaN, inf, -inf tests.
-				funcdata = {'funclabel' : func['funcname'], 
+				funcdata = {'funclabel' : funcname, 
 					'funcname' : funcname, 
 					'pyoperator' : func['pyoperator'],
 					'typelabel' : functype, 

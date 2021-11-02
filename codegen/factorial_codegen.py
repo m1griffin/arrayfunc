@@ -461,67 +461,58 @@ factdata = {
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
-
-# Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['c_code_template'] in ['template_factorial']]
+funcname = 'factorial'
+func = opdata[funcname]
 
 # ==============================================================================
 
 
-for func in funclist:
-
-	# Create the source code based on templates.
-	filename = func['funcname'] + '.c'
-	with open(filename, 'w') as f:
-		funcdata = {'funclabel' : func['funcname'], 'factdefs' : ''}
+# Create the source code based on templates.
+filename = funcname + '.c'
+with open(filename, 'w') as f:
+	funcdata = {'funclabel' : funcname, 'factdefs' : ''}
 
 
-		f.write(uniops_head % funcdata)
-		opscalltext = []
+	f.write(uniops_head % funcdata)
+	opscalltext = []
 
 
-		# Check each array type. 
-		for arraycode in codegen_common.intarrays:
-			funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
-			funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
-			funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
-			funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
-			funcdata['maxfact'] = maxfact[arraycode]
-			funcdata['factdata'] = factdata[arraycode]
-			funcdata['copname'] = func['c_operator_i']
+	# Check each array type. 
+	for arraycode in codegen_common.intarrays:
+		funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
+		funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
+		funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
+		funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
+		funcdata['maxfact'] = maxfact[arraycode]
+		funcdata['factdata'] = factdata[arraycode]
 
 
-			if arraycode in codegen_common.unsignedint:
-				 ops_calc = uniops_fac_intunsigned
-			elif arraycode in codegen_common.signedint:
-				 ops_calc = uniops_fac_intsigned
-			else:
-				print('Error - Unsupported array code.', arraycode)
+		if arraycode in codegen_common.unsignedint:
+			 ops_calc = uniops_fac_intunsigned
+		elif arraycode in codegen_common.signedint:
+			 ops_calc = uniops_fac_intsigned
+		else:
+			print('Error - Unsupported array code.', arraycode)
 
 
-			f.write(ops_calc % funcdata)
+		f.write(ops_calc % funcdata)
 
-			# This is the call to the functions for this array type. This
-			# is inserted into another template below.
-			funcdata['arraycode'] = arraycode
-			opscalltext.append(opscall % funcdata)
+		# This is the call to the functions for this array type. This
+		# is inserted into another template below.
+		funcdata['arraycode'] = arraycode
+		opscalltext.append(opscall % funcdata)
 
 
-		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
+	supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-		f.write(uniops_params % {'funclabel' : func['funcname'], 
-				'opcodedocs' : func['opcodedocs'], 
-				'supportedarrays' : supportedarrays,
-				'matherrors' : ', '.join(func['matherrors'].split(',')),
-				'opscall' : ''.join(opscalltext)})
+	f.write(uniops_params % {'funclabel' : funcname, 
+			'opcodedocs' : func['opcodedocs'], 
+			'supportedarrays' : supportedarrays,
+			'matherrors' : ', '.join(func['matherrors'].split(',')),
+			'opscall' : ''.join(opscalltext)})
+
 
 # ==============================================================================
-
-
-
-
-
 

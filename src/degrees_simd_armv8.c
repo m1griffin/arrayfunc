@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     26-Mar-2020
-// Ver:      27-Mar-2020.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ void degrees_float_1_simd(Py_ssize_t arraylen, float *data) {
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
@@ -124,7 +124,7 @@ void degrees_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
@@ -140,6 +140,126 @@ void degrees_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 	for (x = alignedlength; x < arraylen; x++) {
 		dataout[x] = RADTODEG_F * data[x];
 	}
+
+}
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   Returns 1 if overflow occurred, else returns 0.
+*/
+// param_arr_none
+#if defined(AF_HASSIMD_ARM_AARCH64)
+char degrees_float_1_simd_ovfl(Py_ssize_t arraylen, float *data) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	float32x4_t datasliceleft, checkslice;
+
+	float checkvecresults[FLOATSIMDSIZE];
+	float checksliceinit[FLOATSIMDSIZE] = {0.0};
+
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = vld1q_f32 (checksliceinit);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1q_f32(&data[x]);
+		// The actual SIMD operation. 
+		datasliceleft = vmulq_f32 (datasliceleft, RADTODEG_F_VEC);
+		// Store the result.
+		vst1q_f32(&data[x], datasliceleft);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = vmulq_f32(checkslice, datasliceleft);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	vst1q_f32 (checkvecresults, checkslice);
+	for (x = 0; x < FLOATSIMDSIZE; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data[x] = RADTODEG_F * data[x];
+		if (!isfinite(data[x])) {return 1;}
+	}
+
+	// Everything was OK.
+	return 0;
+
+}
+
+
+
+// param_arr_arr
+char degrees_float_2_simd_ovfl(Py_ssize_t arraylen, float *data, float *dataout) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	float32x4_t datasliceleft, checkslice;
+
+	float checkvecresults[FLOATSIMDSIZE];
+	float checksliceinit[FLOATSIMDSIZE] = {0.0};
+
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = vld1q_f32 (checksliceinit);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1q_f32(&data[x]);
+		// The actual SIMD operation. 
+		datasliceleft = vmulq_f32 (datasliceleft, RADTODEG_F_VEC);
+		// Store the result.
+		vst1q_f32(&dataout[x], datasliceleft);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = vmulq_f32(checkslice, datasliceleft);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	vst1q_f32 (checkvecresults, checkslice);
+	for (x = 0; x < FLOATSIMDSIZE; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		dataout[x] = RADTODEG_F * data[x];
+		if (!isfinite(dataout[x])) {return 1;}
+	}
+
+	// Everything was OK.
+	return 0;
 
 }
 #endif

@@ -80,6 +80,8 @@ mathops_head = """//------------------------------------------------------------
 
 # ==============================================================================
 
+# ==============================================================================
+
 
 # For floating point.
 ops_op_float = """
@@ -93,144 +95,267 @@ ops_op_float = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-%(simd_call_1)s
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] %(copname)s param;
+%(simdplatform)s
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			%(funclabel)s_%(funcmodifier)s_1_simd(arraylen, data1, param);
+		} else {
+			errorstate = %(funclabel)s_%(funcmodifier)s_1_simd_ovfl(arraylen, data1, param);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
 	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] %(copname)s param;
-			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] %(copname)s param;
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] %(copname)s param;
+				if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
+
+%(simdplatform)s
 	}
+#endif
+
 	return ARR_NO_ERR;
 
 }
+
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-%(simd_call_2)s
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] %(copname)s param;
+%(simdplatform)s
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			%(funclabel)s_%(funcmodifier)s_2_simd(arraylen, data1, param, data3);
+		} else {
+			errorstate = %(funclabel)s_%(funcmodifier)s_2_simd_ovfl(arraylen, data1, param, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
 	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] %(copname)s param;
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] %(copname)s param;
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] %(copname)s param;
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
+
+%(simdplatform)s
 	}
+#endif
+
 	return ARR_NO_ERR;
 
 }
+
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, int nosimd, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-%(simd_call_3)s
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param %(copname)s data2[x];
+%(simdplatform)s
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			%(funclabel)s_%(funcmodifier)s_3_simd(arraylen, param, data2);
+		} else {
+			errorstate = %(funclabel)s_%(funcmodifier)s_3_simd_ovfl(arraylen, param, data2);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
 	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param %(copname)s data2[x];
-			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param %(copname)s data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param %(copname)s data2[x];
+				if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
+
+%(simdplatform)s
 	}
+#endif
+
 	return ARR_NO_ERR;
 
 }
+
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, int nosimd, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-%(simd_call_4)s
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param %(copname)s data2[x];
+%(simdplatform)s
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			%(funclabel)s_%(funcmodifier)s_4_simd(arraylen, param, data2, data3);
+		} else {
+			errorstate = %(funclabel)s_%(funcmodifier)s_4_simd_ovfl(arraylen, param, data2, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
 	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param %(copname)s data2[x];
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param %(copname)s data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param %(copname)s data2[x];
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
+
+%(simdplatform)s
 	}
+#endif
+
 	return ARR_NO_ERR;
 
 }
-
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-%(simd_call_5)s
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] %(copname)s data2[x];
+%(simdplatform)s
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			%(funclabel)s_%(funcmodifier)s_5_simd(arraylen, data1, data2);
+		} else {
+			errorstate = %(funclabel)s_%(funcmodifier)s_5_simd_ovfl(arraylen, data1, data2);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
 	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] %(copname)s data2[x];
-			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] %(copname)s data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] %(copname)s data2[x];
+				if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
+
+%(simdplatform)s
 	}
+#endif
+
 	return ARR_NO_ERR;
 
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-%(simd_call_6)s
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] %(copname)s data2[x];
+%(simdplatform)s
+	signed int errorstate;
+
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			%(funclabel)s_%(funcmodifier)s_6_simd(arraylen, data1, data2, data3);
+		} else {
+			errorstate = %(funclabel)s_%(funcmodifier)s_6_simd_ovfl(arraylen, data1, data2, data3);
+			if (errorstate) {return ARR_ERR_ARITHMETIC;}
 		}
+
 	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] %(copname)s data2[x];
-			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+#endif
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] %(copname)s data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] %(copname)s data2[x];
+				if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
+
+%(simdplatform)s
 	}
+#endif
+
 	return ARR_NO_ERR;
 
 }
+
 """
 
 
@@ -2081,6 +2206,373 @@ char %(funclabel)s_%(funcmodifier)s_4_simd_ovfl(Py_ssize_t arraylen, %(arraytype
 /*--------------------------------------------------------------------------- */
 """
 
+# ==============================================================================
+
+# ==============================================================================
+
+# The floating point operations using SIMD. This includes overflow conditions.
+ops_simdsupport_ovfl_float = """
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   This version is without overflow checking.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   Returns 1 if overflow occurred, else returns 0.
+*/
+// param_arr_num_none
+%(simdplatform)s
+char %(funclabel)s_%(funcmodifier)s_1_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice, checkslice;
+
+	%(arraytype)s checkvecresults[%(simdwidth)s];
+	%(arraytype)s checksliceinit[%(simdwidth)s] = {0.0};
+
+
+	// Initialise the comparison values.
+	datasliceright = initvec_%(funcmodifier)s(param);
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = %(vldinstr)s checksliceinit);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data1[x]);
+		// The actual SIMD operation. 
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
+		// Store the result.
+		%(vstinstr1)s &data1[x], %(vstinstr2)s resultslice);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = %(simdmul)s(checkslice, resultslice);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	%(vstinstr1)s checkvecresults, checkslice);
+	for (x = 0; x < %(simdwidth)s; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data1[x] = data1[x] %(copname)s param;
+		if (!isfinite(data1[x])) {return 1;}
+	}
+
+	return 0;
+
+}
+
+
+
+// param_arr_num_arr
+char %(funclabel)s_%(funcmodifier)s_2_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice, checkslice;
+
+	%(arraytype)s checkvecresults[%(simdwidth)s];
+	%(arraytype)s checksliceinit[%(simdwidth)s] = {0.0};
+
+
+	// Initialise the comparison values.
+	datasliceright = initvec_%(funcmodifier)s(param);
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = %(vldinstr)s checksliceinit);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data1[x]);
+		// The actual SIMD operation.
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
+		// Store the result.
+		%(vstinstr1)s &data3[x], %(vstinstr2)s resultslice);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = %(simdmul)s(checkslice, resultslice);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	%(vstinstr1)s checkvecresults, checkslice);
+	for (x = 0; x < %(simdwidth)s; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data3[x] = data1[x] %(copname)s param;
+		if (!isfinite(data3[x])) {return 1;}
+	}
+
+	return 0;
+
+}
+
+
+
+// param_num_arr_none
+char %(funclabel)s_%(funcmodifier)s_3_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice, checkslice;
+
+	%(arraytype)s checkvecresults[%(simdwidth)s];
+	%(arraytype)s checksliceinit[%(simdwidth)s] = {0.0};
+
+
+	// Initialise the comparison values.
+	datasliceleft = initvec_%(funcmodifier)s(param);
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = %(vldinstr)s checksliceinit);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceright = %(vldinstr)s &data2[x]);
+		// The actual SIMD operation.
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
+		// Store the result.
+		%(vstinstr1)s &data2[x], %(vstinstr2)s resultslice);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = %(simdmul)s(checkslice, resultslice);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	%(vstinstr1)s checkvecresults, checkslice);
+	for (x = 0; x < %(simdwidth)s; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data2[x] = param %(copname)s data2[x];
+		if (!isfinite(data2[x])) {return 1;}
+	}
+
+	return 0;
+
+}
+
+
+
+// param_num_arr_arr
+char %(funclabel)s_%(funcmodifier)s_4_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice, checkslice;
+
+	%(arraytype)s checkvecresults[%(simdwidth)s];
+	%(arraytype)s checksliceinit[%(simdwidth)s] = {0.0};
+
+
+	// Initialise the comparison values.
+	datasliceleft = initvec_%(funcmodifier)s(param);
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = %(vldinstr)s checksliceinit);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceright = %(vldinstr)s &data2[x]);
+		// The actual SIMD operation.
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
+		// Store the result.
+		%(vstinstr1)s &data3[x], %(vstinstr2)s resultslice);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = %(simdmul)s(checkslice, resultslice);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	%(vstinstr1)s checkvecresults, checkslice);
+	for (x = 0; x < %(simdwidth)s; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data3[x] = param %(copname)s data2[x];
+		if (!isfinite(data3[x])) {return 1;}
+	}
+
+	return 0;
+
+}
+
+
+
+// param_arr_arr_none
+char %(funclabel)s_%(funcmodifier)s_5_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice, checkslice;
+
+	%(arraytype)s checkvecresults[%(simdwidth)s];
+	%(arraytype)s checksliceinit[%(simdwidth)s] = {0.0};
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = %(vldinstr)s checksliceinit);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data1[x]);
+		datasliceright = %(vldinstr)s &data2[x]);
+		// The actual SIMD operation.
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
+		// Store the result.
+		%(vstinstr1)s &data1[x], %(vstinstr2)s resultslice);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = %(simdmul)s(checkslice, resultslice);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	%(vstinstr1)s checkvecresults, checkslice);
+	for (x = 0; x < %(simdwidth)s; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data1[x] = data1[x] %(copname)s data2[x];
+		if (!isfinite(data1[x])) {return 1;}
+	}
+
+	return 0;
+
+}
+
+
+
+// param_arr_arr_arr
+char %(funclabel)s_%(funcmodifier)s_6_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice, checkslice;
+
+	%(arraytype)s checkvecresults[%(simdwidth)s];
+	%(arraytype)s checksliceinit[%(simdwidth)s] = {0.0};
+
+	// This is used to check for errors by accumulating non-finite values.
+	checkslice = %(vldinstr)s checksliceinit);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data1[x]);
+		datasliceright = %(vldinstr)s &data2[x]);
+		// The actual SIMD operation.
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
+		// Store the result.
+		%(vstinstr1)s &data3[x], %(vstinstr2)s resultslice);
+
+		// Check the result. None-finite errors should accumulate.
+		checkslice = %(simdmul)s(checkslice, resultslice);
+	}
+
+	// Check the results of the SIMD operations. If all is OK then the
+	// results should be all zeros. Any none-finite numbers however will
+	// propagate through and accumulate. 
+	%(vstinstr1)s checkvecresults, checkslice);
+	for (x = 0; x < %(simdwidth)s; x++) {
+		if (!isfinite(checkvecresults[x])) {return 1;}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		data3[x] = data1[x] %(copname)s data2[x];
+		if (!isfinite(data3[x])) {return 1;}
+	}
+
+	return 0;
+
+}
+#endif
+
+/*--------------------------------------------------------------------------- */
+"""
+
 
 # ==============================================================================
 
@@ -2275,6 +2767,10 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 # This is required for SIMD operations only.
 includeoptions_arm = '''#include "simddefs.h"
+
+#ifdef AF_HASSIMD_X86
+#include "%(funclabel)s_simd_x86.h"
+#endif
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
@@ -2482,6 +2978,90 @@ helpsimd2_template = '''* nosimd - If True, SIMD acceleration is disabled. This 
 
 # ==============================================================================
 
+
+# Various SIMD instruction information which varies according to array type.
+# For x86-64.
+
+simdattr_x86 = {
+	'b' : 'v16qi', 
+	'B' : 'v16qi', 
+	'h' : 'v8hi', 
+	'H' : 'v8hi', 
+	'i' : 'v4si', 
+	'I' : 'v4si', 
+	'f' : 'v4sf',
+	'd' : 'v2df',
+}
+
+ovflsimdattr_x86 = {
+	'b' : 'v16qi', 
+	'B' : 'v16qi', 
+	'h' : 'v8hi', 
+	'H' : 'v8hi', 
+	'i' : 'v4si', 
+	'I' : 'v4si', 
+	'f' : 'v4sf',
+	'd' : 'v2df',
+}
+
+
+vldinstr_x86 = {
+	'b' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+	'B' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+	'h' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+	'H' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+	'i' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+	'I' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+	'f' : '(v4sf) __builtin_ia32_loadups(',
+	'd' : '(v2df) __builtin_ia32_loadupd(',
+}
+
+
+vstinstr1_x86 = {
+	'b' : '__builtin_ia32_storedqu((char *)', 
+	'B' : '__builtin_ia32_storedqu((char *)',
+	'h' : '__builtin_ia32_storedqu((char *)',
+	'H' : '__builtin_ia32_storedqu((char *)',
+	'i' : '__builtin_ia32_storedqu((char *)',
+	'I' : '__builtin_ia32_storedqu((char *)',
+	'f' : '__builtin_ia32_storeups(',
+	'd' : '__builtin_ia32_storeupd(',
+}
+
+
+vstinstr2_x86 = {
+	'b' : '', 
+	'B' : '', 
+	'h' : '(v16qi) ', 
+	'H' : '(v16qi) ', 
+	'i' : '(v16qi) ', 
+	'I' : '(v16qi) ', 
+	'f' : '(v4sf)',
+	'd' : '(v2df)',
+}
+
+
+# SIMD operations.
+simdop_x86 = {
+	'f' : '__builtin_ia32_mulps', 
+	'd' : '__builtin_ia32_mulpd', 
+}
+
+
+
+# Multiplication, used for checking for math errors.
+simdmulop_x86 = {'f' : '__builtin_ia32_mulps', 
+				'd' : '__builtin_ia32_mulpd'}
+
+
+# A list of which array types are supported by x86 SIMD instructions.
+x86_simdtypes = tuple(simdop_x86.keys())
+
+
+# ==============================================================================
+
+# ==============================================================================
+
 # For ARM NEON ARMv7 32 bit.
 # Not all possible array types have been implemented as benchmarking
 # has shown that SIMD is actually slower for array types with larger
@@ -2492,6 +3072,7 @@ simdattr_armv7 = {
 	'B' : 'uint8x8_t',
 	'h' : 'int16x4_t',
 	'H' : 'uint16x4_t',
+	'f' : 'float32x2_t',
 }
 
 
@@ -2500,6 +3081,7 @@ ovflsimdattr_armv7 = {
 	'B' : 'uint8x8_t',
 	'h' : 'uint16x4_t',
 	'H' : 'uint16x4_t',
+	'f' : 'float32x2_t',
 }
 
 
@@ -2508,6 +3090,7 @@ vldinstr_armv7 = {
 	'B' : 'vld1_u8(',
 	'h' : 'vld1_s16(',
 	'H' : 'vld1_u16(',
+	'f' : 'vld1_f32(',
 }
 
 vstinstr1_armv7 = {
@@ -2515,6 +3098,7 @@ vstinstr1_armv7 = {
 	'B' : 'vst1_u8(',
 	'h' : 'vst1_s16(',
 	'H' : 'vst1_u16(',
+	'f' : 'vst1_f32(',
 }
 
 vstinstr2_armv7 = {
@@ -2522,13 +3106,7 @@ vstinstr2_armv7 = {
 	'B' : '',
 	'h' : '',
 	'H' : '',
-}
-
-vstinstr2_armv7 = {
-	'b' : '',
-	'B' : '',
-	'h' : '',
-	'H' : '',
+	'f' : '',
 }
 
 
@@ -2539,6 +3117,7 @@ simdop_armv7 = {
 	'B' : 'vmul_u8', 
 	'h' : 'vmul_s16', 
 	'H' : 'vmul_u16', 
+	'f' : 'vmul_f32', 
 }
 
 
@@ -2586,6 +3165,9 @@ simdovfl_armv7 = ('b', 'B', 'h', 'H')
 # A list of which array types are supported by ARM SIMD instructions.
 armv7_simdtypes  = tuple(simdop_armv7.keys())
 
+
+# Multiplication, used for checking for math errors.
+simdmulop_armv7 = 'vmul_f32'
 
 # ==============================================================================
 
@@ -2728,6 +3310,9 @@ simdwidth_armv8 = 128
 # A list of which array types are supported by ARM SIMD instructions.
 armv8_simdtypes = tuple(simdop_armv8.keys())
 
+# Multiplication, used for checking for math errors.
+simdmulop_armv8 = 'vmulq_f32'
+
 
 # ==============================================================================
 
@@ -2748,6 +3333,9 @@ simdwidth = {'b' : 'CHARSIMDSIZE',
 # ==============================================================================
 
 # These get substituted into function call templates.
+SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
+SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)'
+SIMD_platform_x86_ARMv8 = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)'
 SIMD_platform_ARMv7 = '#if defined(AF_HASSIMD_ARMv7_32BIT)'
 SIMD_platform_ARM64v8 = '#if defined(AF_HASSIMD_ARM_AARCH64)'
 SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)'
@@ -2761,13 +3349,20 @@ SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_A
 # SIMD files.
 def findsimdplatform(arraycode, funcname):
 
+	hasx86 = arraycode in x86_simdtypes
 	hasarmv7 = arraycode in armv7_simdtypes
 	hasarmv8 = arraycode in armv8_simdtypes
 
 	# Only the platforms combinations which are used currently are defined here.
-	if hasarmv7 and hasarmv8:
+	if hasx86 and hasarmv7 and hasarmv8:
+		return SIMD_platform_x86_ARM
+	elif hasx86 and (not hasarmv7) and (not hasarmv8):
+		return SIMD_platform_x86
+	elif hasx86 and (not hasarmv7) and hasarmv8:
+		return SIMD_platform_x86_ARMv8
+	elif (not hasx86) and hasarmv7 and hasarmv8:
 		return SIMD_platform_ARM
-	elif (not hasarmv7) and hasarmv8:
+	elif (not hasx86) and (not hasarmv7) and hasarmv8:
 		return SIMD_platform_ARM64v8
 	else:
 		print('Error: Template error in findsimdplatform: %s %s' % (arraycode, funcname))
@@ -2860,7 +3455,7 @@ def CreateArrayDataCCode(arraycode, funcname):
 
 
 	# Prepare the SIMD templates.
-	if arraycode in (set(armv7_simdtypes) | set(armv8_simdtypes)):
+	if arraycode in (set(x86_simdtypes) | set(armv7_simdtypes) | set(armv8_simdtypes)):
 		simdfuncdata = {'simdwidth' : simdwidth[arraycode], 
 			'funclabel' : funcname,
 			'funcmodifier' : funcmodifier,
@@ -2873,6 +3468,8 @@ def CreateArrayDataCCode(arraycode, funcname):
 		funcdata.update(dict([(x, y % simdfuncdata) for x,y in SIMD_call_ovfl.items()]))
 		funcdata['nosimddecl'] = nosimddecl
 		funcdata['nosimdparam'] = nosimdparam
+		funcdata['simdwidth'] = simdwidth.get(arraycode, '')
+		funcdata['simdplatform'] = findsimdplatform(arraycode, funcname)
 	else:
 		# SIMD without overflow detection.
 		funcdata.update(dict([(x, '') for x,y in SIMD_call.items()]))
@@ -2979,6 +3576,83 @@ codegen_common.OutputCHeader(macrofilename,
 
 # ==============================================================================
 
+# Write the SIMD code.
+
+# x86
+def SetSIMDData_x86(funcname):
+	'''Set the SIMD template data for x86. This is for SIMD without
+	overflow checking.
+	'''
+	outputlist = []
+
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+
+	# Function specific includes.
+	outputlist.append(funcdefsblock)
+
+	# Output the generated code.
+	for arraycode in x86_simdtypes:
+
+		arraytype = codegen_common.arraytypes[arraycode]
+
+		# The main template values.
+		funcdata = {'arraytype' : arraytype,
+					'copname' : copname,
+					'funclabel' : funcname,
+					'funcmodifier' : arraytype.replace(' ', '_'),
+					'intminvalue' : codegen_common.minvalue[arraycode],
+					'simdattr' : simdattr_x86[arraycode],
+					'simd_ovflchk_extravars' : '',
+					'simdplatform' : SIMD_platform_x86,
+					'simdwidth' : simdwidth[arraycode],
+					'vldinstr' : vldinstr_x86[arraycode],
+					'vopinstr' : simdop_x86[arraycode],
+					'vstinstr1' : vstinstr1_x86[arraycode],
+					'vstinstr2' : vstinstr2_x86[arraycode],
+					}
+
+
+		# Helper functions.
+		outputlist.append(simd_helpers % funcdata)
+
+
+		# No overflow checking, fill in the template.
+		outputlist.append(ops_simdsupport % funcdata)
+
+		# Overflow check. For integer arrays only.
+		if arraycode in codegen_common.intarrays:
+			# x86 doesn't have an SIMD less than, so we use gt instead. 
+			simddata = {'vltinstr' : vgtinstr_x86[arraycode],
+						'vgtinstr' : vgtinstr_x86[arraycode],
+						'veqinstr' : veqinstr_x86[arraycode],
+						'vreinterpinstr' : '',
+			}
+			# Add this back into the template values.
+			funcdata['simd_pos_willoverflow_12'] = simd_pos_willoverflow_12_x86 % simddata
+			funcdata['simd_pos_willoverflow_34'] = simd_pos_willoverflow_34_x86 % simddata
+			funcdata['simd_neg_willoverflow_12'] = simd_neg_willoverflow_12_x86 % simddata
+			funcdata['simd_neg_willoverflow_34'] = simd_neg_willoverflow_34_x86 % simddata
+			funcdata['simd_equ_willoverflow'] = simd_equ_willoverflow_x86 % simddata
+			funcdata['simdovintmaxvals'] = simdovintmaxvals_x86[arraycode]
+			funcdata['vneginstr'] = vneginstr_x86[arraycode]
+			funcdata['vsignparam'] = vsignparam_x86[arraycode]
+			funcdata['ovflsimdattr'] = ovflsimdattr_x86[arraycode]
+
+			# With overflow checking, fill in the template.
+			outputlist.append(ops_simdsupport_ovfl_signed % funcdata)
+
+		# For float arrays.
+		elif arraycode in codegen_common.floatarrays:
+			funcdata['simdmul'] = simdmulop_x86[arraycode]
+			# With overflow checking, fill in the template.
+			outputlist.append(ops_simdsupport_ovfl_float % funcdata)
+
+
+	return outputlist
+
 
 
 # ARMv7
@@ -3058,6 +3732,14 @@ def SetSIMDData_ARMv7(funcname):
 			# For unsigned integers.
 			elif arraycode in codegen_common.unsignedint:
 				outputlist.append(ops_simdsupport_ovfl_unsigned % funcdata)
+
+
+		# For float arrays.
+		elif arraycode == 'f':
+			funcdata['simdmul'] = simdmulop_armv7
+			# With overflow checking, fill in the template.
+			outputlist.append(ops_simdsupport_ovfl_float % funcdata)
+
 
 	return outputlist
 
@@ -3141,6 +3823,13 @@ def SetSIMDData_ARMv8(funcname):
 			elif arraycode in codegen_common.unsignedint:
 				outputlist.append(ops_simdsupport_ovfl_unsigned % funcdata)
 
+		# For float arrays.
+		elif arraycode == 'f':
+			funcdata['simdmul'] = simdmulop_armv8
+			# With overflow checking, fill in the template.
+			outputlist.append(ops_simdsupport_ovfl_float % funcdata)
+
+
 	return outputlist
 
 
@@ -3184,6 +3873,12 @@ def WriteSIMDCode(funcname, simdplatform, simdfilename, simdcodedate, includexte
 
 # Function specific includes.
 includextext = funcdefsblock
+
+# x86.
+simdcodedate = '1-Apr-2019'
+simdfilename = '_simd_x86'
+outputlist = SetSIMDData_x86(funcname)
+WriteSIMDCode(funcname, 'x86', simdfilename, simdcodedate, includextext, outputlist)
 
 simdcodedate = '8-Oct-2019'
 simdfilename = '_simd_armv7'

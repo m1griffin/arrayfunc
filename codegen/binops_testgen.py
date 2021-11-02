@@ -1300,13 +1300,12 @@ test_template_binop = {
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
 
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['test_op_templ'] in ('test_template_binop', 'test_template_binop2')]
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('test_op_templ') in ('test_template_binop', 'test_template_binop2')]
 
 
 # ==============================================================================
@@ -1317,9 +1316,8 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '05-Apr-2018', funcname)

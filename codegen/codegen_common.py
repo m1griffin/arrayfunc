@@ -31,6 +31,7 @@ import itertools
 import re
 import glob
 import os.path
+import configparser
 
 # ==============================================================================
 
@@ -183,6 +184,8 @@ CompOps = [
 ]
 
 
+# ==============================================================================
+
 def ReadCSVData(filename):
 	"""Read the operator and function definition data from a CSV file. All of
 	the data to create the C code is stored in a spreadsheet and then saved to
@@ -211,6 +214,20 @@ def ReadCSVData(filename):
 
 
 	return csvdata
+
+
+# ==============================================================================
+
+def ReadINI(ininamein):
+	'''Read in an INI file for configuration data.
+	'''
+	# It is important to disable interpolation as otherwise the parser
+	# will have problems with the mod operator %.
+	config = configparser.ConfigParser(interpolation=None, delimiters=':')
+	config.read(ininamein)
+
+	return config
+
 
 # ==============================================================================
 

@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     26-Mar-2020
-// Ver:      01-Oct-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -92,5 +92,11 @@ void mul_float_3_simd(Py_ssize_t arraylen, float param, float *data2);
 void mul_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *data3);
 void mul_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2);
 void mul_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
+char mul_float_1_simd_ovfl(Py_ssize_t arraylen, float *data1, float param);
+char mul_float_2_simd_ovfl(Py_ssize_t arraylen, float *data1, float param, float *data3);
+char mul_float_3_simd_ovfl(Py_ssize_t arraylen, float param, float *data2);
+char mul_float_4_simd_ovfl(Py_ssize_t arraylen, float param, float *data2, float *data3);
+char mul_float_5_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2);
+char mul_float_6_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
 
 

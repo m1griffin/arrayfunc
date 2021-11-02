@@ -600,14 +600,7 @@ template_class_close = '''
 
 
 
-# ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
-
-
-# Filter out the desired math functions.
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_fma']
 
 # ==============================================================================
 
@@ -795,6 +788,13 @@ def gennantestdata():
 	return funcdata
 
 
+# ==============================================================================
+
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
+
+funcname = 'fma'
+func = opdata[funcname]
 
 # ==============================================================================
 
@@ -804,152 +804,150 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+funcname = 'fma'
+filenamebase = 'test_' + funcname
+filename = filenamebase + '.py'
+headerdate = codegen_common.FormatHeaderData(filenamebase, '30-Nov-2018', funcname)
 
-	funcname = 'fma'
-	filenamebase = 'test_' + funcname
-	filename = filenamebase + '.py'
-	headerdate = codegen_common.FormatHeaderData(filenamebase, '30-Nov-2018', funcname)
+# Add additional header data.
+headerdate['modulename'] = modulename
+headerdate['arrayimport'] = arrayimport
 
-	# Add additional header data.
-	headerdate['modulename'] = modulename
-	headerdate['arrayimport'] = arrayimport
-
-	# One function (one output file). 
-	with open(filename, 'w') as f:
-		# The copyright header.
-		f.write(codegen_common.HeaderTemplate % headerdate)
+# One function (one output file). 
+with open(filename, 'w') as f:
+	# The copyright header.
+	f.write(codegen_common.HeaderTemplate % headerdate)
 
 
-		# Check each array type.
-		for functype in codegen_common.floatarrays:
+	# Check each array type.
+	for functype in codegen_common.floatarrays:
 
-			# Basic tests.
-			funcdata = {'pyoperator' : func['pyoperator'],
-				'typelabel' : functype, 'typecode' : functype, 
-				'test_op_x' : func['test_op_x'],
-				'test_op_y' : func['test_op_y'],
-				'test_op_z' : func['test_op_z']}
-
-
-			# With no test options.
-			funcdata['optlable'] = 'optionsnone'
-			funcdata['optdescription'] = 'no options'
-			funcdata['limexpected_a'] = '# No array limits used.'
-			funcdata['limexpected_b'] = '# No array limits used.'
-			funcdata['testoptions'] = ''
-
-			funcdata['arrayevenodd'] = 'even'
-
-			f.write(test_template_fma % funcdata)
+		# Basic tests.
+		funcdata = {'pyoperator' : func['pyoperator'],
+			'typelabel' : functype, 'typecode' : functype, 
+			'test_op_x' : func['test_op_x'],
+			'test_op_y' : func['test_op_y'],
+			'test_op_z' : func['test_op_z']}
 
 
-			#####
+		# With no test options.
+		funcdata['optlable'] = 'optionsnone'
+		funcdata['optdescription'] = 'no options'
+		funcdata['limexpected_a'] = '# No array limits used.'
+		funcdata['limexpected_b'] = '# No array limits used.'
+		funcdata['testoptions'] = ''
 
-			# With maxlen test option.
-			funcdata['optlable'] = 'optionsmaxlen'
-			funcdata['optdescription'] = 'maxlen option'
-			funcdata['limexpected_a'] = 'expected = expected[0:self.limited] + list(self.datax)[self.limited:]'
-			funcdata['limexpected_b'] = 'expected = expected[0:self.limited] + list(self.dataout)[self.limited:]'
-			funcdata['testoptions'] = ', maxlen=self.limited'
+		funcdata['arrayevenodd'] = 'even'
 
-			f.write(test_template_fma % funcdata)
-
-			#####
-
-			# With matherror option.
-			funcdata['optlable'] = 'optionsmatherror'
-			funcdata['optdescription'] = 'matherror option'
-			funcdata['limexpected_a'] = '# No array limits used.'
-			funcdata['limexpected_b'] = '# No array limits used.'
-			funcdata['testoptions'] = ', matherrors=True'
-
-			f.write(test_template_fma % funcdata)
-
-			#####
-
-			# With maxlen and matherrors test options.
-			funcdata['optlable'] = 'optionsmaxlenmatherrors'
-			funcdata['optdescription'] = 'maxlen and matherrors option'
-			funcdata['limexpected_a'] = 'expected = expected[0:self.limited] + list(self.datax)[self.limited:]'
-			funcdata['limexpected_b'] = 'expected = expected[0:self.limited] + list(self.dataout)[self.limited:]'
-			funcdata['testoptions'] = ', maxlen=self.limited, matherrors=True'
-
-			f.write(test_template_fma % funcdata)
+		f.write(test_template_fma % funcdata)
 
 
-			#####
+		#####
 
-			# With matherror option.
-			funcdata['limexpected_a'] = '# No array limits used.'
-			funcdata['limexpected_b'] = '# No array limits used.'
+		# With maxlen test option.
+		funcdata['optlable'] = 'optionsmaxlen'
+		funcdata['optdescription'] = 'maxlen option'
+		funcdata['limexpected_a'] = 'expected = expected[0:self.limited] + list(self.datax)[self.limited:]'
+		funcdata['limexpected_b'] = 'expected = expected[0:self.limited] + list(self.dataout)[self.limited:]'
+		funcdata['testoptions'] = ', maxlen=self.limited'
 
-			# Test options.
-			funcdata['arrayevenodd'] = 'even'
-			funcdata['testoptions'] = ', matherrors=True'
-			f.write(test_template_fma % funcdata)
+		f.write(test_template_fma % funcdata)
 
-			# Test options.
-			funcdata['arrayevenodd'] = 'odd'
-			funcdata['testoptions'] = ', matherrors=True'
-			f.write(test_template_fma % funcdata)
+		#####
 
-			# Test options.
-			funcdata['arrayevenodd'] = 'even'
-			funcdata['testoptions'] = ''
-			f.write(test_template_fma % funcdata)
+		# With matherror option.
+		funcdata['optlable'] = 'optionsmatherror'
+		funcdata['optdescription'] = 'matherror option'
+		funcdata['limexpected_a'] = '# No array limits used.'
+		funcdata['limexpected_b'] = '# No array limits used.'
+		funcdata['testoptions'] = ', matherrors=True'
 
+		f.write(test_template_fma % funcdata)
 
-			#############
+		#####
 
-			# Try all combinations of integer arrays and values. Integers
-			# are an invalid data type.
-			funcdata = {'typelabel' : functype, 
-				'typecode' : functype, 
-				'test_op_x' : func['test_op_x'],
-				'test_op_y' : func['test_op_y'],
-				'test_op_z' : func['test_op_z']}
+		# With maxlen and matherrors test options.
+		funcdata['optlable'] = 'optionsmaxlenmatherrors'
+		funcdata['optdescription'] = 'maxlen and matherrors option'
+		funcdata['limexpected_a'] = 'expected = expected[0:self.limited] + list(self.datax)[self.limited:]'
+		funcdata['limexpected_b'] = 'expected = expected[0:self.limited] + list(self.dataout)[self.limited:]'
+		funcdata['testoptions'] = ', maxlen=self.limited, matherrors=True'
 
-
-			# Class start for integer tests.
-			f.write(param_int_invalid_template % funcdata)
-
-			#############
-
-			# Generate the individual integer tests.
-			for funcdata in genintarraytestdata():
-				f.write(param_int_invalid_template_tests % funcdata)
-
-			# Close off the generated class.
-			f.write(template_class_close)
-
-			#############
+		f.write(test_template_fma % funcdata)
 
 
-			# Test for invalid numbers and kinds of parameters. 
-			funcdata = {'typelabel' : functype, 
-				'typecode' : functype, 
-				'test_op_x' : func['test_op_x'],
-				'test_op_y' : func['test_op_y'],
-				'test_op_z' : func['test_op_z']}
-			f.write(param_invalid_options_template % funcdata)
+		#####
 
-			#############
+		# With matherror option.
+		funcdata['limexpected_a'] = '# No array limits used.'
+		funcdata['limexpected_b'] = '# No array limits used.'
 
-			# Class start for non-finite tests.
-			f.write(nan_data_error_fma_template % funcdata)
+		# Test options.
+		funcdata['arrayevenodd'] = 'even'
+		funcdata['testoptions'] = ', matherrors=True'
+		f.write(test_template_fma % funcdata)
 
-			# Generate the individual non-finite number tests.
-			for funcdata in gennantestdata():
-				f.write(nan_data_error_fma_template_tests % funcdata)
+		# Test options.
+		funcdata['arrayevenodd'] = 'odd'
+		funcdata['testoptions'] = ', matherrors=True'
+		f.write(test_template_fma % funcdata)
 
-			# Close off the generated class.
-			f.write(template_class_close)
+		# Test options.
+		funcdata['arrayevenodd'] = 'even'
+		funcdata['testoptions'] = ''
+		f.write(test_template_fma % funcdata)
 
 
 		#############
 
-		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
+		# Try all combinations of integer arrays and values. Integers
+		# are an invalid data type.
+		funcdata = {'typelabel' : functype, 
+			'typecode' : functype, 
+			'test_op_x' : func['test_op_x'],
+			'test_op_y' : func['test_op_y'],
+			'test_op_z' : func['test_op_z']}
+
+
+		# Class start for integer tests.
+		f.write(param_int_invalid_template % funcdata)
+
+		#############
+
+		# Generate the individual integer tests.
+		for funcdata in genintarraytestdata():
+			f.write(param_int_invalid_template_tests % funcdata)
+
+		# Close off the generated class.
+		f.write(template_class_close)
+
+		#############
+
+
+		# Test for invalid numbers and kinds of parameters. 
+		funcdata = {'typelabel' : functype, 
+			'typecode' : functype, 
+			'test_op_x' : func['test_op_x'],
+			'test_op_y' : func['test_op_y'],
+			'test_op_z' : func['test_op_z']}
+		f.write(param_invalid_options_template % funcdata)
+
+		#############
+
+		# Class start for non-finite tests.
+		f.write(nan_data_error_fma_template % funcdata)
+
+		# Generate the individual non-finite number tests.
+		for funcdata in gennantestdata():
+			f.write(nan_data_error_fma_template_tests % funcdata)
+
+		# Close off the generated class.
+		f.write(template_class_close)
+
+
+	#############
+
+	f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 # ==============================================================================
 

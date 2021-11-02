@@ -59,11 +59,22 @@ def GetCSourceFiles():
 
 # ==============================================================================
 
-def GetFuncConfigData():
-	'''Get the function data from the configuration spreadsheet.
+def GetFuncConfigCategoryData():
+	'''Get the category and function name data from the configuration file.
 	'''
 	# Read the operator and function definition data.
-	return list(codegen_common.ReadCSVData('funcs.csv'))
+	config = codegen_common.ReadINI('affuncdata.ini')
+
+	# Extract function names.
+	funcnames = [x for x in config.keys() if x != 'DEFAULT']
+
+	# Group by category. This produces a dictionary where the category is the
+	# key and a list of associated function names is each value.
+	cat = [(x,y.get('category')) for x,y in config.items() if x != 'DEFAULT']
+	cat.sort(key = lambda x : x[1])
+	categories = dict([(y, [i for i,j in x]) for y,x in itertools.groupby(cat, lambda k : k[1])])
+
+	return funcnames, categories
 
 
 # ==============================================================================
@@ -165,11 +176,11 @@ def GetSIMDTable(filepath):
 
 # ==============================================================================
 
-def MakeFuncDocs(funccategories, funcsdocs, funcdata):
+def MakeFuncDocs(funccategories, funcsdocs, configcategories):
 	'''Extract the function documentation and order them in the correct
 	categories.
 	Parameters: funccategories = The function categories.
-		funcsdocs = The function documentation.
+		configcategories = A dict with function names grouped by category.
 	Returns: The function documentation as a block of text.
 	'''
 	opdocs = []
@@ -177,7 +188,7 @@ def MakeFuncDocs(funccategories, funcsdocs, funcdata):
 	# The function categories
 	for cat in funccategories:
 		# Get all the names of the functions in this category.
-		funcnames = [x['funcname'] for x in funcdata if x['category'] == cat[0]]
+		funcnames = configcategories[cat[0]]
 		funcnames.sort()
 
 		# Create the category title. But first add some blank lines.
@@ -213,15 +224,14 @@ def FormatFuncsDocs(funcsdocs):
 
 # ==============================================================================
 
-def MakeSummaryTable(funccategories, funcsdocs, funcdata):
+def MakeSummaryTable(funccategories, funcsdocs, funcnames, configcategories):
 	'''Extract the function documentation and order them in the correct
 	categories in the form of a one line summary based on the equivalent
 	Python operation.
 	Parameters: funccategories = The function categories.
-		funcsdocs = The function documentation.
+		configcategories = A dict with function names grouped by category.
 	Returns: The function summary as a block of text.
 	'''
-	funcnames = [x['funcname'] for x in funcdata]
 	functitlesize = max([len(x) for x in funcnames])
 	functitlepad = max(functitlesize, len('Function')) + 2
 
@@ -233,7 +243,7 @@ def MakeSummaryTable(funccategories, funcsdocs, funcdata):
 	# The function categories
 	for cat in funccategories:
 		# Get all the names of the functions in this category.
-		funcnames = [x['funcname'] for x in funcdata if x['category'] == cat[0]]
+		funcnames = configcategories[cat[0]]
 		funcnames.sort()
 
 		# Create the category title. But first add some blank lines.
@@ -267,9 +277,8 @@ def MakeSummaryTable(funccategories, funcsdocs, funcdata):
 # The list of C source files.
 filelist = GetCSourceFiles()
 # The function config data from the config spreadsheet.
-funcdata = GetFuncConfigData()
-# Split out just the function names.
-funcnames = [x['funcname'] for x in funcdata]
+funcnames, configcategories = GetFuncConfigCategoryData()
+
 # Extract the function documentation from the C source files.
 funcsdocs = FindFuncDocs(filelist, funcnames)
 
@@ -287,10 +296,10 @@ extrafuncsdocs = FindFuncDocs(filelist, extrafuncs)
 FormatFuncsDocs(extrafuncsdocs)
 
 # Format the main function documentation.
-opdocs = MakeFuncDocs(funccategories, funcsdocs, funcdata)
+opdocs = MakeFuncDocs(funccategories, funcsdocs, configcategories)
 
 # Format the function summary table.
-summtable = MakeSummaryTable(funccategories, funcsdocs, funcdata)
+summtable = MakeSummaryTable(funccategories, funcsdocs, funcnames, configcategories)
 
 # Format the function docs that are not defined in the spreadsheet.
 extradocs = FormatFuncsDocs(extrafuncsdocs)

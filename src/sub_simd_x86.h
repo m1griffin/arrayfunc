@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     1-Apr-2019
-// Ver:      06-Sep-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -62,11 +62,23 @@ void sub_float_3_simd(Py_ssize_t arraylen, float param, float *data2);
 void sub_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *data3);
 void sub_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2);
 void sub_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
+char sub_float_1_simd_ovfl(Py_ssize_t arraylen, float *data1, float param);
+char sub_float_2_simd_ovfl(Py_ssize_t arraylen, float *data1, float param, float *data3);
+char sub_float_3_simd_ovfl(Py_ssize_t arraylen, float param, float *data2);
+char sub_float_4_simd_ovfl(Py_ssize_t arraylen, float param, float *data2, float *data3);
+char sub_float_5_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2);
+char sub_float_6_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
 void sub_double_1_simd(Py_ssize_t arraylen, double *data1, double param);
 void sub_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double *data3);
 void sub_double_3_simd(Py_ssize_t arraylen, double param, double *data2);
 void sub_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double *data3);
 void sub_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2);
 void sub_double_6_simd(Py_ssize_t arraylen, double *data1, double *data2, double *data3);
+char sub_double_1_simd_ovfl(Py_ssize_t arraylen, double *data1, double param);
+char sub_double_2_simd_ovfl(Py_ssize_t arraylen, double *data1, double param, double *data3);
+char sub_double_3_simd_ovfl(Py_ssize_t arraylen, double param, double *data2);
+char sub_double_4_simd_ovfl(Py_ssize_t arraylen, double param, double *data2, double *data3);
+char sub_double_5_simd_ovfl(Py_ssize_t arraylen, double *data1, double *data2);
+char sub_double_6_simd_ovfl(Py_ssize_t arraylen, double *data1, double *data2, double *data3);
 
 

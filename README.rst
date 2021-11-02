@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 7.2.0 for 2021-10-14
+:Version: 8.0.0 for 2021-10-31
 :Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -353,6 +353,10 @@ setup.py directly is no longer done.
 
 Release History
 ===============
+* 8.0.0 - Performance improvements in add, sub, mul, neg, abs, ceil, floor, 
+          trunc, sqrt, degrees, radians. Asum will now use error checking 
+          with floating point SIMD by default where available. Benchmarks
+          and unit tests have been updated accordingly.
 * 7.2.0 - Performance improvements in asum and pow. Asum will now use error
           checking with floating point SIMD on x86_64 by default. Pow has
           special cases for powers of 2 and 3 on integer arrays which allow

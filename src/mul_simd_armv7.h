@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     8-Oct-2019
-// Ver:      01-Oct-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -66,5 +66,17 @@ char mul_unsigned_short_1_simd_ovfl(Py_ssize_t arraylen, unsigned short *data1, 
 char mul_unsigned_short_2_simd_ovfl(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned short *data3);
 char mul_unsigned_short_3_simd_ovfl(Py_ssize_t arraylen, unsigned short param, unsigned short *data2);
 char mul_unsigned_short_4_simd_ovfl(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned short *data3);
+void mul_float_1_simd(Py_ssize_t arraylen, float *data1, float param);
+void mul_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *data3);
+void mul_float_3_simd(Py_ssize_t arraylen, float param, float *data2);
+void mul_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *data3);
+void mul_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2);
+void mul_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
+char mul_float_1_simd_ovfl(Py_ssize_t arraylen, float *data1, float param);
+char mul_float_2_simd_ovfl(Py_ssize_t arraylen, float *data1, float param, float *data3);
+char mul_float_3_simd_ovfl(Py_ssize_t arraylen, float param, float *data2);
+char mul_float_4_simd_ovfl(Py_ssize_t arraylen, float param, float *data2, float *data3);
+char mul_float_5_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2);
+char mul_float_6_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
 
 

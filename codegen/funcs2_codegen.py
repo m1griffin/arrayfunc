@@ -603,42 +603,28 @@ PyMODINIT_FUNC PyInit_ldexp(void)
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
 
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['c_code_template'] in ['template_mathfunc_2', 'template_ldexpfunc_2']]
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('c_code_template') == 'template_mathfunc_2']
 
 
 # ==============================================================================
 
-for func in funclist:
+for funcname, func in funclist:
 
-	# Some functions use a different template than the rest.
-	# This one is for most normal functions.
-	if func['c_code_template'] == 'template_mathfunc_2':
-		arrayparamsheader = 'arrayparams_two'
-		func_calc = mathfunc2_calc
-		func_params = mathfunc2_params
-
-	# This one is for ldexp.
-	elif func['c_code_template'] == 'template_ldexpfunc_2':
-		arrayparamsheader = 'arrayparams_special'
-		func_calc = mathfunc_ldexp_calc
-		func_params = mathfunc2_ldexp_params
-
-	else:
-		print('Error - unknown C code template.', func['c_code_template'])
-
+	arrayparamsheader = 'arrayparams_two'
+	func_calc = mathfunc2_calc
+	func_params = mathfunc2_params
 
 
 	# Create the source code based on templates.
-	filename = func['funcname'] + '.c'
+	filename = funcname + '.c'
 	with open(filename, 'w') as f:
-		funcdata = {'funclabel' : func['funcname']}
-		f.write(mathfunc2_head % {'funclabel' : func['funcname'], 'arrayparamsheader' : arrayparamsheader})
+		funcdata = {'funclabel' : funcname}
+		f.write(mathfunc2_head % {'funclabel' : funcname, 'arrayparamsheader' : arrayparamsheader})
 		for arraycode in codegen_common.floatarrays:
 			funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode]
 			funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
@@ -651,7 +637,7 @@ for func in funclist:
 
 		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-		f.write(func_params % {'funclabel' : func['funcname'], 
+		f.write(func_params % {'funclabel' : funcname, 
 				'opcodedocs' : func['opcodedocs'], 
 				'supportedarrays' : supportedarrays,
 				'matherrors' : ', '.join(func['matherrors'].split(','))})

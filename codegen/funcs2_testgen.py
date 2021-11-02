@@ -2598,12 +2598,12 @@ test_templates = {'test_template' : test_template,
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
 
+# Read in the op codes.
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template']
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('test_op_templ') == 'test_template']
 
 # ==============================================================================
 
@@ -2613,9 +2613,8 @@ modulename = 'arrayfunc'
 arrayimport = 'import array'
 
 
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
@@ -2634,7 +2633,7 @@ for func in funclist:
 		for functype in codegen_common.floatarrays:
 			testtemplate = test_templates[func['test_op_templ']]
 			# Basic tests.
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
 				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : func['test_op_x'],
 				'test_op_y' : func['test_op_y']}
 
@@ -2645,7 +2644,7 @@ for func in funclist:
 			f.write(param_invalid_template % funcdata)
 
 			# NaN, inf, -inf tests.
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
+			funcdata = {'funclabel' : funcname, 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
 				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : func['test_op_x'],
 				'test_op_y' : func['test_op_y'],
 				'test_nan_default' : func['test_nan_default']

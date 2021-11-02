@@ -576,57 +576,54 @@ def findsimdplatform(arraycode):
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
+funcname = 'invert'
+func = opdata[funcname]
 
-# Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['c_code_template'] == 'template_invert']
 
 # ==============================================================================
 
 
-for func in funclist:
-
-	# Create the source code based on templates.
-	filename = func['funcname'] + '.c'
-	with open(filename, 'w') as f:
-		funcdata = {'funclabel' : func['funcname']}
-		f.write(uniops_head % {'funclabel' : func['funcname']})
-		opscalltext = []
+# Create the source code based on templates.
+filename = funcname + '.c'
+with open(filename, 'w') as f:
+	funcdata = {'funclabel' : funcname}
+	f.write(uniops_head % {'funclabel' : funcname})
+	opscalltext = []
 
 
-		# Check each array type. The types of arrays supported must be looked up.
-		for arraycode in codegen_common.intarrays:
-			funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
-			funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
-			funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
-			funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
+	# Check each array type. The types of arrays supported must be looked up.
+	for arraycode in codegen_common.intarrays:
+		funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
+		funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
+		funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
+		funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
 
-			if arraycode in (set(SIMD_x86_support) | set(SIMD_armv7_support) | set(SIMD_armv8_support)):
-				simd_call_vals = {'simdwidth' : simdwidth[arraycode],
-								'simdplatform' : findsimdplatform(arraycode),
-								'funclabel' : funcdata['funclabel'], 
-								'funcmodifier' : funcdata['funcmodifier']}
+		if arraycode in (set(SIMD_x86_support) | set(SIMD_armv7_support) | set(SIMD_armv8_support)):
+			simd_call_vals = {'simdwidth' : simdwidth[arraycode],
+							'simdplatform' : findsimdplatform(arraycode),
+							'funclabel' : funcdata['funclabel'], 
+							'funcmodifier' : funcdata['funcmodifier']}
 
-				funcdata['simd_call'] = SIMD_call % simd_call_vals
-			else:
-				funcdata['simd_call'] = ''
+			funcdata['simd_call'] = SIMD_call % simd_call_vals
+		else:
+			funcdata['simd_call'] = ''
 
-			f.write(uniops_invert_int % funcdata)
+		f.write(uniops_invert_int % funcdata)
 
-			# This is the call to the functions for this array type. This
-			# is inserted into another template below.
-			funcdata['arraycode'] = arraycode
-			opscalltext.append(opscall % funcdata)
+		# This is the call to the functions for this array type. This
+		# is inserted into another template below.
+		funcdata['arraycode'] = arraycode
+		opscalltext.append(opscall % funcdata)
 
-		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
+	supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-		f.write(invert_params % {'funclabel' : func['funcname'], 
-				'opcodedocs' : func['opcodedocs'], 
-				'supportedarrays' : supportedarrays,
-				'matherrors' : ', '.join(func['matherrors'].split(',')),
-				'opscall' : ''.join(opscalltext)})
+	f.write(invert_params % {'funclabel' : funcname, 
+			'opcodedocs' : func['opcodedocs'], 
+			'supportedarrays' : supportedarrays,
+			'matherrors' : ', '.join(func['matherrors'].split(',')),
+			'opscall' : ''.join(opscalltext)})
 
 
 
@@ -641,50 +638,46 @@ simdfilename = '_simd_x86'
 
 # This outputs the SIMD version.
 
-for func in funclist:
+outputlist = []
 
-	outputlist = []
-
-	funcname = func['funcname']
-
-	# This provides the description in the header of the file.
-	maindescription = 'Calculate the %s of values in an array.' % funcname
+# This provides the description in the header of the file.
+maindescription = 'Calculate the %s of values in an array.' % funcname
 
 
-	# Output the generated code.
-	for arraycode in SIMD_x86_support:
+# Output the generated code.
+for arraycode in SIMD_x86_support:
 
-		arraytype = codegen_common.arraytypes[arraycode]
+	arraytype = codegen_common.arraytypes[arraycode]
 
-		# The compare_ops symbols is the same for integer and floating point.
-		datavals = {'funclabel' : funcname,
-					'arraytype' : arraytype, 
-					'funcmodifier' : arraytype.replace(' ', '_'),
-					'simdwidth' : simdwidth[arraycode],
-					}
+	# The compare_ops symbols is the same for integer and floating point.
+	datavals = {'funclabel' : funcname,
+				'arraytype' : arraytype, 
+				'funcmodifier' : arraytype.replace(' ', '_'),
+				'simdwidth' : simdwidth[arraycode],
+				}
 
 
-		# Start of function definition.
-		outputlist.append(ops_simdsupport_x86 % datavals)
+	# Start of function definition.
+	outputlist.append(ops_simdsupport_x86 % datavals)
 
 
 
-	# This outputs the SIMD version.
-	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate,
-		'', ['simddefs'])
+# This outputs the SIMD version.
+codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', ['simddefs'])
 
 
-	# Output the .h header file.
-	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+# Output the .h header file.
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
 
-	# Write out the file.
-	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate)
+# Write out the file.
+codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
 
 # ==============================================================================
 
@@ -698,55 +691,51 @@ simdfilename = '_simd_armv7'
 
 # This outputs the SIMD version.
 
-for func in funclist:
+outputlist = []
 
-	outputlist = []
-
-	funcname = func['funcname']
-
-	# This provides the description in the header of the file.
-	maindescription = 'Calculate the %s of values in an array.' % funcname
+# This provides the description in the header of the file.
+maindescription = 'Calculate the %s of values in an array.' % funcname
 
 
-	# Output the generated code.
-	for arraycode in SIMD_armv7_support:
+# Output the generated code.
+for arraycode in SIMD_armv7_support:
 
-		arraytype = codegen_common.arraytypes[arraycode]
+	arraytype = codegen_common.arraytypes[arraycode]
 
-		# The compare_ops symbols is the same for integer and floating point.
-		datavals = {'funclabel' : funcname,
-					'arraytype' : arraytype, 
-					'funcmodifier' : arraytype.replace(' ', '_'),
-					'simdplatform' : SIMD_platform_ARMv7,
-					'simdwidth' : simdwidth[arraycode],
-					'simdattr' : simdattr_armv7[arraycode],
-					'vldinstr' : vldinstr_armv7[arraycode],
-					'vstinstr' : vstinstr_armv7[arraycode],
-					'vopinstr' : vopinstr_armv7[arraycode],
-					}
+	# The compare_ops symbols is the same for integer and floating point.
+	datavals = {'funclabel' : funcname,
+				'arraytype' : arraytype, 
+				'funcmodifier' : arraytype.replace(' ', '_'),
+				'simdplatform' : SIMD_platform_ARMv7,
+				'simdwidth' : simdwidth[arraycode],
+				'simdattr' : simdattr_armv7[arraycode],
+				'vldinstr' : vldinstr_armv7[arraycode],
+				'vstinstr' : vstinstr_armv7[arraycode],
+				'vopinstr' : vopinstr_armv7[arraycode],
+				}
 
 
-		# Start of function definition.
-		outputlist.append(ops_simdsupport_arm % datavals)
+	# Start of function definition.
+	outputlist.append(ops_simdsupport_arm % datavals)
 
 
 
-	# This outputs the SIMD version.
-	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate,
-		'', ['simddefs', 'simdmacromsg_armv7'])
+# This outputs the SIMD version.
+codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', ['simddefs', 'simdmacromsg_armv7'])
 
 
-	# Output the .h header file.
-	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+# Output the .h header file.
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
 
-	# Write out the file.
-	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate)
+# Write out the file.
+codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
 
 # ==============================================================================
 
@@ -759,55 +748,52 @@ simdfilename = '_simd_armv8'
 
 # This outputs the SIMD version.
 
-for func in funclist:
 
-	outputlist = []
+outputlist = []
 
-	funcname = func['funcname']
-
-	# This provides the description in the header of the file.
-	maindescription = 'Calculate the %s of values in an array.' % funcname
+# This provides the description in the header of the file.
+maindescription = 'Calculate the %s of values in an array.' % funcname
 
 
-	# Output the generated code.
-	for arraycode in SIMD_armv8_support:
+# Output the generated code.
+for arraycode in SIMD_armv8_support:
 
-		arraytype = codegen_common.arraytypes[arraycode]
+	arraytype = codegen_common.arraytypes[arraycode]
 
-		# The compare_ops symbols is the same for integer and floating point.
-		datavals = {'funclabel' : funcname,
-					'arraytype' : arraytype, 
-					'funcmodifier' : arraytype.replace(' ', '_'),
-					'simdplatform' : SIMD_platform_ARM64v8,
-					'simdwidth' : simdwidth[arraycode],
-					'simdattr' : simdattr_armv8[arraycode],
-					'vldinstr' : vldinstr_armv8[arraycode],
-					'vstinstr' : vstinstr_armv8[arraycode],
-					'vopinstr' : vopinstr_armv8[arraycode],
-					}
+	# The compare_ops symbols is the same for integer and floating point.
+	datavals = {'funclabel' : funcname,
+				'arraytype' : arraytype, 
+				'funcmodifier' : arraytype.replace(' ', '_'),
+				'simdplatform' : SIMD_platform_ARM64v8,
+				'simdwidth' : simdwidth[arraycode],
+				'simdattr' : simdattr_armv8[arraycode],
+				'vldinstr' : vldinstr_armv8[arraycode],
+				'vstinstr' : vstinstr_armv8[arraycode],
+				'vopinstr' : vopinstr_armv8[arraycode],
+				}
 
 
-		# Start of function definition.
-		outputlist.append(ops_simdsupport_arm % datavals)
+	# Start of function definition.
+	outputlist.append(ops_simdsupport_arm % datavals)
 
 
 
-	# This outputs the SIMD version.
-	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate,
-		'', ['simddefs', 'simdmacromsg_armv8'])
+# This outputs the SIMD version.
+codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', ['simddefs', 'simdmacromsg_armv8'])
 
 
-	# Output the .h header file.
-	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+# Output the .h header file.
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
 
-	# Write out the file.
-	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate)
+# Write out the file.
+codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
 
 # ==============================================================================
 

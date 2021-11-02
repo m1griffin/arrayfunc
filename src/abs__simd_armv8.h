@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     25-Mar-2020
-// Ver:      06-Sep-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -38,5 +38,9 @@ void abs__signed_int_1_simd(Py_ssize_t arraylen, signed int *data);
 void abs__signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *dataout);
 char abs__signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data);
 char abs__signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed int *dataout);
+void abs__float_1_simd(Py_ssize_t arraylen, float *data);
+void abs__float_2_simd(Py_ssize_t arraylen, float *data, float *dataout);
+char abs__float_1_simd_ovfl(Py_ssize_t arraylen, float *data);
+char abs__float_2_simd_ovfl(Py_ssize_t arraylen, float *data, float *dataout);
 
 

@@ -1634,20 +1634,16 @@ def findsimdplatform(arraycode):
 
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
-
+opdata = codegen_common.ReadINI('affuncdata.ini')
 
 # Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['c_code_template'] in ['template_comp']]
-
+funclist = [(x,dict(y)) for x,y in opdata.items() if y.get('c_code_template') == 'template_comp']
 
 # ==============================================================================
 
 # Output the main code body.
-for func in funclist:
+for funcname, func in funclist:
 
-	funcname = func['funcname']
 
 	# Create the source code based on templates.
 	filename = funcname + '.c'
@@ -1702,7 +1698,7 @@ for func in funclist:
 
 		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-		f.write(comp_params % {'funclabel' : func['funcname'], 
+		f.write(comp_params % {'funclabel' : funcname, 
 				'opcodedocs' : func['opcodedocs'], 
 				'compare_ops' : compare_ops[funcname], 
 				'supportedarrays' : supportedarrays,
@@ -1724,11 +1720,10 @@ simdfilename = '_simd_x86'
 
 # This outputs the SIMD version for x86-64.
 
-for func in funclist:
+for funcname, func in funclist:
 
 	outputlist = []
 
-	funcname = func['funcname']
 
 	# This provides the description in the header of the file.
 	maindescription = 'Calculate the %s of values in an array.' % funcname
@@ -1829,11 +1824,10 @@ simdfilename = '_simd_armv7'
 
 # This outputs the SIMD version for ARM NEON ARMv7 32 bit.
 
-for func in funclist:
+for funcname, func in funclist:
 
 	outputlist = []
 
-	funcname = func['funcname']
 
 	# This provides the description in the header of the file.
 	maindescription = 'Calculate the %s of values in an array.' % funcname
@@ -1892,11 +1886,10 @@ simdfilename = '_simd_armv8'
 
 # This outputs the SIMD version for ARM NEON ARMv8 64 bit.
 
-for func in funclist:
+for funcname, func in funclist:
 
 	outputlist = []
 
-	funcname = func['funcname']
 
 	# This provides the description in the header of the file.
 	maindescription = 'Calculate the %s of values in an array.' % funcname

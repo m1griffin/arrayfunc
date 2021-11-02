@@ -73,6 +73,7 @@
 /*--------------------------------------------------------------------------- */
 
 
+
 /*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data arrays.
    data = The input data array.
@@ -86,48 +87,68 @@ signed int radians_float(Py_ssize_t arraylen, int nosimd, float *data, float *da
 	Py_ssize_t x;
 
 
-
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
-		if (hasoutputarray) {
-			radians_float_2_simd(arraylen, data, dataout);
+	signed int errorstate;
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {		
+				radians_float_2_simd(arraylen, data, dataout);
+			} else {
+				radians_float_1_simd(arraylen, data);
+			}
 		} else {
-			radians_float_1_simd(arraylen, data);
+		// Math error checking enabled.
+			if (hasoutputarray) {		
+				errorstate = radians_float_2_simd_ovfl(arraylen, data, dataout);
+				if (errorstate) {return ARR_ERR_ARITHMETIC;}
+			} else {
+				errorstate = radians_float_1_simd_ovfl(arraylen, data);
+				if (errorstate) {return ARR_ERR_ARITHMETIC;}
+			}
 		}
-		return ARR_NO_ERR;
-	}
+
+	} else {
 #endif
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		if (hasoutputarray) {		
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = DEGTORAD_F * data[x];
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {		
+				for (x = 0; x < arraylen; x++) {
+					dataout[x] = DEGTORAD_F * data[x];
+				}
+			} else {
+				for (x = 0; x < arraylen; x++) {
+					data[x] = DEGTORAD_F * data[x];
+				}
 			}
 		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = DEGTORAD_F * data[x];
+		// Math error checking enabled.
+			if (hasoutputarray) {		
+				for (x = 0; x < arraylen; x++) {
+					dataout[x] = DEGTORAD_F * data[x];
+					if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
+				}
+			} else {
+				for (x = 0; x < arraylen; x++) {
+					data[x] = DEGTORAD_F * data[x];
+					if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
+				}
 			}
 		}
-	} else {
-	// Math error checking enabled.
-		if (hasoutputarray) {		
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = DEGTORAD_F * data[x];
-				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
-			}
-		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = DEGTORAD_F * data[x];
-				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
-			}
-		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
 
 	return ARR_NO_ERR;
 
 }
+
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data arrays.
@@ -142,47 +163,68 @@ signed int radians_double(Py_ssize_t arraylen, int nosimd, double *data, double 
 	Py_ssize_t x;
 
 
+#if defined(AF_HASSIMD_X86)
+	signed int errorstate;
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {		
+				radians_double_2_simd(arraylen, data, dataout);
+			} else {
+				radians_double_1_simd(arraylen, data);
+			}
+		} else {
+		// Math error checking enabled.
+			if (hasoutputarray) {		
+				errorstate = radians_double_2_simd_ovfl(arraylen, data, dataout);
+				if (errorstate) {return ARR_ERR_ARITHMETIC;}
+			} else {
+				errorstate = radians_double_1_simd_ovfl(arraylen, data);
+				if (errorstate) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+
+	} else {
+#endif
+
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {		
+				for (x = 0; x < arraylen; x++) {
+					dataout[x] = DEGTORAD_D * data[x];
+				}
+			} else {
+				for (x = 0; x < arraylen; x++) {
+					data[x] = DEGTORAD_D * data[x];
+				}
+			}
+		} else {
+		// Math error checking enabled.
+			if (hasoutputarray) {		
+				for (x = 0; x < arraylen; x++) {
+					dataout[x] = DEGTORAD_D * data[x];
+					if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
+				}
+			} else {
+				for (x = 0; x < arraylen; x++) {
+					data[x] = DEGTORAD_D * data[x];
+					if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
+				}
+			}
+		}
 
 #if defined(AF_HASSIMD_X86)
-	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
-		if (hasoutputarray) {
-			radians_double_2_simd(arraylen, data, dataout);
-		} else {
-			radians_double_1_simd(arraylen, data);
-		}
-		return ARR_NO_ERR;
 	}
 #endif
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		if (hasoutputarray) {
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = DEGTORAD_D * data[x];
-			}
-		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = DEGTORAD_D * data[x];
-			}
-		}
-	} else {
-	// Math error checking enabled.
-		if (hasoutputarray) {
-			for (x = 0; x < arraylen; x++) {
-				dataout[x] = DEGTORAD_D * data[x];
-				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
-			}
-		} else {
-			for (x = 0; x < arraylen; x++) {
-				data[x] = DEGTORAD_D * data[x];
-				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
-			}
-		}
-	}
 	return ARR_NO_ERR;
 
 }
+
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 
@@ -268,7 +310,7 @@ Call formats: \n\
     radians(array1, outparray) \n\
     radians(array1, maxlen=y) \n\
     radians(array1, matherrors=False)) \n\
-    radians(array, nosimd=False) \n\\n\
+    radians(array, nosimd=False) \n\
 \n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
@@ -281,6 +323,7 @@ Call formats: \n\
   default is false. \n\
 * nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
   optional. The default is FALSE.  \n\
+\
 ");
 
 

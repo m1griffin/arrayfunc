@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      06-Mar-2020.
+# Ver:      31-Oct-2021.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -6886,7 +6886,7 @@ class overflow_signed_ovflmin_q(unittest.TestCase):
 
 
 ##############################################################################
-class neg_nandata_exceptions_nan_f(unittest.TestCase):
+class neg_nandata_exceptions_nan_even_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -6912,11 +6912,30 @@ class neg_nandata_exceptions_nan_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('f', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'even' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('f', [math.inf] * 10)
-		self.datanan = array.array('f', [math.nan] * 10)
-		self.dataninf = array.array('f', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('f', outdata)
+
+		self.datainf = array.array('f', infdata)
+		self.datanan = array.array('f', nandata)
+		self.dataninf = array.array('f', ninfdata)
 
 
 	########################################################
@@ -6969,7 +6988,7 @@ class neg_nandata_exceptions_nan_f(unittest.TestCase):
 
 
 ##############################################################################
-class neg_nandata_exceptions_nan_d(unittest.TestCase):
+class neg_nandata_exceptions_nan_odd_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -6995,11 +7014,132 @@ class neg_nandata_exceptions_nan_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('d', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'odd' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('d', [math.inf] * 10)
-		self.datanan = array.array('d', [math.nan] * 10)
-		self.dataninf = array.array('d', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('f', outdata)
+
+		self.datainf = array.array('f', infdata)
+		self.datanan = array.array('f', nandata)
+		self.dataninf = array.array('f', ninfdata)
+
+
+	########################################################
+	def test_neg_outputarray_a1(self):
+		"""Test neg for data of nan with matherrors checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datanan, self.dataout)
+
+
+	########################################################
+	def test_neg_inplace_a2(self):
+		"""Test neg in place for data of nan with matherrors checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datanan)
+
+
+	########################################################
+	def test_neg_ov_outputarray_a3(self):
+		"""Test neg for data of nan with matherrors=True and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datanan, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_ov_inplace_a4(self):
+		"""Test neg in place for data of nan with matherrors=True and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datanan, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datanan), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class neg_nandata_exceptions_nan_even_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation.
+	nan_data_errorchecked_noparam_template
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'even' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
+
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('d', outdata)
+
+		self.datainf = array.array('d', infdata)
+		self.datanan = array.array('d', nandata)
+		self.dataninf = array.array('d', ninfdata)
 
 
 	########################################################
@@ -7052,7 +7192,7 @@ class neg_nandata_exceptions_nan_d(unittest.TestCase):
 
 
 ##############################################################################
-class neg_nandata_exceptions_inf_f(unittest.TestCase):
+class neg_nandata_exceptions_nan_odd_arraysize_d(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -7078,11 +7218,132 @@ class neg_nandata_exceptions_inf_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('f', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'odd' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('f', [math.inf] * 10)
-		self.datanan = array.array('f', [math.nan] * 10)
-		self.dataninf = array.array('f', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('d', outdata)
+
+		self.datainf = array.array('d', infdata)
+		self.datanan = array.array('d', nandata)
+		self.dataninf = array.array('d', ninfdata)
+
+
+	########################################################
+	def test_neg_outputarray_a1(self):
+		"""Test neg for data of nan with matherrors checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datanan, self.dataout)
+
+
+	########################################################
+	def test_neg_inplace_a2(self):
+		"""Test neg in place for data of nan with matherrors checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datanan)
+
+
+	########################################################
+	def test_neg_ov_outputarray_a3(self):
+		"""Test neg for data of nan with matherrors=True and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datanan, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_ov_inplace_a4(self):
+		"""Test neg in place for data of nan with matherrors=True and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datanan, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datanan), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class neg_nandata_exceptions_inf_even_arraysize_f(unittest.TestCase):
+	"""Test for basic general function operation.
+	nan_data_errorchecked_noparam_template
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'even' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
+
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('f', outdata)
+
+		self.datainf = array.array('f', infdata)
+		self.datanan = array.array('f', nandata)
+		self.dataninf = array.array('f', ninfdata)
 
 
 	########################################################
@@ -7135,7 +7396,7 @@ class neg_nandata_exceptions_inf_f(unittest.TestCase):
 
 
 ##############################################################################
-class neg_nandata_exceptions_inf_d(unittest.TestCase):
+class neg_nandata_exceptions_inf_odd_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -7161,11 +7422,132 @@ class neg_nandata_exceptions_inf_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('d', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'odd' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('d', [math.inf] * 10)
-		self.datanan = array.array('d', [math.nan] * 10)
-		self.dataninf = array.array('d', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('f', outdata)
+
+		self.datainf = array.array('f', infdata)
+		self.datanan = array.array('f', nandata)
+		self.dataninf = array.array('f', ninfdata)
+
+
+	########################################################
+	def test_neg_outputarray_a1(self):
+		"""Test neg for data of inf with matherrors checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datainf, self.dataout)
+
+
+	########################################################
+	def test_neg_inplace_a2(self):
+		"""Test neg in place for data of inf with matherrors checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datainf)
+
+
+	########################################################
+	def test_neg_ov_outputarray_a3(self):
+		"""Test neg for data of inf with matherrors=True and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datainf, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_ov_inplace_a4(self):
+		"""Test neg in place for data of inf with matherrors=True and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datainf, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datainf), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class neg_nandata_exceptions_inf_even_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation.
+	nan_data_errorchecked_noparam_template
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'even' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
+
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('d', outdata)
+
+		self.datainf = array.array('d', infdata)
+		self.datanan = array.array('d', nandata)
+		self.dataninf = array.array('d', ninfdata)
 
 
 	########################################################
@@ -7218,7 +7600,7 @@ class neg_nandata_exceptions_inf_d(unittest.TestCase):
 
 
 ##############################################################################
-class neg_nandata_exceptions_ninf_f(unittest.TestCase):
+class neg_nandata_exceptions_inf_odd_arraysize_d(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -7244,11 +7626,132 @@ class neg_nandata_exceptions_ninf_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('f', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'odd' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('f', [math.inf] * 10)
-		self.datanan = array.array('f', [math.nan] * 10)
-		self.dataninf = array.array('f', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('d', outdata)
+
+		self.datainf = array.array('d', infdata)
+		self.datanan = array.array('d', nandata)
+		self.dataninf = array.array('d', ninfdata)
+
+
+	########################################################
+	def test_neg_outputarray_a1(self):
+		"""Test neg for data of inf with matherrors checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datainf, self.dataout)
+
+
+	########################################################
+	def test_neg_inplace_a2(self):
+		"""Test neg in place for data of inf with matherrors checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.datainf)
+
+
+	########################################################
+	def test_neg_ov_outputarray_a3(self):
+		"""Test neg for data of inf with matherrors=True and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datainf, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_ov_inplace_a4(self):
+		"""Test neg in place for data of inf with matherrors=True and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.datainf, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datainf), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class neg_nandata_exceptions_ninf_even_arraysize_f(unittest.TestCase):
+	"""Test for basic general function operation.
+	nan_data_errorchecked_noparam_template
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'even' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
+
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('f', outdata)
+
+		self.datainf = array.array('f', infdata)
+		self.datanan = array.array('f', nandata)
+		self.dataninf = array.array('f', ninfdata)
 
 
 	########################################################
@@ -7301,7 +7804,7 @@ class neg_nandata_exceptions_ninf_f(unittest.TestCase):
 
 
 ##############################################################################
-class neg_nandata_exceptions_ninf_d(unittest.TestCase):
+class neg_nandata_exceptions_ninf_odd_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -7327,11 +7830,234 @@ class neg_nandata_exceptions_ninf_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.dataout = array.array('d', itertools.repeat(0.0, 10))
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'odd' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
 
-		self.datainf = array.array('d', [math.inf] * 10)
-		self.datanan = array.array('d', [math.nan] * 10)
-		self.dataninf = array.array('d', [-math.inf] * 10)
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('f', outdata)
+
+		self.datainf = array.array('f', infdata)
+		self.datanan = array.array('f', nandata)
+		self.dataninf = array.array('f', ninfdata)
+
+
+	########################################################
+	def test_neg_outputarray_a1(self):
+		"""Test neg for data of -inf with matherrors checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.dataninf, self.dataout)
+
+
+	########################################################
+	def test_neg_inplace_a2(self):
+		"""Test neg in place for data of -inf with matherrors checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.dataninf)
+
+
+	########################################################
+	def test_neg_ov_outputarray_a3(self):
+		"""Test neg for data of -inf with matherrors=True and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.dataninf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.dataninf, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_ov_inplace_a4(self):
+		"""Test neg in place for data of -inf with matherrors=True and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.dataninf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.dataninf, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataninf), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class neg_nandata_exceptions_ninf_even_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation.
+	nan_data_errorchecked_noparam_template
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'even' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
+
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('d', outdata)
+
+		self.datainf = array.array('d', infdata)
+		self.datanan = array.array('d', nandata)
+		self.dataninf = array.array('d', ninfdata)
+
+
+	########################################################
+	def test_neg_outputarray_a1(self):
+		"""Test neg for data of -inf with matherrors checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.dataninf, self.dataout)
+
+
+	########################################################
+	def test_neg_inplace_a2(self):
+		"""Test neg in place for data of -inf with matherrors checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.neg(self.dataninf)
+
+
+	########################################################
+	def test_neg_ov_outputarray_a3(self):
+		"""Test neg for data of -inf with matherrors=True and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.dataninf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.dataninf, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_ov_inplace_a4(self):
+		"""Test neg in place for data of -inf with matherrors=True and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [-(x) for x in self.dataninf]
+
+		# This is the actual test.
+		arrayfunc.neg(self.dataninf, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataninf), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class neg_nandata_exceptions_ninf_odd_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation.
+	nan_data_errorchecked_noparam_template
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# This allows the template to select a number which fits evenly into 
+		# SIMD register sizes or for which processing overflows into the 
+		# non-SIMD cleanup code at the end.
+		arraylength = 64
+		if 'odd' == 'even':
+			outdata = list(itertools.repeat(0.0, arraylength))
+
+			infdata = [math.inf] * arraylength
+			nandata = [math.nan] * arraylength
+			ninfdata = [-math.inf] * arraylength
+
+		else:
+			outdata = list(itertools.repeat(0.0, arraylength + 1))
+
+			infdata = ([1.0] * arraylength) + [math.inf]
+			nandata = ([1.0] * arraylength) + [math.nan]
+			ninfdata = ([1.0] * arraylength) + [-math.inf]
+
+
+		self.dataout = array.array('d', outdata)
+
+		self.datainf = array.array('d', infdata)
+		self.datanan = array.array('d', nandata)
+		self.dataninf = array.array('d', ninfdata)
 
 
 	########################################################

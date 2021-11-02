@@ -409,6 +409,37 @@ signed int abs__float(Py_ssize_t arraylen, int nosimd, float *data, float *datao
 	Py_ssize_t x;
 
 
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE) ) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {
+				abs__float_2_simd(arraylen, data, dataout);
+			} else {
+				abs__float_1_simd(arraylen, data);
+			}
+			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			if (hasoutputarray) {
+				ovflresult = abs__float_2_simd_ovfl(arraylen, data, dataout);
+			} else {
+				ovflresult = abs__float_1_simd_ovfl(arraylen, data);
+			}
+
+			if (ovflresult) { 
+				return ARR_ERR_OVFL; 
+			} else {
+				return ARR_NO_ERR;
+			}
+		}
+
+	} else {
+#endif
+
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
@@ -434,6 +465,12 @@ signed int abs__float(Py_ssize_t arraylen, int nosimd, float *data, float *datao
 			}
 		}
 	}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
+#endif
+
 
 	return ARR_NO_ERR;
 
@@ -478,6 +515,8 @@ signed int abs__double(Py_ssize_t arraylen, int nosimd, double *data, double *da
 			}
 		}
 	}
+
+
 
 	return ARR_NO_ERR;
 

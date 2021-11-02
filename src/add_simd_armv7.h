@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     8-Oct-2019
-// Ver:      06-Sep-2021.
+// Ver:      31-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -70,5 +70,17 @@ char add_unsigned_short_3_simd_ovfl(Py_ssize_t arraylen, unsigned short param, u
 char add_unsigned_short_4_simd_ovfl(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned short *data3);
 char add_unsigned_short_5_simd_ovfl(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2);
 char add_unsigned_short_6_simd_ovfl(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2, unsigned short *data3);
+void add_float_1_simd(Py_ssize_t arraylen, float *data1, float param);
+void add_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *data3);
+void add_float_3_simd(Py_ssize_t arraylen, float param, float *data2);
+void add_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *data3);
+void add_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2);
+void add_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
+char add_float_1_simd_ovfl(Py_ssize_t arraylen, float *data1, float param);
+char add_float_2_simd_ovfl(Py_ssize_t arraylen, float *data1, float param, float *data3);
+char add_float_3_simd_ovfl(Py_ssize_t arraylen, float param, float *data2);
+char add_float_4_simd_ovfl(Py_ssize_t arraylen, float param, float *data2, float *data3);
+char add_float_5_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2);
+char add_float_6_simd_ovfl(Py_ssize_t arraylen, float *data1, float *data2, float *data3);
 
 

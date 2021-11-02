@@ -5,7 +5,7 @@
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
-# Ver:      14-Oct-2021.
+# Ver:      18-Oct-2021.
 #
 ###############################################################################
 #
@@ -65,7 +65,7 @@ def InitOptionData(arraycode, arraysize, funcname):
 
 	# Function ldexp needs a specific array type as the second parameter.
 	if funcname == 'ldexp':
-		ydata = [0]
+		ydata = []
 		optiondata.ldexp_y = int(ydata[-1])
 	else:
 		optiondata.ldexp_y = None
@@ -127,9 +127,9 @@ def InitDataArrays(arraycode, arraysize):
 
 	# Ensure the data is in the right format for the array type.
 	if arraycode in ('f', 'd'):
-		xdata = [float(x) for x in [2]]
+		xdata = [float(x) for x in [0,1,2,3,4,5]]
 	else:
-		xdata = [int(x) for x in [2]]
+		xdata = [int(x) for x in [0,1,2,3,4,5]]
 
 	arraydata.datax = array.array(arraycode, (x for x,y in zip(itertools.cycle(xdata), itertools.repeat(0, arraysize))))
 	assert len(arraydata.datax) == arraysize, 'datax is not expected length %d' % len(arraydata.datax)
@@ -137,7 +137,7 @@ def InitDataArrays(arraycode, arraysize):
 	arraydata.arraylength = len(arraydata.datax)
 
 	# Y data.
-	ydata = [0]
+	ydata = []
 	if len(ydata) > 0:
 		yvalue = abs(ydata[-1])
 		if arraycode in ('f', 'd'):
@@ -148,7 +148,7 @@ def InitDataArrays(arraycode, arraysize):
 		arraydata.yvalue = None
 
 	# Z data.
-	zdata = [0]
+	zdata = []
 	if len(zdata) > 0:
 		zvalue = abs(zdata[-1])
 		if arraycode in ('f', 'd'):
@@ -247,13 +247,13 @@ def BenchmarkPython(pyitercounts, arraycode, arraysize, arraydata, optiondata):
 	# Time for python.
 	starttime = time.perf_counter()
 
-	if False:
+	if True:
 		for x in range(pyitercounts):
 			for i in range(arraylength):
-				result = [pow(x, 3) for x in datax]
+				dataout[i] = datax[i] ** 3
 	else:
 		for x in range(pyitercounts):
-			result = [pow(x, 3) for x in datax]
+			dataout[i] = datax[i] ** 3
 
 	endtime = time.perf_counter()
 
