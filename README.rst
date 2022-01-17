@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 8.0.0 for 2021-10-31
-:Copyright: 2014 - 2021
+:Version: 8.1.0 for 2022-10-17
+:Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
 
@@ -303,7 +303,7 @@ Ubuntu 21.10           64 bit    GCC               3.9
 Debian 11              32 bit    GCC               3.9
 Debian 11              64 bit    GCC               3.9
 OpenSuse 15.3          64 bit    GCC               3.6
-Centos 8.4             64 bit    GCC               3.6
+Alma 8.5               64 bit    GCC               3.6
 FreeBSD 13             64 bit    LLVM              3.8
 OpenBSD 7.0            64 bit    LLVM              3.8
 MS Windows 10          64 bit    MS VS C 2015      3.10
@@ -353,6 +353,9 @@ setup.py directly is no longer done.
 
 Release History
 ===============
+* 8.1.0 - Update to testing and support. Centos has been replaced by 
+          AlmaLinux due to Red Hat ending long term support for Centos.
+          No actual code changes.
 * 8.0.1 - Technical bump to version number to include update information.
 * 8.0.0 - Performance improvements in add, sub, mul, neg, abs, ceil, floor, 
           trunc, sqrt, degrees, radians. Asum will now use error checking 
