@@ -2245,7 +2245,7 @@ endobj
 endobj
 376 0 obj
 <<
-/Author (Michael Griffin) /CreationDate (D:20211101200534+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20211101200534+00'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (Michael Griffin) /CreationDate (D:20220407185925+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20220407185925+00'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (ArrayFunc) /Trapped /False
 >>
 endobj
@@ -3087,7 +3087,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (8.0.0 for 2021-10-31) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (8.1.1 for 2022-03-31) Tj T* ET
 Q
 Q
 q
@@ -3108,7 +3108,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (2014 - 2021) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (2014 - 2022) Tj T* ET
 Q
 Q
 q
@@ -42859,136 +42859,198 @@ endstream
 endobj
 596 0 obj
 <<
-/Length 7132
+/Length 8824
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
-1 0 0 1 62.69291 549.0236 cm
+1 0 0 1 62.69291 531.0236 cm
 1 1 1 rg
+n 0 234 469.8898 -18 re f*
+.878431 .878431 .878431 rg
 n 0 216 469.8898 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 198 469.8898 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 180 469.8898 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 162 469.8898 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 144 469.8898 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 126 469.8898 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 108 469.8898 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 90 469.8898 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 72 469.8898 -18 re f*
-.878431 .878431 .878431 rg
-n 0 54 469.8898 -18 re f*
 1 1 1 rg
-n 0 36 469.8898 -18 re f*
+n 0 54 469.8898 -18 re f*
 .878431 .878431 .878431 rg
+n 0 36 469.8898 -18 re f*
+1 1 1 rg
 n 0 18 469.8898 -18 re f*
 .960784 .960784 .862745 rg
-n 0 216 469.8898 -18 re f*
+n 0 234 469.8898 -18 re f*
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
+1 0 0 1 6 219 cm
+q
+.960784 .960784 .862745 rg
+n 0 0 142.3924 12 re f*
+Q
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 63.97118 0 Td (OS) Tj T* -63.97118 0 Td ET
+Q
+Q
+q
+1 0 0 1 160.3924 219 cm
+q
+.960784 .960784 .862745 rg
+n 0 0 55.12711 12 re f*
+Q
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 5.893555 0 Td (Hardware) Tj T* -5.893555 0 Td ET
+Q
+Q
+q
+1 0 0 1 227.5195 219 cm
+q
+.960784 .960784 .862745 rg
+n 0 0 28.27627 12 re f*
+Q
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 5.803133 0 Td (Bits) Tj T* -5.803133 0 Td ET
+Q
+Q
+q
+1 0 0 1 267.7957 219 cm
+q
+.960784 .960784 .862745 rg
+n 0 0 88.69066 12 re f*
+Q
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 24.34533 0 Td (Compiler) Tj T* -24.34533 0 Td ET
+Q
+Q
+q
+1 0 0 1 368.4864 219 cm
+q
+.960784 .960784 .862745 rg
+n 0 0 95.40337 12 re f*
+Q
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 13.79669 0 Td (Python Version) Tj T* -13.79669 0 Td ET
+Q
+Q
+0 0 0 rg
+q
 1 0 0 1 6 201 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 131.0099 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 58.27996 0 Td (OS) Tj T* -58.27996 0 Td ET
-Q
-Q
-q
-1 0 0 1 149.0099 201 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 42.47997 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 12.90499 0 Td (Bits) Tj T* -12.90499 0 Td ET
-Q
-Q
-q
-1 0 0 1 203.4899 201 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 90.14995 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 25.07497 0 Td (Compiler) Tj T* -25.07497 0 Td ET
-Q
-Q
-q
-1 0 0 1 305.6398 201 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 158.2499 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 28.54496 0 Td (Python Version Tested) Tj T* -28.54496 0 Td ET
-Q
-Q
-0 0 0 rg
-q
-1 0 0 1 6 183 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 20.04 LTS) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 183 cm
+1 0 0 1 160.3924 201 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 183 cm
+1 0 0 1 227.5195 201 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 201 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 183 cm
+1 0 0 1 368.4864 201 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.8) Tj T* ET
 Q
 Q
 q
-1 0 0 1 6 165 cm
+1 0 0 1 6 183 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 21.10) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 165 cm
+1 0 0 1 160.3924 183 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 165 cm
+1 0 0 1 227.5195 183 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 183 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 165 cm
+1 0 0 1 368.4864 183 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.9) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 11) Tj T* ET
+Q
+Q
+q
+1 0 0 1 160.3924 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (i686) Tj T* ET
+Q
+Q
+q
+1 0 0 1 227.5195 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
+Q
+Q
+q
+1 0 0 1 368.4864 165 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.9) Tj T* ET
@@ -43002,21 +43064,28 @@ BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 11) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 147 cm
+1 0 0 1 160.3924 147 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 147 cm
+1 0 0 1 227.5195 147 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 147 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 147 cm
+1 0 0 1 368.4864 147 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.9) Tj T* ET
@@ -43026,53 +43095,67 @@ q
 1 0 0 1 6 129 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 11) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (OpenSuse 15.3) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 129 cm
+1 0 0 1 160.3924 129 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 129 cm
+1 0 0 1 227.5195 129 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 129 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 129 cm
+1 0 0 1 368.4864 129 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.9) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.6) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 111 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (OpenSuse 15.3) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Alma 8.5) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 111 cm
+1 0 0 1 160.3924 111 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 111 cm
+1 0 0 1 227.5195 111 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 111 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 111 cm
+1 0 0 1 368.4864 111 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.6) Tj T* ET
@@ -43082,53 +43165,67 @@ q
 1 0 0 1 6 93 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Centos 8.4) Tj T* ET
-Q
-Q
-q
-1 0 0 1 149.0099 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
-Q
-Q
-q
-1 0 0 1 203.4899 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 305.6398 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.6) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 75 cm
-q
-0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (FreeBSD 13) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 75 cm
+1 0 0 1 160.3924 93 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 75 cm
+1 0 0 1 227.5195 93 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 93 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LLVM) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 75 cm
+1 0 0 1 368.4864 93 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.8) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 75 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (OpenBSD 7.0) Tj T* ET
+Q
+Q
+q
+1 0 0 1 160.3924 75 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 227.5195 75 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 75 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LLVM) Tj T* ET
+Q
+Q
+q
+1 0 0 1 368.4864 75 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.8) Tj T* ET
@@ -43138,53 +43235,67 @@ q
 1 0 0 1 6 57 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (OpenBSD 7.0) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS Windows 10) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 57 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
-Q
-Q
-q
-1 0 0 1 203.4899 57 cm
+1 0 0 1 160.3924 57 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LLVM) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 57 cm
+1 0 0 1 227.5195 57 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.8) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS VS C v.1929) Tj T* ET
+Q
+Q
+q
+1 0 0 1 368.4864 57 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.10) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 39 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS Windows 10) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS Windows 11) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 39 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
-Q
-Q
-q
-1 0 0 1 203.4899 39 cm
+1 0 0 1 160.3924 39 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS VS C 2015) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 39 cm
+1 0 0 1 227.5195 39 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 39 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS VS C v.1929) Tj T* ET
+Q
+Q
+q
+1 0 0 1 368.4864 39 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.10) Tj T* ET
@@ -43194,53 +43305,67 @@ q
 1 0 0 1 6 21 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Raspbian \(RPi 3\)) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Raspberry Pi 2022-04-04) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 21 cm
+1 0 0 1 160.3924 21 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (RPi 3) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 21 cm
+1 0 0 1 227.5195 21 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 21 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 21 cm
+1 0 0 1 368.4864 21 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.7) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.9) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 20.04 \(RPi 4\)) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 20.04) Tj T* ET
 Q
 Q
 q
-1 0 0 1 149.0099 3 cm
+1 0 0 1 160.3924 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64 bit) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (RPi 4) Tj T* ET
 Q
 Q
 q
-1 0 0 1 203.4899 3 cm
+1 0 0 1 227.5195 3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 267.7957 3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 305.6398 3 cm
+1 0 0 1 368.4864 3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.8) Tj T* ET
@@ -43251,6 +43376,7 @@ q
 1 j
 0 0 0 RG
 .25 w
+n 0 216 m 469.8898 216 l S
 n 0 198 m 469.8898 198 l S
 n 0 180 m 469.8898 180 l S
 n 0 162 m 469.8898 162 l S
@@ -43262,44 +43388,21 @@ n 0 72 m 469.8898 72 l S
 n 0 54 m 469.8898 54 l S
 n 0 36 m 469.8898 36 l S
 n 0 18 m 469.8898 18 l S
-n 143.0099 0 m 143.0099 216 l S
-n 197.4899 0 m 197.4899 216 l S
-n 299.6398 0 m 299.6398 216 l S
-n 0 216 m 469.8898 216 l S
+n 154.3924 0 m 154.3924 234 l S
+n 221.5195 0 m 221.5195 234 l S
+n 261.7957 0 m 261.7957 234 l S
+n 362.4864 0 m 362.4864 234 l S
+n 0 234 m 469.8898 234 l S
 n 0 0 m 469.8898 0 l S
-n 0 0 m 0 216 l S
-n 469.8898 0 m 469.8898 216 l S
+n 0 0 m 0 234 l S
+n 469.8898 0 m 469.8898 234 l S
 Q
-Q
-q
-1 0 0 1 62.69291 549.0236 cm
-Q
-q
-1 0 0 1 62.69291 543.0236 cm
-Q
-q
-1 0 0 1 62.69291 543.0236 cm
 Q
 q
 1 0 0 1 62.69291 531.0236 cm
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
-Q
 Q
 q
-1 0 0 1 23 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Raspbian \(RPi 3\) tests were conducted on a Raspberry Pi 3 ARM CPU running in 32 bit mode.) Tj T* ET
-Q
-Q
-q
-Q
+1 0 0 1 62.69291 525.0236 cm
 Q
 q
 1 0 0 1 62.69291 525.0236 cm
@@ -43319,7 +43422,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in 64 bit mode.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running in 32 bit mode.) Tj T* ET
 Q
 Q
 q
@@ -43343,6 +43446,30 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in 64 bit mode.) Tj T* ET
+Q
+Q
+q
+Q
+Q
+q
+1 0 0 1 62.69291 489.0236 cm
+Q
+q
+1 0 0 1 62.69291 477.0236 cm
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (All others were conducted using VMs running on x86 hardware.) Tj T* ET
 Q
 Q
@@ -43350,7 +43477,7 @@ q
 Q
 Q
 q
-1 0 0 1 62.69291 495.0236 cm
+1 0 0 1 62.69291 477.0236 cm
 Q
  
 endstream
@@ -44312,63 +44439,16 @@ xref
 0000694558 00000 n 
 0000703143 00000 n 
 0000728197 00000 n 
-0000735382 00000 n 
-0000736192 00000 n 
-0000736227 00000 n 
-0000736262 00000 n 
-0000736297 00000 n 
-0000736332 00000 n 
-0000736367 00000 n 
-0000736402 00000 n 
-0000736437 00000 n 
-0000736472 00000 n 
-0000736507 00000 n 
-0000736543 00000 n 
-0000736579 00000 n 
-0000736615 00000 n 
-0000736651 00000 n 
-0000736687 00000 n 
-0000736723 00000 n 
-0000736759 00000 n 
-0000736795 00000 n 
-0000736831 00000 n 
-0000736867 00000 n 
-0000736903 00000 n 
-0000736939 00000 n 
-0000736975 00000 n 
-0000737011 00000 n 
-0000737047 00000 n 
-0000737083 00000 n 
-0000737119 00000 n 
-0000737155 00000 n 
-0000737191 00000 n 
-0000737227 00000 n 
-0000737263 00000 n 
-0000737299 00000 n 
-0000737335 00000 n 
-0000737371 00000 n 
-0000737407 00000 n 
-0000737443 00000 n 
-0000737479 00000 n 
-0000737515 00000 n 
-0000737551 00000 n 
-0000737587 00000 n 
-0000737623 00000 n 
-0000737659 00000 n 
-0000737695 00000 n 
-0000737731 00000 n 
-0000737767 00000 n 
-0000737803 00000 n 
-0000737839 00000 n 
-0000737875 00000 n 
-0000737911 00000 n 
-0000737947 00000 n 
-0000737983 00000 n 
-0000738019 00000 n 
-0000738055 00000 n 
-0000738091 00000 n 
-0000738127 00000 n 
-0000738163 00000 n 
+0000737074 00000 n 
+0000737884 00000 n 
+0000737919 00000 n 
+0000737954 00000 n 
+0000737989 00000 n 
+0000738024 00000 n 
+0000738059 00000 n 
+0000738094 00000 n 
+0000738129 00000 n 
+0000738164 00000 n 
 0000738199 00000 n 
 0000738235 00000 n 
 0000738271 00000 n 
@@ -44381,10 +44461,57 @@ xref
 0000738523 00000 n 
 0000738559 00000 n 
 0000738595 00000 n 
+0000738631 00000 n 
+0000738667 00000 n 
+0000738703 00000 n 
+0000738739 00000 n 
+0000738775 00000 n 
+0000738811 00000 n 
+0000738847 00000 n 
+0000738883 00000 n 
+0000738919 00000 n 
+0000738955 00000 n 
+0000738991 00000 n 
+0000739027 00000 n 
+0000739063 00000 n 
+0000739099 00000 n 
+0000739135 00000 n 
+0000739171 00000 n 
+0000739207 00000 n 
+0000739243 00000 n 
+0000739279 00000 n 
+0000739315 00000 n 
+0000739351 00000 n 
+0000739387 00000 n 
+0000739423 00000 n 
+0000739459 00000 n 
+0000739495 00000 n 
+0000739531 00000 n 
+0000739567 00000 n 
+0000739603 00000 n 
+0000739639 00000 n 
+0000739675 00000 n 
+0000739711 00000 n 
+0000739747 00000 n 
+0000739783 00000 n 
+0000739819 00000 n 
+0000739855 00000 n 
+0000739891 00000 n 
+0000739927 00000 n 
+0000739963 00000 n 
+0000739999 00000 n 
+0000740035 00000 n 
+0000740071 00000 n 
+0000740107 00000 n 
+0000740143 00000 n 
+0000740179 00000 n 
+0000740215 00000 n 
+0000740251 00000 n 
+0000740287 00000 n 
 trailer
 <<
 /ID 
-[<bd22c68dacca65a6526e34bfed95e746><bd22c68dacca65a6526e34bfed95e746>]
+[<a665d32348b27d9192e535dd00161367><a665d32348b27d9192e535dd00161367>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 376 0 R
@@ -44392,5 +44519,5 @@ trailer
 /Size 666
 >>
 startxref
-738631
+740323
 %%EOF

@@ -16,6 +16,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to ArrayFunc’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -37,9 +38,9 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Michael Griffin</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">6.2.0 for 2021-06-05</td>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">8.1.1 for 2022-03-31</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">2014 - 2021</td>
+<tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">2014 - 2022</td>
 </tr>
 <tr class="field-even field"><th class="field-name">License:</th><td class="field-body">This document may be distributed under the Apache License V2.0.</td>
 </tr>
@@ -112,140 +113,141 @@
 <li><a class="reference internal" href="#mul" id="id64">mul</a></li>
 <li><a class="reference internal" href="#neg" id="id65">neg</a></li>
 <li><a class="reference internal" href="#pow" id="id66">pow</a></li>
-<li><a class="reference internal" href="#sub" id="id67">sub</a></li>
-<li><a class="reference internal" href="#truediv" id="id68">truediv</a></li>
+<li><a class="reference internal" href="#pow2" id="id67">pow2</a></li>
+<li><a class="reference internal" href="#pow3" id="id68">pow3</a></li>
+<li><a class="reference internal" href="#sub" id="id69">sub</a></li>
+<li><a class="reference internal" href="#truediv" id="id70">truediv</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3" id="id69">Comparison operator functions</a><ul>
-<li><a class="reference internal" href="#eq" id="id70">eq</a></li>
-<li><a class="reference internal" href="#ge" id="id71">ge</a></li>
-<li><a class="reference internal" href="#gt" id="id72">gt</a></li>
-<li><a class="reference internal" href="#le" id="id73">le</a></li>
-<li><a class="reference internal" href="#lt" id="id74">lt</a></li>
-<li><a class="reference internal" href="#ne" id="id75">ne</a></li>
+<li><a class="reference internal" href="#id3" id="id71">Comparison operator functions</a><ul>
+<li><a class="reference internal" href="#eq" id="id72">eq</a></li>
+<li><a class="reference internal" href="#ge" id="id73">ge</a></li>
+<li><a class="reference internal" href="#gt" id="id74">gt</a></li>
+<li><a class="reference internal" href="#le" id="id75">le</a></li>
+<li><a class="reference internal" href="#lt" id="id76">lt</a></li>
+<li><a class="reference internal" href="#ne" id="id77">ne</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id4" id="id76">Bitwise operator functions</a><ul>
-<li><a class="reference internal" href="#and" id="id77">and_</a></li>
-<li><a class="reference internal" href="#invert" id="id78">invert</a></li>
-<li><a class="reference internal" href="#lshift" id="id79">lshift</a></li>
-<li><a class="reference internal" href="#or" id="id80">or_</a></li>
-<li><a class="reference internal" href="#rshift" id="id81">rshift</a></li>
-<li><a class="reference internal" href="#xor" id="id82">xor</a></li>
+<li><a class="reference internal" href="#id4" id="id78">Bitwise operator functions</a><ul>
+<li><a class="reference internal" href="#and" id="id79">and_</a></li>
+<li><a class="reference internal" href="#invert" id="id80">invert</a></li>
+<li><a class="reference internal" href="#lshift" id="id81">lshift</a></li>
+<li><a class="reference internal" href="#or" id="id82">or_</a></li>
+<li><a class="reference internal" href="#rshift" id="id83">rshift</a></li>
+<li><a class="reference internal" href="#xor" id="id84">xor</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id5" id="id83">Power and logarithmic functions</a><ul>
-<li><a class="reference internal" href="#exp" id="id84">exp</a></li>
-<li><a class="reference internal" href="#expm1" id="id85">expm1</a></li>
-<li><a class="reference internal" href="#log" id="id86">log</a></li>
-<li><a class="reference internal" href="#log10" id="id87">log10</a></li>
-<li><a class="reference internal" href="#log1p" id="id88">log1p</a></li>
-<li><a class="reference internal" href="#log2" id="id89">log2</a></li>
-<li><a class="reference internal" href="#sqrt" id="id90">sqrt</a></li>
+<li><a class="reference internal" href="#id5" id="id85">Power and logarithmic functions</a><ul>
+<li><a class="reference internal" href="#exp" id="id86">exp</a></li>
+<li><a class="reference internal" href="#expm1" id="id87">expm1</a></li>
+<li><a class="reference internal" href="#log" id="id88">log</a></li>
+<li><a class="reference internal" href="#log10" id="id89">log10</a></li>
+<li><a class="reference internal" href="#log1p" id="id90">log1p</a></li>
+<li><a class="reference internal" href="#log2" id="id91">log2</a></li>
+<li><a class="reference internal" href="#sqrt" id="id92">sqrt</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id91">Hyperbolic functions</a><ul>
-<li><a class="reference internal" href="#acosh" id="id92">acosh</a></li>
-<li><a class="reference internal" href="#asinh" id="id93">asinh</a></li>
-<li><a class="reference internal" href="#atanh" id="id94">atanh</a></li>
-<li><a class="reference internal" href="#cosh" id="id95">cosh</a></li>
-<li><a class="reference internal" href="#sinh" id="id96">sinh</a></li>
-<li><a class="reference internal" href="#tanh" id="id97">tanh</a></li>
+<li><a class="reference internal" href="#id6" id="id93">Hyperbolic functions</a><ul>
+<li><a class="reference internal" href="#acosh" id="id94">acosh</a></li>
+<li><a class="reference internal" href="#asinh" id="id95">asinh</a></li>
+<li><a class="reference internal" href="#atanh" id="id96">atanh</a></li>
+<li><a class="reference internal" href="#cosh" id="id97">cosh</a></li>
+<li><a class="reference internal" href="#sinh" id="id98">sinh</a></li>
+<li><a class="reference internal" href="#tanh" id="id99">tanh</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7" id="id98">Trigonometric functions</a><ul>
-<li><a class="reference internal" href="#acos" id="id99">acos</a></li>
-<li><a class="reference internal" href="#asin" id="id100">asin</a></li>
-<li><a class="reference internal" href="#atan" id="id101">atan</a></li>
-<li><a class="reference internal" href="#atan2" id="id102">atan2</a></li>
-<li><a class="reference internal" href="#cos" id="id103">cos</a></li>
-<li><a class="reference internal" href="#hypot" id="id104">hypot</a></li>
-<li><a class="reference internal" href="#sin" id="id105">sin</a></li>
-<li><a class="reference internal" href="#tan" id="id106">tan</a></li>
+<li><a class="reference internal" href="#id7" id="id100">Trigonometric functions</a><ul>
+<li><a class="reference internal" href="#acos" id="id101">acos</a></li>
+<li><a class="reference internal" href="#asin" id="id102">asin</a></li>
+<li><a class="reference internal" href="#atan" id="id103">atan</a></li>
+<li><a class="reference internal" href="#atan2" id="id104">atan2</a></li>
+<li><a class="reference internal" href="#cos" id="id105">cos</a></li>
+<li><a class="reference internal" href="#hypot" id="id106">hypot</a></li>
+<li><a class="reference internal" href="#sin" id="id107">sin</a></li>
+<li><a class="reference internal" href="#tan" id="id108">tan</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8" id="id107">Angular conversion</a><ul>
-<li><a class="reference internal" href="#degrees" id="id108">degrees</a></li>
-<li><a class="reference internal" href="#radians" id="id109">radians</a></li>
+<li><a class="reference internal" href="#id8" id="id109">Angular conversion</a><ul>
+<li><a class="reference internal" href="#degrees" id="id110">degrees</a></li>
+<li><a class="reference internal" href="#radians" id="id111">radians</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9" id="id110">Number-theoretic and representation functions</a><ul>
-<li><a class="reference internal" href="#ceil" id="id111">ceil</a></li>
-<li><a class="reference internal" href="#copysign" id="id112">copysign</a></li>
-<li><a class="reference internal" href="#fabs" id="id113">fabs</a></li>
-<li><a class="reference internal" href="#factorial" id="id114">factorial</a></li>
-<li><a class="reference internal" href="#floor" id="id115">floor</a></li>
-<li><a class="reference internal" href="#fmod" id="id116">fmod</a></li>
-<li><a class="reference internal" href="#isfinite" id="id117">isfinite</a></li>
-<li><a class="reference internal" href="#isinf" id="id118">isinf</a></li>
-<li><a class="reference internal" href="#isnan" id="id119">isnan</a></li>
-<li><a class="reference internal" href="#ldexp" id="id120">ldexp</a></li>
-<li><a class="reference internal" href="#trunc" id="id121">trunc</a></li>
+<li><a class="reference internal" href="#id9" id="id112">Number-theoretic and representation functions</a><ul>
+<li><a class="reference internal" href="#ceil" id="id113">ceil</a></li>
+<li><a class="reference internal" href="#copysign" id="id114">copysign</a></li>
+<li><a class="reference internal" href="#fabs" id="id115">fabs</a></li>
+<li><a class="reference internal" href="#factorial" id="id116">factorial</a></li>
+<li><a class="reference internal" href="#floor" id="id117">floor</a></li>
+<li><a class="reference internal" href="#fmod" id="id118">fmod</a></li>
+<li><a class="reference internal" href="#isfinite" id="id119">isfinite</a></li>
+<li><a class="reference internal" href="#isinf" id="id120">isinf</a></li>
+<li><a class="reference internal" href="#isnan" id="id121">isnan</a></li>
+<li><a class="reference internal" href="#ldexp" id="id122">ldexp</a></li>
+<li><a class="reference internal" href="#trunc" id="id123">trunc</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id10" id="id122">Special functions</a><ul>
-<li><a class="reference internal" href="#erf" id="id123">erf</a></li>
-<li><a class="reference internal" href="#erfc" id="id124">erfc</a></li>
-<li><a class="reference internal" href="#gamma" id="id125">gamma</a></li>
-<li><a class="reference internal" href="#lgamma" id="id126">lgamma</a></li>
+<li><a class="reference internal" href="#id10" id="id124">Special functions</a><ul>
+<li><a class="reference internal" href="#erf" id="id125">erf</a></li>
+<li><a class="reference internal" href="#erfc" id="id126">erfc</a></li>
+<li><a class="reference internal" href="#gamma" id="id127">gamma</a></li>
+<li><a class="reference internal" href="#lgamma" id="id128">lgamma</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id11" id="id127">Additional functions</a><ul>
-<li><a class="reference internal" href="#fma" id="id128">fma</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#option-flags-and-parameters" id="id129">Option Flags and Parameters</a><ul>
-<li><a class="reference internal" href="#arithmetic-overflow-control" id="id130">Arithmetic Overflow Control</a></li>
-<li><a class="reference internal" href="#using-only-part-of-an-array" id="id131">Using Only Part of an Array</a></li>
-<li><a class="reference internal" href="#simd-control" id="id132">SIMD Control</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#data-types" id="id133">Data Types</a><ul>
-<li><a class="reference internal" href="#array-types" id="id134">Array Types</a></li>
-<li><a class="reference internal" href="#numeric-parameter-types" id="id135">Numeric Parameter Types</a></li>
-<li><a class="reference internal" href="#maximum-array-size" id="id136">Maximum Array Size</a></li>
-<li><a class="reference internal" href="#platform-compiler-support" id="id137">Platform Compiler Support</a></li>
-<li><a class="reference internal" href="#integer-error-checking" id="id138">Integer Error Checking</a><ul>
-<li><a class="reference internal" href="#error-categories" id="id139">Error Categories</a></li>
-<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks" id="id140">Disabling Integer Division by Zero Checks</a></li>
-<li><a class="reference internal" href="#floating-point-nan-and-infinity" id="id141">Floating Point NaN and Infinity</a></li>
+<li><a class="reference internal" href="#id11" id="id129">Additional functions</a><ul>
+<li><a class="reference internal" href="#fma" id="id130">fma</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#exceptions" id="id142">Exceptions</a><ul>
-<li><a class="reference internal" href="#exceptions-general" id="id143">Exceptions - General</a></li>
+<li><a class="reference internal" href="#option-flags-and-parameters" id="id131">Option Flags and Parameters</a><ul>
+<li><a class="reference internal" href="#arithmetic-overflow-control" id="id132">Arithmetic Overflow Control</a></li>
+<li><a class="reference internal" href="#using-only-part-of-an-array" id="id133">Using Only Part of an Array</a></li>
+<li><a class="reference internal" href="#simd-control" id="id134">SIMD Control</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#platform-oddities" id="id144">Platform Oddities</a></li>
-<li><a class="reference internal" href="#simd-support" id="id145">SIMD Support</a><ul>
-<li><a class="reference internal" href="#general" id="id146">General</a></li>
-<li><a class="reference internal" href="#platform-support" id="id147">Platform Support</a></li>
-<li><a class="reference internal" href="#raspberry-pi-32-versus-64-bit" id="id148">Raspberry Pi 32 versus 64 bit</a></li>
-<li><a class="reference internal" href="#data-type-support" id="id149">Data Type Support</a><ul>
-<li><a class="reference internal" href="#x86-64" id="id150">x86-64</a></li>
-<li><a class="reference internal" href="#armv7" id="id151">ARMv7</a></li>
-<li><a class="reference internal" href="#armv8-aarch64" id="id152">ARMv8 AARCH64</a></li>
+<li><a class="reference internal" href="#data-types" id="id135">Data Types</a><ul>
+<li><a class="reference internal" href="#array-types" id="id136">Array Types</a></li>
+<li><a class="reference internal" href="#numeric-parameter-types" id="id137">Numeric Parameter Types</a></li>
+<li><a class="reference internal" href="#maximum-array-size" id="id138">Maximum Array Size</a></li>
+<li><a class="reference internal" href="#platform-compiler-support" id="id139">Platform Compiler Support</a></li>
+<li><a class="reference internal" href="#integer-error-checking" id="id140">Integer Error Checking</a><ul>
+<li><a class="reference internal" href="#error-categories" id="id141">Error Categories</a></li>
+<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks" id="id142">Disabling Integer Division by Zero Checks</a></li>
+<li><a class="reference internal" href="#floating-point-nan-and-infinity" id="id143">Floating Point NaN and Infinity</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#simd-support-attributes" id="id153">SIMD Support Attributes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#performance" id="id154">Performance</a><ul>
-<li><a class="reference internal" href="#variables-affecting-performance" id="id155">Variables affecting Performance</a></li>
-<li><a class="reference internal" href="#typical-performance-readings" id="id156">Typical Performance Readings</a><ul>
-<li><a class="reference internal" href="#default-performance" id="id157">Default Performance</a></li>
-<li><a class="reference internal" href="#optimised-performance-with-simd" id="id158">Optimised Performance (with SIMD)</a></li>
-<li><a class="reference internal" href="#simd-optimisation-effects" id="id159">SIMD Optimisation Effects</a></li>
-<li><a class="reference internal" href="#array-size-versus-performance" id="id160">Array Size Versus Performance</a></li>
+<li><a class="reference internal" href="#exceptions" id="id144">Exceptions</a><ul>
+<li><a class="reference internal" href="#exceptions-general" id="id145">Exceptions - General</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#platform-effects" id="id161">Platform Effects</a></li>
+<li><a class="reference internal" href="#platform-oddities" id="id146">Platform Oddities</a></li>
+<li><a class="reference internal" href="#simd-support" id="id147">SIMD Support</a><ul>
+<li><a class="reference internal" href="#general" id="id148">General</a></li>
+<li><a class="reference internal" href="#platform-support" id="id149">Platform Support</a></li>
+<li><a class="reference internal" href="#raspberry-pi-32-versus-64-bit" id="id150">Raspberry Pi 32 versus 64 bit</a></li>
+<li><a class="reference internal" href="#data-type-support" id="id151">Data Type Support</a><ul>
+<li><a class="reference internal" href="#x86-64" id="id152">x86-64</a></li>
+<li><a class="reference internal" href="#armv7" id="id153">ARMv7</a></li>
+<li><a class="reference internal" href="#armv8-aarch64" id="id154">ARMv8 AARCH64</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id12" id="id162">Platform support</a></li>
+<li><a class="reference internal" href="#simd-support-attributes" id="id155">SIMD Support Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance" id="id156">Performance</a><ul>
+<li><a class="reference internal" href="#variables-affecting-performance" id="id157">Variables affecting Performance</a></li>
+<li><a class="reference internal" href="#typical-performance-readings" id="id158">Typical Performance Readings</a><ul>
+<li><a class="reference internal" href="#default-performance" id="id159">Default Performance</a></li>
+<li><a class="reference internal" href="#optimised-performance-with-simd" id="id160">Optimised Performance (with SIMD)</a></li>
+<li><a class="reference internal" href="#array-size-versus-performance" id="id161">Array Size Versus Performance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#platform-effects" id="id162">Platform Effects</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id12" id="id163">Platform support</a></li>
 </ul>
 </li>
 </ul>
@@ -433,6 +435,12 @@ the form required by the output array.</td>
 </tr>
 <tr class="row-even"><td>pow</td>
 <td>[x ** param for x in array1]</td>
+</tr>
+<tr class="row-odd"><td>pow2</td>
+<td>[x * x for x in array1]</td>
+</tr>
+<tr class="row-even"><td>pow3</td>
+<td>[x * x * x for x in array1]</td>
 </tr>
 <tr class="row-odd"><td>sub</td>
 <td>[x - param for x in array1]</td>
@@ -1970,7 +1978,7 @@ optional. The default is FALSE.</li>
 <td>b, B, h, H, i, I, l, L, q, Q, f, d</td>
 </tr>
 <tr class="row-even"><td>Exceptions raised:</td>
-<td>OverflowError, ArithmeticError</td>
+<td>OverflowError, ArithmeticError, ValueError</td>
 </tr>
 </tbody>
 </table>
@@ -2000,8 +2008,102 @@ parameter is ignored.</li>
 default is false.</li>
 </ul>
 </div>
+<div class="section" id="pow2">
+<h4><a class="toc-backref" href="#id67">pow2</a><a class="headerlink" href="#pow2" title="Permalink to this headline">¶</a></h4>
+<p>Calculate pow2 over the values in an array.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Equivalent to:</td>
+<td>[x * x for x in array1]</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Array types supported:</td>
+<td>b, B, h, H, i, I, l, L, q, Q, f, d</td>
+</tr>
+<tr class="row-even"><td>Exceptions raised:</td>
+<td>OverflowError, ArithmeticError, ValueError</td>
+</tr>
+</tbody>
+</table>
+<p>Call formats:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pow2</span><span class="p">(</span><span class="n">array1</span><span class="p">)</span>
+<span class="n">pow2</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
+<span class="n">pow2</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">pow2</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>array1 - The first input data array to be examined. If no output
+array is provided the results will overwrite the input data.</li>
+<li>outparray - The output array. This parameter is optional.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid
+positive integer. If a zero or negative length, or a value which is
+greater than the actual length of the array is specified, this
+parameter is ignored.</li>
+<li>matherrors - If true, arithmetic error checking is disabled. The
+default is false.</li>
+</ul>
+</div>
+<div class="section" id="pow3">
+<h4><a class="toc-backref" href="#id68">pow3</a><a class="headerlink" href="#pow3" title="Permalink to this headline">¶</a></h4>
+<p>Calculate pow3 over the values in an array.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Equivalent to:</td>
+<td>[x * x * x for x in array1]</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="32%" />
+<col width="68%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Array types supported:</td>
+<td>b, B, h, H, i, I, l, L, q, Q, f, d</td>
+</tr>
+<tr class="row-even"><td>Exceptions raised:</td>
+<td>OverflowError, ArithmeticError, ValueError</td>
+</tr>
+</tbody>
+</table>
+<p>Call formats:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pow3</span><span class="p">(</span><span class="n">array1</span><span class="p">)</span>
+<span class="n">pow3</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
+<span class="n">pow3</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">pow3</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>array1 - The first input data array to be examined. If no output
+array is provided the results will overwrite the input data.</li>
+<li>outparray - The output array. This parameter is optional.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid
+positive integer. If a zero or negative length, or a value which is
+greater than the actual length of the array is specified, this
+parameter is ignored.</li>
+<li>matherrors - If true, arithmetic error checking is disabled. The
+default is false.</li>
+</ul>
+</div>
 <div class="section" id="sub">
-<h4><a class="toc-backref" href="#id67">sub</a><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id69">sub</a><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sub over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2063,7 +2165,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="truediv">
-<h4><a class="toc-backref" href="#id68">truediv</a><a class="headerlink" href="#truediv" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id70">truediv</a><a class="headerlink" href="#truediv" title="Permalink to this headline">¶</a></h4>
 <p>Calculate truediv over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2124,9 +2226,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id69">Comparison operator functions</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id71">Comparison operator functions</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="eq">
-<h4><a class="toc-backref" href="#id70">eq</a><a class="headerlink" href="#eq" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id72">eq</a><a class="headerlink" href="#eq" title="Permalink to this headline">¶</a></h4>
 <p>Calculate eq over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2183,7 +2285,7 @@ return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="ge">
-<h4><a class="toc-backref" href="#id71">ge</a><a class="headerlink" href="#ge" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id73">ge</a><a class="headerlink" href="#ge" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ge over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2240,7 +2342,7 @@ return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="gt">
-<h4><a class="toc-backref" href="#id72">gt</a><a class="headerlink" href="#gt" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id74">gt</a><a class="headerlink" href="#gt" title="Permalink to this headline">¶</a></h4>
 <p>Calculate gt over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2297,7 +2399,7 @@ return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="le">
-<h4><a class="toc-backref" href="#id73">le</a><a class="headerlink" href="#le" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id75">le</a><a class="headerlink" href="#le" title="Permalink to this headline">¶</a></h4>
 <p>Calculate le over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2354,7 +2456,7 @@ return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="lt">
-<h4><a class="toc-backref" href="#id74">lt</a><a class="headerlink" href="#lt" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id76">lt</a><a class="headerlink" href="#lt" title="Permalink to this headline">¶</a></h4>
 <p>Calculate lt over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2411,7 +2513,7 @@ return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="ne">
-<h4><a class="toc-backref" href="#id75">ne</a><a class="headerlink" href="#ne" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id77">ne</a><a class="headerlink" href="#ne" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ne over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2469,9 +2571,9 @@ return value will be false.</li>
 </div>
 </div>
 <div class="section" id="id4">
-<h3><a class="toc-backref" href="#id76">Bitwise operator functions</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id78">Bitwise operator functions</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="and">
-<h4><a class="toc-backref" href="#id77">and_</a><a class="headerlink" href="#and" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id79">and_</a><a class="headerlink" href="#and" title="Permalink to this headline">¶</a></h4>
 <p>Calculate and_ over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2531,7 +2633,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="invert">
-<h4><a class="toc-backref" href="#id78">invert</a><a class="headerlink" href="#invert" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id80">invert</a><a class="headerlink" href="#invert" title="Permalink to this headline">¶</a></h4>
 <p>Calculate invert over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2578,7 +2680,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="lshift">
-<h4><a class="toc-backref" href="#id79">lshift</a><a class="headerlink" href="#lshift" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id81">lshift</a><a class="headerlink" href="#lshift" title="Permalink to this headline">¶</a></h4>
 <p>Calculate lshift over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2638,7 +2740,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="or">
-<h4><a class="toc-backref" href="#id80">or_</a><a class="headerlink" href="#or" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id82">or_</a><a class="headerlink" href="#or" title="Permalink to this headline">¶</a></h4>
 <p>Calculate or_ over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2698,7 +2800,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="rshift">
-<h4><a class="toc-backref" href="#id81">rshift</a><a class="headerlink" href="#rshift" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id83">rshift</a><a class="headerlink" href="#rshift" title="Permalink to this headline">¶</a></h4>
 <p>Calculate rshift over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2758,7 +2860,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="xor">
-<h4><a class="toc-backref" href="#id82">xor</a><a class="headerlink" href="#xor" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id84">xor</a><a class="headerlink" href="#xor" title="Permalink to this headline">¶</a></h4>
 <p>Calculate xor over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2819,9 +2921,9 @@ optional. The default is FALSE.</li>
 </div>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id83">Power and logarithmic functions</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id85">Power and logarithmic functions</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="exp">
-<h4><a class="toc-backref" href="#id84">exp</a><a class="headerlink" href="#exp" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id86">exp</a><a class="headerlink" href="#exp" title="Permalink to this headline">¶</a></h4>
 <p>Calculate exp over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2860,7 +2962,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="expm1">
-<h4><a class="toc-backref" href="#id85">expm1</a><a class="headerlink" href="#expm1" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id87">expm1</a><a class="headerlink" href="#expm1" title="Permalink to this headline">¶</a></h4>
 <p>Calculate expm1 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2899,7 +3001,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log">
-<h4><a class="toc-backref" href="#id86">log</a><a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id88">log</a><a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2938,7 +3040,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log10">
-<h4><a class="toc-backref" href="#id87">log10</a><a class="headerlink" href="#log10" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id89">log10</a><a class="headerlink" href="#log10" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log10 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2977,7 +3079,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log1p">
-<h4><a class="toc-backref" href="#id88">log1p</a><a class="headerlink" href="#log1p" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id90">log1p</a><a class="headerlink" href="#log1p" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log1p over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3016,7 +3118,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log2">
-<h4><a class="toc-backref" href="#id89">log2</a><a class="headerlink" href="#log2" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id91">log2</a><a class="headerlink" href="#log2" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log2 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3055,7 +3157,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sqrt">
-<h4><a class="toc-backref" href="#id90">sqrt</a><a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id92">sqrt</a><a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sqrt over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3098,9 +3200,9 @@ optional. The default is FALSE.</li>
 </div>
 </div>
 <div class="section" id="id6">
-<h3><a class="toc-backref" href="#id91">Hyperbolic functions</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id93">Hyperbolic functions</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="acosh">
-<h4><a class="toc-backref" href="#id92">acosh</a><a class="headerlink" href="#acosh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id94">acosh</a><a class="headerlink" href="#acosh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate acosh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3139,7 +3241,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="asinh">
-<h4><a class="toc-backref" href="#id93">asinh</a><a class="headerlink" href="#asinh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id95">asinh</a><a class="headerlink" href="#asinh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate asinh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3178,7 +3280,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="atanh">
-<h4><a class="toc-backref" href="#id94">atanh</a><a class="headerlink" href="#atanh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id96">atanh</a><a class="headerlink" href="#atanh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate atanh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3217,7 +3319,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="cosh">
-<h4><a class="toc-backref" href="#id95">cosh</a><a class="headerlink" href="#cosh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id97">cosh</a><a class="headerlink" href="#cosh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate cosh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3256,7 +3358,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sinh">
-<h4><a class="toc-backref" href="#id96">sinh</a><a class="headerlink" href="#sinh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id98">sinh</a><a class="headerlink" href="#sinh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sinh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3295,7 +3397,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="tanh">
-<h4><a class="toc-backref" href="#id97">tanh</a><a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id99">tanh</a><a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate tanh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3335,9 +3437,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id7">
-<h3><a class="toc-backref" href="#id98">Trigonometric functions</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id100">Trigonometric functions</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="acos">
-<h4><a class="toc-backref" href="#id99">acos</a><a class="headerlink" href="#acos" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id101">acos</a><a class="headerlink" href="#acos" title="Permalink to this headline">¶</a></h4>
 <p>Calculate acos over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3376,7 +3478,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="asin">
-<h4><a class="toc-backref" href="#id100">asin</a><a class="headerlink" href="#asin" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id102">asin</a><a class="headerlink" href="#asin" title="Permalink to this headline">¶</a></h4>
 <p>Calculate asin over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3415,7 +3517,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="atan">
-<h4><a class="toc-backref" href="#id101">atan</a><a class="headerlink" href="#atan" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id103">atan</a><a class="headerlink" href="#atan" title="Permalink to this headline">¶</a></h4>
 <p>Calculate atan over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3454,7 +3556,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="atan2">
-<h4><a class="toc-backref" href="#id102">atan2</a><a class="headerlink" href="#atan2" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id104">atan2</a><a class="headerlink" href="#atan2" title="Permalink to this headline">¶</a></h4>
 <p>Calculate atan2 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3514,7 +3616,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="cos">
-<h4><a class="toc-backref" href="#id103">cos</a><a class="headerlink" href="#cos" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id105">cos</a><a class="headerlink" href="#cos" title="Permalink to this headline">¶</a></h4>
 <p>Calculate cos over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3553,7 +3655,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="hypot">
-<h4><a class="toc-backref" href="#id104">hypot</a><a class="headerlink" href="#hypot" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id106">hypot</a><a class="headerlink" href="#hypot" title="Permalink to this headline">¶</a></h4>
 <p>Calculate hypot over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3613,7 +3715,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sin">
-<h4><a class="toc-backref" href="#id105">sin</a><a class="headerlink" href="#sin" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id107">sin</a><a class="headerlink" href="#sin" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sin over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3652,7 +3754,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="tan">
-<h4><a class="toc-backref" href="#id106">tan</a><a class="headerlink" href="#tan" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id108">tan</a><a class="headerlink" href="#tan" title="Permalink to this headline">¶</a></h4>
 <p>Calculate tan over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3692,9 +3794,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id8">
-<h3><a class="toc-backref" href="#id107">Angular conversion</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id109">Angular conversion</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="degrees">
-<h4><a class="toc-backref" href="#id108">degrees</a><a class="headerlink" href="#degrees" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id110">degrees</a><a class="headerlink" href="#degrees" title="Permalink to this headline">¶</a></h4>
 <p>Calculate degrees over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3736,7 +3838,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="radians">
-<h4><a class="toc-backref" href="#id109">radians</a><a class="headerlink" href="#radians" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id111">radians</a><a class="headerlink" href="#radians" title="Permalink to this headline">¶</a></h4>
 <p>Calculate radians over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3779,9 +3881,9 @@ optional. The default is FALSE.</li>
 </div>
 </div>
 <div class="section" id="id9">
-<h3><a class="toc-backref" href="#id110">Number-theoretic and representation functions</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id112">Number-theoretic and representation functions</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="ceil">
-<h4><a class="toc-backref" href="#id111">ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id113">ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ceil over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3823,7 +3925,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="copysign">
-<h4><a class="toc-backref" href="#id112">copysign</a><a class="headerlink" href="#copysign" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id114">copysign</a><a class="headerlink" href="#copysign" title="Permalink to this headline">¶</a></h4>
 <p>Calculate copysign over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3883,7 +3985,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="fabs">
-<h4><a class="toc-backref" href="#id113">fabs</a><a class="headerlink" href="#fabs" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id115">fabs</a><a class="headerlink" href="#fabs" title="Permalink to this headline">¶</a></h4>
 <p>Calculate fabs over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3922,7 +4024,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="factorial">
-<h4><a class="toc-backref" href="#id114">factorial</a><a class="headerlink" href="#factorial" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id116">factorial</a><a class="headerlink" href="#factorial" title="Permalink to this headline">¶</a></h4>
 <p>Calculate factorial over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3961,7 +4063,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="floor">
-<h4><a class="toc-backref" href="#id115">floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id117">floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h4>
 <p>Calculate floor over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4003,7 +4105,7 @@ optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="fmod">
-<h4><a class="toc-backref" href="#id116">fmod</a><a class="headerlink" href="#fmod" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id118">fmod</a><a class="headerlink" href="#fmod" title="Permalink to this headline">¶</a></h4>
 <p>Calculate fmod over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4063,7 +4165,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="isfinite">
-<h4><a class="toc-backref" href="#id117">isfinite</a><a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id119">isfinite</a><a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h4>
 <p>Calculate isfinite over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4098,7 +4200,7 @@ the return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="isinf">
-<h4><a class="toc-backref" href="#id118">isinf</a><a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id120">isinf</a><a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h4>
 <p>Calculate isinf over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4133,7 +4235,7 @@ the return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="isnan">
-<h4><a class="toc-backref" href="#id119">isnan</a><a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id121">isnan</a><a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h4>
 <p>Calculate isnan over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4168,7 +4270,7 @@ the return value will be false.</li>
 </ul>
 </div>
 <div class="section" id="ldexp">
-<h4><a class="toc-backref" href="#id120">ldexp</a><a class="headerlink" href="#ldexp" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id122">ldexp</a><a class="headerlink" href="#ldexp" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ldexp over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4209,7 +4311,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="trunc">
-<h4><a class="toc-backref" href="#id121">trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id123">trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h4>
 <p>Calculate trunc over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4252,9 +4354,9 @@ optional. The default is FALSE.</li>
 </div>
 </div>
 <div class="section" id="id10">
-<h3><a class="toc-backref" href="#id122">Special functions</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id124">Special functions</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="erf">
-<h4><a class="toc-backref" href="#id123">erf</a><a class="headerlink" href="#erf" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id125">erf</a><a class="headerlink" href="#erf" title="Permalink to this headline">¶</a></h4>
 <p>Calculate erf over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4293,7 +4395,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="erfc">
-<h4><a class="toc-backref" href="#id124">erfc</a><a class="headerlink" href="#erfc" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id126">erfc</a><a class="headerlink" href="#erfc" title="Permalink to this headline">¶</a></h4>
 <p>Calculate erfc over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4332,7 +4434,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="gamma">
-<h4><a class="toc-backref" href="#id125">gamma</a><a class="headerlink" href="#gamma" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id127">gamma</a><a class="headerlink" href="#gamma" title="Permalink to this headline">¶</a></h4>
 <p>Calculate gamma over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4371,7 +4473,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="lgamma">
-<h4><a class="toc-backref" href="#id126">lgamma</a><a class="headerlink" href="#lgamma" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id128">lgamma</a><a class="headerlink" href="#lgamma" title="Permalink to this headline">¶</a></h4>
 <p>Calculate lgamma over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4411,9 +4513,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id11">
-<h3><a class="toc-backref" href="#id127">Additional functions</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id129">Additional functions</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="fma">
-<h4><a class="toc-backref" href="#id128">fma</a><a class="headerlink" href="#fma" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id130">fma</a><a class="headerlink" href="#fma" title="Permalink to this headline">¶</a></h4>
 <p>Calculate fma over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4495,9 +4597,9 @@ default is false.</li>
 </div>
 <hr class="docutils" />
 <div class="section" id="option-flags-and-parameters">
-<h2><a class="toc-backref" href="#id129">Option Flags and Parameters</a><a class="headerlink" href="#option-flags-and-parameters" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id131">Option Flags and Parameters</a><a class="headerlink" href="#option-flags-and-parameters" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="arithmetic-overflow-control">
-<h3><a class="toc-backref" href="#id130">Arithmetic Overflow Control</a><a class="headerlink" href="#arithmetic-overflow-control" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id132">Arithmetic Overflow Control</a><a class="headerlink" href="#arithmetic-overflow-control" title="Permalink to this headline">¶</a></h3>
 <p>Many functions allow integer overflow detection to be turned off if desired.
 See the list of operators for which operators this applies to.</p>
 <p>Integer overflow is when a number becomes too large to fit within the specified
@@ -4515,7 +4617,7 @@ with the amount of improvement depending on the type of calculation being
 performed and the data type used.</p>
 </div>
 <div class="section" id="using-only-part-of-an-array">
-<h3><a class="toc-backref" href="#id131">Using Only Part of an Array</a><a class="headerlink" href="#using-only-part-of-an-array" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id133">Using Only Part of an Array</a><a class="headerlink" href="#using-only-part-of-an-array" title="Permalink to this headline">¶</a></h3>
 <p>The array math functions only use existing arrays that the user provides and do
 not create new arrays or resize existing ones. The reason for this is that when
 very large arrays are being used, continually allocating and de-allocating
@@ -4534,7 +4636,7 @@ size of the array, the length limit will be ignored and the entire array used.
 The default is to use the entire array.</p>
 </div>
 <div class="section" id="simd-control">
-<h3><a class="toc-backref" href="#id132">SIMD Control</a><a class="headerlink" href="#simd-control" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id134">SIMD Control</a><a class="headerlink" href="#simd-control" title="Permalink to this headline">¶</a></h3>
 <p>SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
 multiple operations to take place in parallel. Some, but not all, functions will
 make use of these instructions to speed up execution.</p>
@@ -4550,9 +4652,9 @@ execution will be disabled. The default is “False”.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="data-types">
-<h2><a class="toc-backref" href="#id133">Data Types</a><a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id135">Data Types</a><a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="array-types">
-<h3><a class="toc-backref" href="#id134">Array Types</a><a class="headerlink" href="#array-types" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id136">Array Types</a><a class="headerlink" href="#array-types" title="Permalink to this headline">¶</a></h3>
 <p>The following array types from the Python standard library are supported.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4605,7 +4707,7 @@ execution will be disabled. The default is “False”.</p>
 </table>
 </div>
 <div class="section" id="numeric-parameter-types">
-<h3><a class="toc-backref" href="#id135">Numeric Parameter Types</a><a class="headerlink" href="#numeric-parameter-types" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id137">Numeric Parameter Types</a><a class="headerlink" href="#numeric-parameter-types" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
@@ -4630,7 +4732,7 @@ execution will be disabled. The default is “False”.</p>
 mismatch between Python and ‘C’ language numeric limits.</p>
 </div>
 <div class="section" id="maximum-array-size">
-<h3><a class="toc-backref" href="#id136">Maximum Array Size</a><a class="headerlink" href="#maximum-array-size" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id138">Maximum Array Size</a><a class="headerlink" href="#maximum-array-size" title="Permalink to this headline">¶</a></h3>
 <p>Arrays are limited to no more than the number of elements defined by the Python
 C API constant Py_ssize_t. The size of this will depend on your platform
 characteristics. However, it will normally allow for arrays larger than can be
@@ -4643,17 +4745,17 @@ run out of memory if you are not careful when creating very large arrays from
 lists.</p>
 </div>
 <div class="section" id="platform-compiler-support">
-<h3><a class="toc-backref" href="#id137">Platform Compiler Support</a><a class="headerlink" href="#platform-compiler-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id139">Platform Compiler Support</a><a class="headerlink" href="#platform-compiler-support" title="Permalink to this headline">¶</a></h3>
 <p>Beginning with version 2.0 of ArrayFunc, versions compiled with the Microsoft
 MSVS compiler now has feature parity with the GCC version. This change is due
 to the Microsoft C compiler now supporting a new enough version of the ‘C’
 standard.</p>
 </div>
 <div class="section" id="integer-error-checking">
-<h3><a class="toc-backref" href="#id138">Integer Error Checking</a><a class="headerlink" href="#integer-error-checking" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id140">Integer Error Checking</a><a class="headerlink" href="#integer-error-checking" title="Permalink to this headline">¶</a></h3>
 <p>Error checking in integer operators is conducted as follows:</p>
 <div class="section" id="error-categories">
-<h4><a class="toc-backref" href="#id139">Error Categories</a><a class="headerlink" href="#error-categories" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id141">Error Categories</a><a class="headerlink" href="#error-categories" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
 <col width="27%" />
@@ -4744,13 +4846,13 @@ arrays cannot contain fractional results.</li>
 </ul>
 </div>
 <div class="section" id="disabling-integer-division-by-zero-checks">
-<h4><a class="toc-backref" href="#id140">Disabling Integer Division by Zero Checks</a><a class="headerlink" href="#disabling-integer-division-by-zero-checks" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id142">Disabling Integer Division by Zero Checks</a><a class="headerlink" href="#disabling-integer-division-by-zero-checks" title="Permalink to this headline">¶</a></h4>
 <p>Division by zero cannot be disabled for integer division or modulus operations.
 Division by zero could cause seg faults (crashes), so this option is ignored for
 these functions.</p>
 </div>
 <div class="section" id="floating-point-nan-and-infinity">
-<h4><a class="toc-backref" href="#id141">Floating Point NaN and Infinity</a><a class="headerlink" href="#floating-point-nan-and-infinity" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id143">Floating Point NaN and Infinity</a><a class="headerlink" href="#floating-point-nan-and-infinity" title="Permalink to this headline">¶</a></h4>
 <p>Floating point numbers include three special values, NaN (Not a Number), and
 negative and positive infinity. Arrayfunc uses the platform C compiler to create
 executable code. Some compilers may produce different results than other
@@ -4765,9 +4867,9 @@ code in most cases.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="exceptions">
-<h2><a class="toc-backref" href="#id142">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id144">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="exceptions-general">
-<h3><a class="toc-backref" href="#id143">Exceptions - General</a><a class="headerlink" href="#exceptions-general" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id145">Exceptions - General</a><a class="headerlink" href="#exceptions-general" title="Permalink to this headline">¶</a></h3>
 <p>The following exceptions apply to most functions.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4885,7 +4987,7 @@ value in the input array to integer.</td>
 </div>
 <hr class="docutils" />
 <div class="section" id="platform-oddities">
-<h2><a class="toc-backref" href="#id144">Platform Oddities</a><a class="headerlink" href="#platform-oddities" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id146">Platform Oddities</a><a class="headerlink" href="#platform-oddities" title="Permalink to this headline">¶</a></h2>
 <p>As most operators are implemented using native behaviour, details of some
 operations may depend on the CPU architecture.</p>
 <p>Lshift and rshift will exhibit a behaviour that depends on the CPU type
@@ -4908,9 +5010,9 @@ depending on the array type.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="simd-support">
-<h2><a class="toc-backref" href="#id145">SIMD Support</a><a class="headerlink" href="#simd-support" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id147">SIMD Support</a><a class="headerlink" href="#simd-support" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="general">
-<h3><a class="toc-backref" href="#id146">General</a><a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id148">General</a><a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
 <p>SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
 multiple operations to take place in parallel. Some, but not all, functions will
 make use of these instructions to speed up execution.</p>
@@ -4920,7 +5022,7 @@ to disable SIMD, but should there be hardware related problems the function can
 be forced to fall back to conventional execution mode.</p>
 </div>
 <div class="section" id="platform-support">
-<h3><a class="toc-backref" href="#id147">Platform Support</a><a class="headerlink" href="#platform-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id149">Platform Support</a><a class="headerlink" href="#platform-support" title="Permalink to this headline">¶</a></h3>
 <p>SIMD instructions are presently supported only on the following:</p>
 <ul class="simple">
 <li>64 bit x86 (i.e. AMD64) using GCC.</li>
@@ -4935,7 +5037,7 @@ wider data types (e.g. double precision floating point) SIMD provides only
 marginal speed ups anyway.</p>
 </div>
 <div class="section" id="raspberry-pi-32-versus-64-bit">
-<h3><a class="toc-backref" href="#id148">Raspberry Pi 32 versus 64 bit</a><a class="headerlink" href="#raspberry-pi-32-versus-64-bit" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id150">Raspberry Pi 32 versus 64 bit</a><a class="headerlink" href="#raspberry-pi-32-versus-64-bit" title="Permalink to this headline">¶</a></h3>
 <p>The Raspberry Pi uses an ARM CPU. This can operate in 32 or 64 bit mode. When
 in 32 bit mode, the Raspberry Pi 3 operates in ARMv7 mode. This has 64 bit ARM
 NEON SIMD vectors.</p>
@@ -4956,9 +5058,9 @@ modified in order to use SIMD acceleration.</p>
 performance many times faster than when using native Python.</p>
 </div>
 <div class="section" id="data-type-support">
-<h3><a class="toc-backref" href="#id149">Data Type Support</a><a class="headerlink" href="#data-type-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id151">Data Type Support</a><a class="headerlink" href="#data-type-support" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="x86-64">
-<h4><a class="toc-backref" href="#id150">x86-64</a><a class="headerlink" href="#x86-64" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id152">x86-64</a><a class="headerlink" href="#x86-64" title="Permalink to this headline">¶</a></h4>
 <p>The following table shows which array data types are supported by x86-64
 SIMD instructions.</p>
 <table border="1" class="docutils">
@@ -5233,8 +5335,8 @@ SIMD instructions.</p>
 <td>X</td>
 </tr>
 <tr class="row-odd"><td>lshift</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>X</td>
+<td>X</td>
 <td>X</td>
 <td>X</td>
 <td>X</td>
@@ -5260,49 +5362,7 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
-<tr class="row-odd"><td>ne</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>X</td>
-<td>X</td>
-</tr>
-<tr class="row-even"><td>neg</td>
-<td>X</td>
-<td>&#160;</td>
-<td>X</td>
-<td>&#160;</td>
-<td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>or_</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>radians</td>
+<tr class="row-odd"><td>mul</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5316,12 +5376,40 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
-<tr class="row-odd"><td>rshift</td>
+<tr class="row-even"><td>ne</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>neg</td>
+<td>X</td>
 <td>&#160;</td>
+<td>X</td>
+<td>&#160;</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>or_</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
 <td>X</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5330,7 +5418,7 @@ SIMD instructions.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>sqrt</td>
+<tr class="row-odd"><td>radians</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5344,7 +5432,35 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
-<tr class="row-odd"><td>sub</td>
+<tr class="row-even"><td>rshift</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>sub</td>
 <td>X</td>
 <td>&#160;</td>
 <td>X</td>
@@ -5358,7 +5474,7 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
-<tr class="row-even"><td>trunc</td>
+<tr class="row-odd"><td>trunc</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5372,7 +5488,7 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
-<tr class="row-odd"><td>xor</td>
+<tr class="row-even"><td>xor</td>
 <td>X</td>
 <td>X</td>
 <td>X</td>
@@ -5390,7 +5506,7 @@ SIMD instructions.</p>
 </table>
 </div>
 <div class="section" id="armv7">
-<h4><a class="toc-backref" href="#id151">ARMv7</a><a class="headerlink" href="#armv7" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id153">ARMv7</a><a class="headerlink" href="#armv7" title="Permalink to this headline">¶</a></h4>
 <p>The following table shows which array data types are supported by ARMv7
 SIMD instructions.</p>
 <table border="1" class="docutils">
@@ -5459,13 +5575,13 @@ SIMD instructions.</p>
 <td>&#160;</td>
 <td>X</td>
 <td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>add</td>
@@ -5479,7 +5595,7 @@ SIMD instructions.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
+<td>X</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>amax</td>
@@ -5661,7 +5777,7 @@ SIMD instructions.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
+<td>X</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>ne</td>
@@ -5683,13 +5799,13 @@ SIMD instructions.</p>
 <td>&#160;</td>
 <td>X</td>
 <td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>X</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>or_</td>
@@ -5745,7 +5861,7 @@ SIMD instructions.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
+<td>X</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>xor</td>
@@ -5766,7 +5882,7 @@ SIMD instructions.</p>
 </table>
 </div>
 <div class="section" id="armv8-aarch64">
-<h4><a class="toc-backref" href="#id152">ARMv8 AARCH64</a><a class="headerlink" href="#armv8-aarch64" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id154">ARMv8 AARCH64</a><a class="headerlink" href="#armv8-aarch64" title="Permalink to this headline">¶</a></h4>
 <p>The following table shows which array data types are supported by ARMv8
 SIMD instructions.</p>
 <table border="1" class="docutils">
@@ -6143,7 +6259,7 @@ SIMD instructions.</p>
 </div>
 </div>
 <div class="section" id="simd-support-attributes">
-<h3><a class="toc-backref" href="#id153">SIMD Support Attributes</a><a class="headerlink" href="#simd-support-attributes" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id155">SIMD Support Attributes</a><a class="headerlink" href="#simd-support-attributes" title="Permalink to this headline">¶</a></h3>
 <p>There is an attribute which can be tested to detect if ArrayFunc is compiled
 with SIMD support and if the current hardware supports the required SIMD level.</p>
 <p>arrayfunc.simdsupport.hassimd</p>
@@ -6158,9 +6274,9 @@ with SIMD support and if the current hardware supports the required SIMD level.<
 </div>
 <hr class="docutils" />
 <div class="section" id="performance">
-<h2><a class="toc-backref" href="#id154">Performance</a><a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id156">Performance</a><a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="variables-affecting-performance">
-<h3><a class="toc-backref" href="#id155">Variables affecting Performance</a><a class="headerlink" href="#variables-affecting-performance" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id157">Variables affecting Performance</a><a class="headerlink" href="#variables-affecting-performance" title="Permalink to this headline">¶</a></h3>
 <p>The purpose of the Arrayfunc module is to execute common operations faster than
 native Python. The relative speed will depend upon a number of factors:</p>
 <ul class="simple">
@@ -6189,9 +6305,9 @@ the built-in or “itertools” Python equivalents. This means that the benchmar
 results should be taken as general guidelines rather than precise comparisons.</p>
 </div>
 <div class="section" id="typical-performance-readings">
-<h3><a class="toc-backref" href="#id156">Typical Performance Readings</a><a class="headerlink" href="#typical-performance-readings" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id158">Typical Performance Readings</a><a class="headerlink" href="#typical-performance-readings" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="default-performance">
-<h4><a class="toc-backref" href="#id157">Default Performance</a><a class="headerlink" href="#default-performance" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id159">Default Performance</a><a class="headerlink" href="#default-performance" title="Permalink to this headline">¶</a></h4>
 <p>In this set of tests, all error checking was turned on and SIMD
 acceleration was enabled where this did not conflict with the preceding
 (the defaults in each case).</p>
@@ -6230,46 +6346,46 @@ acceleration was enabled where this did not conflict with the preceding
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>115</td>
-<td>95</td>
-<td>70</td>
+<td>116</td>
+<td>99</td>
+<td>67</td>
 <td>50</td>
-<td>35</td>
+<td>34</td>
 <td>21</td>
-<td>8.2</td>
 <td>7.8</td>
-<td>7.4</td>
+<td>8.1</td>
+<td>8.2</td>
 <td>7.6</td>
-<td>56</td>
-<td>30</td>
+<td>54</td>
+<td>29</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>54</td>
-<td>57</td>
-<td>29</td>
-<td>26</td>
+<td>53</td>
+<td>56</td>
+<td>28</td>
+<td>31</td>
 <td>16</td>
-<td>15</td>
+<td>16</td>
+<td>3.9</td>
 <td>3.8</td>
+<td>3.6</td>
 <td>3.5</td>
-<td>3.4</td>
-<td>3.5</td>
-<td>24</td>
-<td>13</td>
+<td>25</td>
+<td>14</td>
 </tr>
 <tr class="row-even"><td>abs_</td>
-<td>120</td>
+<td>1286</td>
 <td>&#160;</td>
-<td>117</td>
+<td>704</td>
 <td>&#160;</td>
-<td>125</td>
-<td>&#160;</td>
-<td>130</td>
+<td>419</td>
 <td>&#160;</td>
 <td>101</td>
 <td>&#160;</td>
-<td>201</td>
-<td>116</td>
+<td>101</td>
+<td>&#160;</td>
+<td>161</td>
+<td>111</td>
 </tr>
 <tr class="row-odd"><td>acos</td>
 <td>&#160;</td>
@@ -6282,8 +6398,8 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
 <td>14</td>
+<td>13</td>
 </tr>
 <tr class="row-even"><td>acosh</td>
 <td>&#160;</td>
@@ -6296,76 +6412,76 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>10</td>
-<td>10</td>
+<td>8.3</td>
+<td>8.5</td>
 </tr>
 <tr class="row-odd"><td>add</td>
-<td>111</td>
-<td>138</td>
-<td>112</td>
+<td>1249</td>
+<td>110</td>
+<td>663</td>
+<td>119</td>
+<td>342</td>
 <td>99</td>
-<td>122</td>
+<td>86</td>
+<td>67</td>
 <td>99</td>
-<td>92</td>
 <td>63</td>
-<td>94</td>
-<td>78</td>
-<td>122</td>
-<td>80</td>
+<td>331</td>
+<td>119</td>
 </tr>
 <tr class="row-even"><td>afilter</td>
-<td>89</td>
+<td>94</td>
+<td>92</td>
 <td>87</td>
-<td>88</td>
-<td>87</td>
-<td>88</td>
-<td>85</td>
-<td>88</td>
 <td>86</td>
-<td>85</td>
+<td>86</td>
+<td>86</td>
 <td>87</td>
-<td>88</td>
-<td>89</td>
+<td>87</td>
+<td>87</td>
+<td>86</td>
+<td>87</td>
+<td>87</td>
 </tr>
 <tr class="row-odd"><td>amax</td>
+<td>75</td>
+<td>73</td>
+<td>148</td>
+<td>147</td>
+<td>114</td>
+<td>102</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
+<td>15</td>
 <td>87</td>
-<td>87</td>
-<td>175</td>
-<td>172</td>
-<td>131</td>
-<td>129</td>
-<td>18</td>
-<td>17</td>
-<td>17</td>
-<td>17</td>
-<td>82</td>
-<td>42</td>
+<td>43</td>
 </tr>
 <tr class="row-even"><td>amin</td>
-<td>67</td>
-<td>66</td>
-<td>130</td>
-<td>130</td>
-<td>103</td>
-<td>93</td>
+<td>68</td>
+<td>65</td>
+<td>129</td>
+<td>131</td>
+<td>101</td>
+<td>89</td>
+<td>14</td>
 <td>14</td>
 <td>13</td>
 <td>13</td>
-<td>13</td>
-<td>66</td>
-<td>33</td>
+<td>71</td>
+<td>34</td>
 </tr>
 <tr class="row-odd"><td>and_</td>
-<td>1534</td>
-<td>1513</td>
-<td>839</td>
-<td>902</td>
-<td>588</td>
-<td>350</td>
-<td>111</td>
-<td>74</td>
-<td>119</td>
-<td>96</td>
+<td>1801</td>
+<td>1606</td>
+<td>1027</td>
+<td>866</td>
+<td>437</td>
+<td>344</td>
+<td>103</td>
+<td>104</td>
+<td>140</td>
+<td>86</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -6380,8 +6496,8 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>17</td>
-<td>13</td>
+<td>16</td>
+<td>14</td>
 </tr>
 <tr class="row-odd"><td>asinh</td>
 <td>&#160;</td>
@@ -6394,22 +6510,22 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
+<td>6.9</td>
 <td>7.6</td>
-<td>8.0</td>
 </tr>
 <tr class="row-even"><td>asum</td>
 <td>5.9</td>
-<td>7.3</td>
 <td>7.4</td>
-<td>9.9</td>
-<td>8.2</td>
+<td>7.5</td>
+<td>9.8</td>
+<td>8.1</td>
 <td>8.0</td>
-<td>8.5</td>
-<td>6.4</td>
-<td>5.4</td>
+<td>8.4</td>
 <td>6.5</td>
+<td>5.4</td>
 <td>7.0</td>
-<td>6.8</td>
+<td>30</td>
+<td>15</td>
 </tr>
 <tr class="row-odd"><td>atan</td>
 <td>&#160;</td>
@@ -6422,8 +6538,8 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>16</td>
-<td>13</td>
+<td>14</td>
+<td>11</td>
 </tr>
 <tr class="row-even"><td>atan2</td>
 <td>&#160;</td>
@@ -6436,8 +6552,8 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>7.8</td>
-<td>6.7</td>
+<td>7.3</td>
+<td>6.5</td>
 </tr>
 <tr class="row-odd"><td>atanh</td>
 <td>&#160;</td>
@@ -6450,8 +6566,8 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.4</td>
-<td>8.8</td>
+<td>7.0</td>
+<td>7.4</td>
 </tr>
 <tr class="row-even"><td>ceil</td>
 <td>&#160;</td>
@@ -6464,346 +6580,52 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>332</td>
-<td>198</td>
+<td>770</td>
+<td>229</td>
 </tr>
 <tr class="row-odd"><td>compress</td>
-<td>31</td>
-<td>38</td>
-<td>31</td>
+<td>29</td>
 <td>36</td>
-<td>31</td>
-<td>17</td>
-<td>35</td>
-<td>23</td>
-<td>31</td>
-<td>23</td>
 <td>30</td>
-<td>33</td>
-</tr>
-<tr class="row-even"><td>copysign</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>191</td>
-<td>151</td>
-</tr>
-<tr class="row-odd"><td>cos</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>26</td>
-<td>11</td>
-</tr>
-<tr class="row-even"><td>cosh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>13</td>
-<td>13</td>
-</tr>
-<tr class="row-odd"><td>count</td>
-<td>213</td>
-<td>248</td>
-<td>210</td>
-<td>207</td>
-<td>170</td>
-<td>130</td>
-<td>144</td>
-<td>117</td>
-<td>150</td>
-<td>112</td>
-<td>86</td>
-<td>85</td>
-</tr>
-<tr class="row-even"><td>cycle</td>
-<td>87</td>
-<td>83</td>
-<td>89</td>
-<td>90</td>
-<td>87</td>
-<td>55</td>
-<td>83</td>
-<td>59</td>
-<td>82</td>
-<td>56</td>
-<td>28</td>
-<td>27</td>
-</tr>
-<tr class="row-odd"><td>degrees</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>133</td>
-<td>142</td>
-</tr>
-<tr class="row-even"><td>dropwhile</td>
-<td>114</td>
-<td>113</td>
-<td>113</td>
-<td>113</td>
-<td>114</td>
-<td>124</td>
-<td>114</td>
-<td>110</td>
-<td>111</td>
-<td>110</td>
-<td>116</td>
-<td>103</td>
-</tr>
-<tr class="row-odd"><td>eq</td>
-<td>985</td>
-<td>1032</td>
-<td>471</td>
-<td>551</td>
-<td>274</td>
-<td>180</td>
-<td>64</td>
-<td>66</td>
-<td>64</td>
-<td>64</td>
-<td>282</td>
-<td>130</td>
-</tr>
-<tr class="row-even"><td>erf</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>11</td>
-<td>10</td>
-</tr>
-<tr class="row-odd"><td>erfc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>6.7</td>
-<td>6.6</td>
-</tr>
-<tr class="row-even"><td>exp</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>38</td>
+<td>30</td>
 <td>19</td>
-<td>17</td>
-</tr>
-<tr class="row-odd"><td>expm1</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>7.6</td>
-<td>7.8</td>
-</tr>
-<tr class="row-even"><td>fabs</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>201</td>
-<td>146</td>
-</tr>
-<tr class="row-odd"><td>factorial</td>
-<td>141</td>
-<td>199</td>
-<td>142</td>
-<td>150</td>
-<td>150</td>
-<td>134</td>
-<td>113</td>
-<td>96</td>
-<td>122</td>
-<td>100</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>findindex</td>
-<td>202</td>
-<td>222</td>
-<td>110</td>
-<td>104</td>
-<td>42</td>
-<td>38</td>
-<td>14</td>
-<td>13</td>
-<td>13</td>
-<td>13</td>
-<td>62</td>
-<td>34</td>
-</tr>
-<tr class="row-odd"><td>findindices</td>
-<td>24</td>
-<td>29</td>
-<td>23</td>
-<td>29</td>
-<td>23</td>
-<td>29</td>
-<td>23</td>
-<td>29</td>
-<td>23</td>
-<td>28</td>
-<td>31</td>
-<td>31</td>
-</tr>
-<tr class="row-even"><td>floor</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>322</td>
-<td>194</td>
-</tr>
-<tr class="row-odd"><td>floordiv</td>
-<td>34</td>
-<td>27</td>
-<td>35</td>
-<td>35</td>
-<td>38</td>
-<td>26</td>
-<td>35</td>
 <td>32</td>
-<td>35</td>
-<td>26</td>
-<td>177</td>
-<td>138</td>
+<td>22</td>
+<td>32</td>
+<td>21</td>
+<td>31</td>
+<td>34</td>
 </tr>
-<tr class="row-even"><td>fma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>92</td>
-<td>76</td>
-</tr>
-<tr class="row-odd"><td>fmod</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>9.6</td>
-<td>11</td>
-</tr>
-<tr class="row-even"><td>gamma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>1.8</td>
-<td>2.0</td>
-</tr>
-<tr class="row-odd"><td>ge</td>
-<td>967</td>
-<td>947</td>
-<td>529</td>
-<td>530</td>
-<td>283</td>
+<tr class="row-even"><td>convert</td>
+<td>285</td>
+<td>285</td>
 <td>178</td>
-<td>65</td>
-<td>62</td>
-<td>64</td>
-<td>64</td>
-<td>279</td>
+<td>274</td>
+<td>263</td>
+<td>252</td>
+<td>144</td>
+<td>134</td>
+<td>121</td>
+<td>155</td>
+<td>152</td>
 <td>141</td>
 </tr>
-<tr class="row-even"><td>gt</td>
-<td>1065</td>
-<td>751</td>
-<td>526</td>
-<td>382</td>
-<td>184</td>
-<td>182</td>
-<td>65</td>
-<td>62</td>
-<td>63</td>
-<td>65</td>
-<td>277</td>
-<td>142</td>
+<tr class="row-odd"><td>copysign</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>190</td>
+<td>143</td>
 </tr>
-<tr class="row-odd"><td>hypot</td>
+<tr class="row-even"><td>cos</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6814,122 +6636,10 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
-<td>11</td>
-</tr>
-<tr class="row-even"><td>invert</td>
-<td>2085</td>
-<td>2502</td>
-<td>1169</td>
-<td>1481</td>
-<td>638</td>
-<td>647</td>
-<td>151</td>
-<td>221</td>
-<td>146</td>
-<td>201</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>isfinite</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>102</td>
-<td>117</td>
-</tr>
-<tr class="row-even"><td>isinf</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>123</td>
-<td>121</td>
-</tr>
-<tr class="row-odd"><td>isnan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>162</td>
-<td>133</td>
-</tr>
-<tr class="row-even"><td>ldexp</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>23</td>
-<td>23</td>
-</tr>
-<tr class="row-odd"><td>le</td>
-<td>1012</td>
-<td>999</td>
-<td>540</td>
-<td>532</td>
-<td>185</td>
-<td>186</td>
-<td>64</td>
-<td>63</td>
-<td>63</td>
-<td>65</td>
-<td>293</td>
-<td>140</td>
-</tr>
-<tr class="row-even"><td>lgamma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>9.9</td>
-<td>8.5</td>
-</tr>
-<tr class="row-odd"><td>log</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>27</td>
 <td>24</td>
+<td>10</td>
 </tr>
-<tr class="row-even"><td>log10</td>
+<tr class="row-odd"><td>cosh</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6940,328 +6650,776 @@ acceleration was enabled where this did not conflict with the preceding
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
+<td>13</td>
 <td>13</td>
 </tr>
-<tr class="row-odd"><td>log1p</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>10</td>
-<td>10</td>
-</tr>
-<tr class="row-even"><td>log2</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>23</td>
-<td>14</td>
-</tr>
-<tr class="row-odd"><td>lshift</td>
-<td>205</td>
-<td>245</td>
-<td>869</td>
-<td>958</td>
-<td>476</td>
-<td>353</td>
-<td>116</td>
-<td>106</td>
-<td>127</td>
-<td>92</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>lt</td>
-<td>725</td>
-<td>768</td>
-<td>362</td>
-<td>399</td>
-<td>190</td>
-<td>162</td>
-<td>63</td>
-<td>62</td>
-<td>62</td>
-<td>66</td>
-<td>267</td>
-<td>127</td>
-</tr>
-<tr class="row-odd"><td>mod</td>
-<td>29</td>
-<td>27</td>
-<td>19</td>
-<td>31</td>
-<td>35</td>
-<td>22</td>
-<td>31</td>
-<td>22</td>
-<td>30</td>
-<td>21</td>
-<td>84</td>
-<td>64</td>
-</tr>
-<tr class="row-even"><td>mul</td>
-<td>96</td>
+<tr class="row-even"><td>count</td>
+<td>198</td>
+<td>223</td>
+<td>220</td>
+<td>217</td>
+<td>163</td>
 <td>112</td>
-<td>89</td>
-<td>98</td>
-<td>94</td>
-<td>77</td>
-<td>84</td>
-<td>61</td>
-<td>75</td>
-<td>59</td>
-<td>138</td>
-<td>97</td>
-</tr>
-<tr class="row-odd"><td>ne</td>
-<td>1008</td>
-<td>997</td>
-<td>475</td>
-<td>512</td>
-<td>276</td>
-<td>181</td>
-<td>65</td>
-<td>62</td>
-<td>64</td>
-<td>65</td>
-<td>282</td>
-<td>125</td>
-</tr>
-<tr class="row-even"><td>neg</td>
-<td>145</td>
-<td>&#160;</td>
+<td>158</td>
 <td>108</td>
-<td>&#160;</td>
-<td>162</td>
-<td>&#160;</td>
-<td>107</td>
-<td>&#160;</td>
-<td>92</td>
-<td>&#160;</td>
-<td>151</td>
-<td>90</td>
-</tr>
-<tr class="row-odd"><td>or_</td>
-<td>1490</td>
-<td>1458</td>
-<td>827</td>
-<td>876</td>
-<td>567</td>
-<td>341</td>
-<td>101</td>
-<td>85</td>
-<td>106</td>
-<td>88</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>pow</td>
-<td>46</td>
-<td>50</td>
-<td>42</td>
-<td>47</td>
-<td>36</td>
-<td>63</td>
-<td>20</td>
-<td>59</td>
-<td>19</td>
-<td>58</td>
-<td>7.3</td>
-<td>6.1</td>
-</tr>
-<tr class="row-odd"><td>radians</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>138</td>
-<td>145</td>
-</tr>
-<tr class="row-even"><td>repeat</td>
-<td>136</td>
-<td>121</td>
-<td>138</td>
-<td>143</td>
-<td>144</td>
-<td>41</td>
-<td>112</td>
-<td>37</td>
-<td>118</td>
-<td>41</td>
-<td>104</td>
-<td>95</td>
-</tr>
-<tr class="row-odd"><td>rshift</td>
-<td>194</td>
-<td>232</td>
-<td>196</td>
-<td>891</td>
-<td>175</td>
-<td>324</td>
-<td>118</td>
-<td>103</td>
-<td>115</td>
-<td>81</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>sin</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>24</td>
-<td>12</td>
-</tr>
-<tr class="row-odd"><td>sinh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>5.7</td>
-<td>5.9</td>
-</tr>
-<tr class="row-even"><td>sqrt</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>77</td>
-<td>48</td>
-</tr>
-<tr class="row-odd"><td>sub</td>
-<td>146</td>
+<td>154</td>
 <td>110</td>
-<td>112</td>
-<td>144</td>
-<td>121</td>
-<td>68</td>
-<td>89</td>
-<td>56</td>
-<td>111</td>
-<td>56</td>
-<td>122</td>
+<td>80</td>
 <td>79</td>
 </tr>
-<tr class="row-even"><td>takewhile</td>
-<td>160</td>
-<td>156</td>
-<td>162</td>
-<td>161</td>
-<td>157</td>
-<td>111</td>
-<td>144</td>
-<td>76</td>
-<td>133</td>
-<td>83</td>
-<td>195</td>
-<td>117</td>
-</tr>
-<tr class="row-odd"><td>tan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>8.7</td>
-<td>6.2</td>
-</tr>
-<tr class="row-even"><td>tanh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>6.7</td>
-<td>6.6</td>
-</tr>
-<tr class="row-odd"><td>truediv</td>
-<td>53</td>
-<td>45</td>
-<td>54</td>
-<td>55</td>
-<td>57</td>
-<td>46</td>
+<tr class="row-odd"><td>cycle</td>
+<td>80</td>
+<td>80</td>
+<td>80</td>
+<td>85</td>
+<td>85</td>
 <td>56</td>
-<td>48</td>
-<td>51</td>
-<td>44</td>
-<td>152</td>
+<td>85</td>
+<td>57</td>
+<td>86</td>
+<td>55</td>
+<td>28</td>
+<td>28</td>
+</tr>
+<tr class="row-even"><td>degrees</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>479</td>
+<td>156</td>
+</tr>
+<tr class="row-odd"><td>dropwhile</td>
+<td>111</td>
+<td>113</td>
+<td>110</td>
+<td>110</td>
+<td>110</td>
+<td>109</td>
+<td>110</td>
+<td>108</td>
+<td>108</td>
+<td>108</td>
+<td>116</td>
+<td>102</td>
+</tr>
+<tr class="row-even"><td>eq</td>
+<td>985</td>
+<td>1000</td>
+<td>475</td>
+<td>525</td>
+<td>264</td>
+<td>177</td>
+<td>63</td>
+<td>61</td>
+<td>62</td>
+<td>61</td>
+<td>265</td>
+<td>131</td>
+</tr>
+<tr class="row-odd"><td>erf</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>10</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>erfc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.1</td>
+<td>6.3</td>
+</tr>
+<tr class="row-odd"><td>exp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>18</td>
+<td>17</td>
+</tr>
+<tr class="row-even"><td>expm1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>7.1</td>
+<td>7.6</td>
+</tr>
+<tr class="row-odd"><td>fabs</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>163</td>
+<td>116</td>
+</tr>
+<tr class="row-even"><td>factorial</td>
+<td>136</td>
+<td>195</td>
+<td>130</td>
 <td>135</td>
+<td>135</td>
+<td>136</td>
+<td>110</td>
+<td>101</td>
+<td>125</td>
+<td>101</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
-<tr class="row-even"><td>trunc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>282</td>
-<td>170</td>
+<tr class="row-odd"><td>findindex</td>
+<td>201</td>
+<td>219</td>
+<td>106</td>
+<td>105</td>
+<td>41</td>
+<td>37</td>
+<td>15</td>
+<td>13</td>
+<td>13</td>
+<td>13</td>
+<td>61</td>
+<td>35</td>
 </tr>
-<tr class="row-odd"><td>xor</td>
-<td>1574</td>
-<td>1573</td>
-<td>937</td>
-<td>916</td>
-<td>599</td>
-<td>401</td>
-<td>141</td>
-<td>82</td>
+<tr class="row-even"><td>findindices</td>
+<td>24</td>
+<td>29</td>
+<td>32</td>
+<td>29</td>
+<td>22</td>
+<td>30</td>
+<td>24</td>
+<td>26</td>
+<td>23</td>
+<td>28</td>
+<td>30</td>
+<td>30</td>
+</tr>
+<tr class="row-odd"><td>floor</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>729</td>
+<td>248</td>
+</tr>
+<tr class="row-even"><td>floordiv</td>
+<td>33</td>
+<td>28</td>
+<td>34</td>
+<td>33</td>
+<td>35</td>
+<td>28</td>
+<td>33</td>
+<td>29</td>
+<td>35</td>
+<td>26</td>
+<td>189</td>
+<td>169</td>
+</tr>
+<tr class="row-odd"><td>fma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>88</td>
+<td>83</td>
+</tr>
+<tr class="row-even"><td>fmod</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>9.2</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>gamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.5</td>
+<td>1.6</td>
+</tr>
+<tr class="row-even"><td>ge</td>
+<td>986</td>
+<td>956</td>
+<td>571</td>
+<td>548</td>
+<td>275</td>
+<td>177</td>
+<td>62</td>
+<td>62</td>
+<td>71</td>
+<td>62</td>
+<td>333</td>
+<td>140</td>
+</tr>
+<tr class="row-odd"><td>gt</td>
+<td>1009</td>
+<td>757</td>
+<td>524</td>
+<td>380</td>
+<td>186</td>
+<td>173</td>
+<td>64</td>
+<td>63</td>
+<td>63</td>
+<td>65</td>
+<td>266</td>
+<td>147</td>
+</tr>
+<tr class="row-even"><td>hypot</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>14</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>invert</td>
+<td>2089</td>
+<td>2444</td>
+<td>1081</td>
+<td>1389</td>
+<td>590</td>
+<td>554</td>
+<td>158</td>
+<td>180</td>
+<td>151</td>
+<td>181</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>isfinite</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>107</td>
+<td>119</td>
+</tr>
+<tr class="row-odd"><td>isinf</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>117</td>
+<td>124</td>
+</tr>
+<tr class="row-even"><td>isnan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>142</td>
+<td>121</td>
+</tr>
+<tr class="row-odd"><td>ldexp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>24</td>
+<td>24</td>
+</tr>
+<tr class="row-even"><td>le</td>
+<td>1048</td>
+<td>972</td>
+<td>528</td>
+<td>536</td>
+<td>188</td>
+<td>182</td>
+<td>71</td>
+<td>63</td>
+<td>62</td>
+<td>65</td>
+<td>263</td>
+<td>130</td>
+</tr>
+<tr class="row-odd"><td>lgamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>8.1</td>
+<td>7.7</td>
+</tr>
+<tr class="row-even"><td>log</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>24</td>
+<td>20</td>
+</tr>
+<tr class="row-odd"><td>log10</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>13</td>
+<td>12</td>
+</tr>
+<tr class="row-even"><td>log1p</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>8.4</td>
+<td>8.5</td>
+</tr>
+<tr class="row-odd"><td>log2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>21</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>lshift</td>
+<td>1527</td>
+<td>1502</td>
+<td>945</td>
+<td>953</td>
+<td>444</td>
+<td>340</td>
+<td>121</td>
 <td>104</td>
-<td>95</td>
+<td>131</td>
+<td>109</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>lt</td>
+<td>693</td>
+<td>754</td>
+<td>362</td>
+<td>399</td>
+<td>183</td>
+<td>159</td>
+<td>63</td>
+<td>64</td>
+<td>63</td>
+<td>63</td>
+<td>241</td>
+<td>128</td>
+</tr>
+<tr class="row-even"><td>mod</td>
+<td>28</td>
+<td>26</td>
+<td>22</td>
+<td>28</td>
+<td>31</td>
+<td>22</td>
+<td>31</td>
+<td>22</td>
+<td>32</td>
+<td>25</td>
+<td>72</td>
+<td>67</td>
+</tr>
+<tr class="row-odd"><td>mul</td>
+<td>87</td>
+<td>110</td>
+<td>93</td>
+<td>91</td>
+<td>99</td>
+<td>101</td>
+<td>76</td>
+<td>71</td>
+<td>93</td>
+<td>71</td>
+<td>339</td>
+<td>134</td>
+</tr>
+<tr class="row-even"><td>ne</td>
+<td>1027</td>
+<td>1020</td>
+<td>493</td>
+<td>536</td>
+<td>278</td>
+<td>186</td>
+<td>67</td>
+<td>68</td>
+<td>65</td>
+<td>64</td>
+<td>296</td>
+<td>138</td>
+</tr>
+<tr class="row-odd"><td>neg</td>
+<td>1226</td>
+<td>&#160;</td>
+<td>538</td>
+<td>&#160;</td>
+<td>280</td>
+<td>&#160;</td>
+<td>93</td>
+<td>&#160;</td>
+<td>103</td>
+<td>&#160;</td>
+<td>139</td>
+<td>85</td>
+</tr>
+<tr class="row-even"><td>or_</td>
+<td>1588</td>
+<td>1666</td>
+<td>1004</td>
+<td>855</td>
+<td>434</td>
+<td>342</td>
+<td>108</td>
+<td>83</td>
+<td>114</td>
+<td>99</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>pow</td>
+<td>246</td>
+<td>282</td>
+<td>226</td>
+<td>229</td>
+<td>297</td>
+<td>264</td>
+<td>232</td>
+<td>196</td>
+<td>199</td>
+<td>185</td>
+<td>7.9</td>
+<td>6.9</td>
+</tr>
+<tr class="row-even"><td>pow2</td>
+<td>229</td>
+<td>228</td>
+<td>261</td>
+<td>294</td>
+<td>262</td>
+<td>208</td>
+<td>199</td>
+<td>190</td>
+<td>202</td>
+<td>206</td>
+<td>206</td>
+<td>116</td>
+</tr>
+<tr class="row-odd"><td>pow3</td>
+<td>215</td>
+<td>208</td>
+<td>229</td>
+<td>222</td>
+<td>215</td>
+<td>193</td>
+<td>136</td>
+<td>125</td>
+<td>127</td>
+<td>119</td>
+<td>159</td>
+<td>141</td>
+</tr>
+<tr class="row-even"><td>radians</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>525</td>
+<td>193</td>
+</tr>
+<tr class="row-odd"><td>repeat</td>
+<td>134</td>
+<td>123</td>
+<td>132</td>
+<td>146</td>
+<td>141</td>
+<td>42</td>
+<td>120</td>
+<td>38</td>
+<td>132</td>
+<td>38</td>
+<td>118</td>
+<td>101</td>
+</tr>
+<tr class="row-even"><td>rshift</td>
+<td>1213</td>
+<td>1440</td>
+<td>191</td>
+<td>805</td>
+<td>419</td>
+<td>328</td>
+<td>115</td>
+<td>101</td>
+<td>133</td>
+<td>107</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>sin</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>20</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>sinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>5.4</td>
+<td>5.8</td>
+</tr>
+<tr class="row-odd"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>233</td>
+<td>96</td>
+</tr>
+<tr class="row-even"><td>sub</td>
+<td>1072</td>
+<td>87</td>
+<td>594</td>
+<td>137</td>
+<td>348</td>
+<td>67</td>
+<td>104</td>
+<td>64</td>
+<td>91</td>
+<td>81</td>
+<td>343</td>
+<td>101</td>
+</tr>
+<tr class="row-odd"><td>takewhile</td>
+<td>157</td>
+<td>159</td>
+<td>156</td>
+<td>157</td>
+<td>161</td>
+<td>108</td>
+<td>137</td>
+<td>102</td>
+<td>146</td>
+<td>80</td>
+<td>200</td>
+<td>110</td>
+</tr>
+<tr class="row-even"><td>tan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>8.3</td>
+<td>5.9</td>
+</tr>
+<tr class="row-odd"><td>tanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>7.0</td>
+<td>6.9</td>
+</tr>
+<tr class="row-even"><td>truediv</td>
+<td>53</td>
+<td>44</td>
+<td>53</td>
+<td>49</td>
+<td>52</td>
+<td>44</td>
+<td>53</td>
+<td>43</td>
+<td>51</td>
+<td>45</td>
+<td>134</td>
+<td>123</td>
+</tr>
+<tr class="row-odd"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>730</td>
+<td>252</td>
+</tr>
+<tr class="row-even"><td>xor</td>
+<td>1604</td>
+<td>1593</td>
+<td>982</td>
+<td>894</td>
+<td>444</td>
+<td>359</td>
+<td>116</td>
+<td>110</td>
+<td>117</td>
+<td>84</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -7279,13 +7437,13 @@ acceleration was enabled where this did not conflict with the preceding
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Average:</td>
-<td>171</td>
+<td>206</td>
 </tr>
 <tr class="row-odd"><td>Maximum:</td>
-<td>2502</td>
+<td>2444</td>
 </tr>
 <tr class="row-even"><td>Minimum:</td>
-<td>1.8</td>
+<td>1.5</td>
 </tr>
 <tr class="row-odd"><td>Array size:</td>
 <td>100000</td>
@@ -7294,16 +7452,18 @@ acceleration was enabled where this did not conflict with the preceding
 </table>
 </div>
 <div class="section" id="optimised-performance-with-simd">
-<h4><a class="toc-backref" href="#id158">Optimised Performance (with SIMD)</a><a class="headerlink" href="#optimised-performance-with-simd" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id160">Optimised Performance (with SIMD)</a><a class="headerlink" href="#optimised-performance-with-simd" title="Permalink to this headline">¶</a></h4>
 <p>In this set of tests, all arithmetic error checking was disabled (not the
-default state) and SIMD acceleration was enabled (the normal default).
-Note that there may be unexpected slight differences as compared to the
-previous data table due to variations in test timing.</p>
-<p>This data may be of some use when estimating if any useful performance
-gains can be made in your specific application by disabling error
-checking in order to enable SIMD operations. It is not recommended
-to disable math error checking without good reason.</p>
-<p>Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.</p>
+default state) and SIMD acceleration was enabled (the normal default). The
+values here are relative to the default (see the above table), where values
+less than 1 are slower, and values above 1 are faster.</p>
+<p>Floating point SIMD operations are only enabled when error checking is disabled.
+This data may be of some use when estimating if any useful performance
+gains can be made in your specific application by disabling error checking.
+It is not recommended to disable math error checking without good reason.</p>
+<p>It will be noted that some integer operations which use SIMD are also slightly
+faster when error checking is disabled due to reduced checking overhead.</p>
+<p>Effect of turning error checking off and leaving SIMD on for functions with both.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="17%" />
@@ -7338,39 +7498,39 @@ to disable math error checking without good reason.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>116</td>
-<td>96</td>
-<td>70</td>
-<td>51</td>
-<td>35</td>
-<td>21</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>56</td>
-<td>30</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>55</td>
-<td>56</td>
-<td>29</td>
-<td>31</td>
-<td>16</td>
-<td>15</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>24</td>
-<td>13</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
 <tr class="row-even"><td>abs_</td>
-<td>1820</td>
+<td>1.2</td>
 <td>&#160;</td>
-<td>1122</td>
+<td>1.4</td>
 <td>&#160;</td>
-<td>470</td>
+<td>1.4</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7408,18 +7568,18 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>add</td>
-<td>1309</td>
+<td>1.3</td>
 <td>&#160;</td>
-<td>723</td>
+<td>1.3</td>
 <td>&#160;</td>
-<td>404</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>1.1</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>522</td>
-<td>105</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.1</td>
 </tr>
 <tr class="row-even"><td>afilter</td>
 <td>&#160;</td>
@@ -7436,40 +7596,40 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>amax</td>
-<td>87</td>
-<td>87</td>
-<td>167</td>
-<td>174</td>
-<td>135</td>
-<td>129</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>84</td>
-<td>41</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
 <tr class="row-even"><td>amin</td>
-<td>67</td>
-<td>65</td>
-<td>133</td>
-<td>133</td>
-<td>103</td>
-<td>97</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>67</td>
-<td>34</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>and_</td>
-<td>1545</td>
-<td>1515</td>
-<td>827</td>
-<td>887</td>
-<td>590</td>
-<td>352</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7516,8 +7676,8 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>27</td>
-<td>14</td>
+<td>1.0</td>
+<td>1.0</td>
 </tr>
 <tr class="row-odd"><td>atan</td>
 <td>&#160;</td>
@@ -7572,8 +7732,8 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>1177</td>
-<td>290</td>
+<td>1.4</td>
+<td>1.1</td>
 </tr>
 <tr class="row-odd"><td>compress</td>
 <td>&#160;</td>
@@ -7589,7 +7749,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>copysign</td>
+<tr class="row-even"><td>convert</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7603,7 +7763,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>cos</td>
+<tr class="row-odd"><td>copysign</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7617,7 +7777,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>cosh</td>
+<tr class="row-even"><td>cos</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7631,7 +7791,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>count</td>
+<tr class="row-odd"><td>cosh</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7645,7 +7805,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>cycle</td>
+<tr class="row-even"><td>count</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7659,21 +7819,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>degrees</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>669</td>
-<td>212</td>
-</tr>
-<tr class="row-even"><td>dropwhile</td>
+<tr class="row-odd"><td>cycle</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7687,35 +7833,21 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>eq</td>
-<td>1030</td>
-<td>1026</td>
-<td>474</td>
-<td>551</td>
-<td>274</td>
-<td>180</td>
+<tr class="row-even"><td>degrees</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>281</td>
-<td>132</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
 </tr>
-<tr class="row-even"><td>erf</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>erfc</td>
+<tr class="row-odd"><td>dropwhile</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7729,7 +7861,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>exp</td>
+<tr class="row-even"><td>eq</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7743,7 +7875,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>expm1</td>
+<tr class="row-odd"><td>erf</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7757,7 +7889,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>fabs</td>
+<tr class="row-even"><td>erfc</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7771,7 +7903,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>factorial</td>
+<tr class="row-odd"><td>exp</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7785,21 +7917,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>findindex</td>
-<td>204</td>
-<td>222</td>
-<td>110</td>
-<td>105</td>
-<td>42</td>
-<td>38</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>62</td>
-<td>33</td>
-</tr>
-<tr class="row-odd"><td>findindices</td>
+<tr class="row-even"><td>expm1</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7813,21 +7931,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>floor</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>1134</td>
-<td>280</td>
-</tr>
-<tr class="row-odd"><td>floordiv</td>
+<tr class="row-odd"><td>fabs</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7841,7 +7945,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>fma</td>
+<tr class="row-even"><td>factorial</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7855,7 +7959,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>fmod</td>
+<tr class="row-odd"><td>findindex</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7869,7 +7973,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>gamma</td>
+<tr class="row-even"><td>findindices</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7883,35 +7987,21 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>ge</td>
-<td>960</td>
-<td>953</td>
-<td>529</td>
-<td>513</td>
-<td>284</td>
-<td>178</td>
+<tr class="row-odd"><td>floor</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>277</td>
-<td>136</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>1.1</td>
 </tr>
-<tr class="row-even"><td>gt</td>
-<td>1062</td>
-<td>761</td>
-<td>528</td>
-<td>383</td>
-<td>181</td>
-<td>183</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>278</td>
-<td>143</td>
-</tr>
-<tr class="row-odd"><td>hypot</td>
+<tr class="row-even"><td>floordiv</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7925,21 +8015,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>invert</td>
-<td>2125</td>
-<td>2489</td>
-<td>1191</td>
-<td>1444</td>
-<td>638</td>
-<td>621</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>isfinite</td>
+<tr class="row-odd"><td>fma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7953,7 +8029,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>isinf</td>
+<tr class="row-even"><td>fmod</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7967,7 +8043,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>isnan</td>
+<tr class="row-odd"><td>gamma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7981,7 +8057,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>ldexp</td>
+<tr class="row-even"><td>ge</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -7995,21 +8071,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>le</td>
-<td>1012</td>
-<td>1009</td>
-<td>540</td>
-<td>516</td>
-<td>186</td>
-<td>186</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>295</td>
-<td>140</td>
-</tr>
-<tr class="row-even"><td>lgamma</td>
+<tr class="row-odd"><td>gt</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8023,7 +8085,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>log</td>
+<tr class="row-even"><td>hypot</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8037,7 +8099,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>log10</td>
+<tr class="row-odd"><td>invert</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8051,7 +8113,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>log1p</td>
+<tr class="row-even"><td>isfinite</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8065,7 +8127,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>log2</td>
+<tr class="row-odd"><td>isinf</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8079,35 +8141,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>lshift</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>868</td>
-<td>963</td>
-<td>471</td>
-<td>353</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>lt</td>
-<td>730</td>
-<td>757</td>
-<td>365</td>
-<td>401</td>
-<td>190</td>
-<td>159</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>266</td>
-<td>126</td>
-</tr>
-<tr class="row-odd"><td>mod</td>
+<tr class="row-even"><td>isnan</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8121,7 +8155,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>mul</td>
+<tr class="row-odd"><td>ldexp</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8135,49 +8169,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>ne</td>
-<td>1014</td>
-<td>998</td>
-<td>472</td>
-<td>518</td>
-<td>276</td>
-<td>181</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>281</td>
-<td>136</td>
-</tr>
-<tr class="row-even"><td>neg</td>
-<td>1727</td>
-<td>&#160;</td>
-<td>670</td>
-<td>&#160;</td>
-<td>442</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>or_</td>
-<td>1521</td>
-<td>1479</td>
-<td>828</td>
-<td>882</td>
-<td>563</td>
-<td>335</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>pow</td>
+<tr class="row-even"><td>le</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8191,21 +8183,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>radians</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>705</td>
-<td>228</td>
-</tr>
-<tr class="row-even"><td>repeat</td>
+<tr class="row-odd"><td>lgamma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8219,21 +8197,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>rshift</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>874</td>
-<td>&#160;</td>
-<td>318</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>sin</td>
+<tr class="row-even"><td>log</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8247,7 +8211,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>sinh</td>
+<tr class="row-odd"><td>log10</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8261,35 +8225,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>sqrt</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>259</td>
-<td>95</td>
-</tr>
-<tr class="row-odd"><td>sub</td>
-<td>1328</td>
-<td>&#160;</td>
-<td>720</td>
-<td>&#160;</td>
-<td>510</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>400</td>
-<td>115</td>
-</tr>
-<tr class="row-even"><td>takewhile</td>
+<tr class="row-even"><td>log1p</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8303,7 +8239,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>tan</td>
+<tr class="row-odd"><td>log2</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8317,7 +8253,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>tanh</td>
+<tr class="row-even"><td>lshift</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8331,7 +8267,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>truediv</td>
+<tr class="row-odd"><td>lt</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8345,7 +8281,7 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
-<tr class="row-even"><td>trunc</td>
+<tr class="row-even"><td>mod</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8356,16 +8292,282 @@ to disable math error checking without good reason.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>968</td>
-<td>247</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
-<tr class="row-odd"><td>xor</td>
-<td>1610</td>
-<td>1574</td>
-<td>924</td>
-<td>920</td>
-<td>594</td>
-<td>400</td>
+<tr class="row-odd"><td>mul</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.2</td>
+</tr>
+<tr class="row-even"><td>ne</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>neg</td>
+<td>1.3</td>
+<td>&#160;</td>
+<td>1.3</td>
+<td>&#160;</td>
+<td>1.3</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>or_</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>pow</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>pow2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>pow3</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>radians</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>repeat</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>rshift</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>sin</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>sinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>sub</td>
+<td>1.2</td>
+<td>&#160;</td>
+<td>1.5</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>1.1</td>
+</tr>
+<tr class="row-odd"><td>takewhile</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>tan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>tanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>truediv</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>1.1</td>
+</tr>
+<tr class="row-even"><td>xor</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -8387,13 +8589,13 @@ to disable math error checking without good reason.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Average:</td>
-<td>497</td>
+<td>1</td>
 </tr>
 <tr class="row-odd"><td>Maximum:</td>
-<td>2489</td>
+<td>1</td>
 </tr>
 <tr class="row-even"><td>Minimum:</td>
-<td>12.8</td>
+<td>1.0</td>
 </tr>
 <tr class="row-odd"><td>Array size:</td>
 <td>100000</td>
@@ -8401,1090 +8603,8 @@ to disable math error checking without good reason.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="simd-optimisation-effects">
-<h4><a class="toc-backref" href="#id159">SIMD Optimisation Effects</a><a class="headerlink" href="#simd-optimisation-effects" title="Permalink to this headline">¶</a></h4>
-<p>This set of tests shows what the effect of SIMD optimisations are for those
-functions which support it. SIMD optimisations are enabled by default except in
-a few cases where they conflict with math error checking (in which case error
-checking must be disabled to use them). This information may be useful in
-deciding which platform you wish to use to run your application. This
-data is primarily of interest in judging expected benchmark performance
-on different platforms.</p>
-<p>Relative Performance with and without SIMD Optimisations - Optimised / SIMD Time.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="17%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-<col width="7%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">function</th>
-<th class="head">b</th>
-<th class="head">B</th>
-<th class="head">h</th>
-<th class="head">H</th>
-<th class="head">i</th>
-<th class="head">I</th>
-<th class="head">l</th>
-<th class="head">L</th>
-<th class="head">q</th>
-<th class="head">Q</th>
-<th class="head">f</th>
-<th class="head">d</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>aall</td>
-<td>14</td>
-<td>12</td>
-<td>8.1</td>
-<td>6.2</td>
-<td>4.2</td>
-<td>2.8</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.2</td>
-<td>2.3</td>
-</tr>
-<tr class="row-odd"><td>aany</td>
-<td>14</td>
-<td>15</td>
-<td>7.4</td>
-<td>8.1</td>
-<td>4.2</td>
-<td>4.4</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.2</td>
-<td>2.3</td>
-</tr>
-<tr class="row-even"><td>abs_</td>
-<td>11</td>
-<td>&#160;</td>
-<td>6.1</td>
-<td>&#160;</td>
-<td>2.7</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>acos</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>acosh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>add</td>
-<td>6.5</td>
-<td>&#160;</td>
-<td>3.5</td>
-<td>&#160;</td>
-<td>1.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>2.3</td>
-<td>1.2</td>
-</tr>
-<tr class="row-even"><td>afilter</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>amax</td>
-<td>3.3</td>
-<td>3.7</td>
-<td>6.0</td>
-<td>7.6</td>
-<td>5.0</td>
-<td>5.7</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>2.5</td>
-<td>1.9</td>
-</tr>
-<tr class="row-even"><td>amin</td>
-<td>3.2</td>
-<td>3.6</td>
-<td>6.3</td>
-<td>7.9</td>
-<td>5.0</td>
-<td>5.7</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>2.6</td>
-<td>2.0</td>
-</tr>
-<tr class="row-odd"><td>and_</td>
-<td>9.3</td>
-<td>6.3</td>
-<td>5.1</td>
-<td>5.0</td>
-<td>3.3</td>
-<td>3.0</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>asin</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>asinh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>asum</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.8</td>
-<td>2.0</td>
-</tr>
-<tr class="row-odd"><td>atan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>atan2</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>atanh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>ceil</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.3</td>
-<td>1.3</td>
-</tr>
-<tr class="row-odd"><td>compress</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>copysign</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>cos</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>cosh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>count</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>cycle</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>degrees</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.0</td>
-<td>1.1</td>
-</tr>
-<tr class="row-even"><td>dropwhile</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>eq</td>
-<td>16</td>
-<td>20</td>
-<td>7.4</td>
-<td>8.2</td>
-<td>4.2</td>
-<td>2.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>4.3</td>
-<td>2.1</td>
-</tr>
-<tr class="row-even"><td>erf</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>erfc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>exp</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>expm1</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>fabs</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>factorial</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>findindex</td>
-<td>14</td>
-<td>15</td>
-<td>7.4</td>
-<td>7.4</td>
-<td>2.9</td>
-<td>2.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.1</td>
-<td>2.1</td>
-</tr>
-<tr class="row-odd"><td>findindices</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>floor</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.5</td>
-<td>1.1</td>
-</tr>
-<tr class="row-odd"><td>floordiv</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>fma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>fmod</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>gamma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>ge</td>
-<td>15</td>
-<td>19</td>
-<td>8.2</td>
-<td>8.0</td>
-<td>4.4</td>
-<td>2.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>4.2</td>
-<td>1.8</td>
-</tr>
-<tr class="row-even"><td>gt</td>
-<td>16</td>
-<td>15</td>
-<td>8.2</td>
-<td>5.9</td>
-<td>2.8</td>
-<td>2.8</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>4.2</td>
-<td>1.9</td>
-</tr>
-<tr class="row-odd"><td>hypot</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>invert</td>
-<td>9.4</td>
-<td>9.6</td>
-<td>5.1</td>
-<td>4.9</td>
-<td>2.7</td>
-<td>2.5</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>isfinite</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>isinf</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>isnan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>ldexp</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>le</td>
-<td>15</td>
-<td>19</td>
-<td>8.2</td>
-<td>7.8</td>
-<td>2.9</td>
-<td>2.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>4.3</td>
-<td>2.1</td>
-</tr>
-<tr class="row-even"><td>lgamma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>log</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>log10</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>log1p</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>log2</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>lshift</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>5.2</td>
-<td>3.9</td>
-<td>2.5</td>
-<td>2.7</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>lt</td>
-<td>11</td>
-<td>15</td>
-<td>5.6</td>
-<td>6.1</td>
-<td>2.9</td>
-<td>2.5</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.8</td>
-<td>2.0</td>
-</tr>
-<tr class="row-odd"><td>mod</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>mul</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>ne</td>
-<td>15</td>
-<td>19</td>
-<td>7.3</td>
-<td>8.1</td>
-<td>4.3</td>
-<td>2.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>4.2</td>
-<td>2.1</td>
-</tr>
-<tr class="row-even"><td>neg</td>
-<td>8.1</td>
-<td>&#160;</td>
-<td>4.8</td>
-<td>&#160;</td>
-<td>2.0</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>or_</td>
-<td>9.3</td>
-<td>6.2</td>
-<td>5.1</td>
-<td>5.1</td>
-<td>3.3</td>
-<td>2.9</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>pow</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>radians</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.1</td>
-<td>1.2</td>
-</tr>
-<tr class="row-even"><td>repeat</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>rshift</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.8</td>
-<td>&#160;</td>
-<td>2.6</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>sin</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>sinh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>sqrt</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.3</td>
-<td>2.0</td>
-</tr>
-<tr class="row-odd"><td>sub</td>
-<td>8.9</td>
-<td>&#160;</td>
-<td>3.4</td>
-<td>&#160;</td>
-<td>2.5</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>1.7</td>
-<td>1.3</td>
-</tr>
-<tr class="row-even"><td>takewhile</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>tan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>tanh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-odd"><td>truediv</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-<tr class="row-even"><td>trunc</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>3.2</td>
-<td>1.1</td>
-</tr>
-<tr class="row-odd"><td>xor</td>
-<td>9.3</td>
-<td>6.2</td>
-<td>5.0</td>
-<td>5.0</td>
-<td>3.3</td>
-<td>3.0</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="array-size-versus-performance">
-<h4><a class="toc-backref" href="#id160">Array Size Versus Performance</a><a class="headerlink" href="#array-size-versus-performance" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id161">Array Size Versus Performance</a><a class="headerlink" href="#array-size-versus-performance" title="Permalink to this headline">¶</a></h4>
 <p>The following shoes the effects of array size on a selected arrayfunc function
 benchmark.</p>
 <p>As array size increases, function call overhead decreases as a proportion of
@@ -9529,101 +8649,101 @@ reloads. This threshold will depend upon the particular hardware being used.</p>
 <tbody valign="top">
 <tr class="row-even"><td>10</td>
 <td>1.7</td>
-<td>1.5</td>
+<td>1.6</td>
+<td>1.6</td>
 <td>1.5</td>
 <td>1.4</td>
-<td>1.4</td>
+<td>1.2</td>
+<td>1.5</td>
 <td>1.1</td>
 <td>1.5</td>
-<td>1.0</td>
-<td>1.4</td>
 <td>1.0</td>
 <td>1.2</td>
 <td>1.2</td>
 </tr>
 <tr class="row-odd"><td>100</td>
+<td>13</td>
 <td>11</td>
 <td>11</td>
+<td>12</td>
+<td>12</td>
+<td>8.3</td>
+<td>11</td>
+<td>9.4</td>
 <td>10</td>
-<td>9.6</td>
-<td>9.9</td>
-<td>7.8</td>
-<td>11</td>
-<td>7.3</td>
-<td>11</td>
-<td>7.2</td>
-<td>8.7</td>
-<td>8.7</td>
+<td>7.5</td>
+<td>9.8</td>
+<td>9.3</td>
 </tr>
 <tr class="row-even"><td>1000</td>
-<td>62</td>
-<td>66</td>
-<td>57</td>
-<td>49</td>
-<td>53</td>
-<td>45</td>
+<td>118</td>
+<td>60</td>
+<td>107</td>
 <td>59</td>
-<td>39</td>
-<td>57</td>
-<td>41</td>
-<td>47</td>
-<td>44</td>
+<td>66</td>
+<td>43</td>
+<td>54</td>
+<td>40</td>
+<td>56</td>
+<td>42</td>
+<td>62</td>
+<td>54</td>
 </tr>
 <tr class="row-odd"><td>10000</td>
-<td>102</td>
-<td>124</td>
+<td>636</td>
+<td>99</td>
+<td>414</td>
 <td>100</td>
-<td>82</td>
-<td>98</td>
-<td>94</td>
-<td>109</td>
-<td>77</td>
-<td>115</td>
-<td>82</td>
+<td>258</td>
 <td>93</td>
+<td>108</td>
+<td>82</td>
+<td>113</td>
 <td>96</td>
+<td>247</td>
+<td>140</td>
 </tr>
 <tr class="row-even"><td>100000</td>
-<td>108</td>
-<td>142</td>
-<td>108</td>
-<td>87</td>
+<td>1239</td>
 <td>111</td>
-<td>110</td>
-<td>98</td>
-<td>71</td>
-<td>98</td>
-<td>83</td>
-<td>104</td>
-<td>86</td>
+<td>639</td>
+<td>112</td>
+<td>354</td>
+<td>101</td>
+<td>129</td>
+<td>91</td>
+<td>129</td>
+<td>113</td>
+<td>350</td>
+<td>162</td>
 </tr>
 <tr class="row-odd"><td>1000000</td>
+<td>559</td>
+<td>113</td>
+<td>233</td>
 <td>109</td>
-<td>144</td>
-<td>103</td>
-<td>83</td>
-<td>75</td>
-<td>79</td>
-<td>56</td>
-<td>40</td>
-<td>41</td>
-<td>40</td>
-<td>82</td>
-<td>51</td>
+<td>117</td>
+<td>86</td>
+<td>60</td>
+<td>45</td>
+<td>65</td>
+<td>48</td>
+<td>111</td>
+<td>58</td>
 </tr>
 <tr class="row-even"><td>10000000</td>
-<td>112</td>
-<td>139</td>
-<td>103</td>
-<td>89</td>
-<td>91</td>
+<td>407</td>
+<td>135</td>
+<td>216</td>
+<td>113</td>
+<td>111</td>
+<td>83</td>
+<td>39</td>
+<td>44</td>
+<td>57</td>
+<td>45</td>
+<td>107</td>
 <td>56</td>
-<td>59</td>
-<td>42</td>
-<td>56</td>
-<td>32</td>
-<td>74</td>
-<td>50</td>
 </tr>
 </tbody>
 </table>
@@ -9663,99 +8783,99 @@ reloads. This threshold will depend upon the particular hardware being used.</p>
 <tbody valign="top">
 <tr class="row-even"><td>10</td>
 <td>1.8</td>
+<td>1.7</td>
 <td>1.6</td>
+<td>1.7</td>
+<td>1.5</td>
+<td>1.3</td>
+<td>1.5</td>
+<td>1.3</td>
 <td>1.6</td>
-<td>1.5</td>
-<td>1.5</td>
-<td>1.2</td>
-<td>1.6</td>
-<td>1.1</td>
-<td>1.5</td>
 <td>1.3</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>100</td>
+<td>16</td>
+<td>15</td>
+<td>16</td>
 <td>14</td>
-<td>14</td>
+<td>15</td>
+<td>10</td>
 <td>13</td>
-<td>12</td>
-<td>12</td>
-<td>9.3</td>
-<td>12</td>
-<td>8.1</td>
-<td>12</td>
-<td>8.1</td>
+<td>10</td>
+<td>13</td>
+<td>9.6</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>1000</td>
-<td>133</td>
-<td>124</td>
-<td>120</td>
-<td>110</td>
-<td>87</td>
+<td>141</td>
+<td>137</td>
+<td>126</td>
+<td>122</td>
+<td>91</td>
+<td>69</td>
 <td>64</td>
-<td>68</td>
-<td>50</td>
+<td>55</td>
 <td>64</td>
-<td>48</td>
+<td>56</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>10000</td>
-<td>767</td>
-<td>763</td>
-<td>524</td>
-<td>515</td>
-<td>380</td>
-<td>319</td>
-<td>144</td>
+<td>781</td>
+<td>794</td>
+<td>592</td>
+<td>556</td>
+<td>382</td>
+<td>269</td>
+<td>134</td>
 <td>104</td>
-<td>143</td>
-<td>107</td>
+<td>145</td>
+<td>111</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>100000</td>
-<td>1533</td>
-<td>1567</td>
-<td>857</td>
-<td>864</td>
-<td>574</td>
-<td>454</td>
-<td>139</td>
-<td>111</td>
-<td>145</td>
-<td>117</td>
+<td>1611</td>
+<td>1622</td>
+<td>999</td>
+<td>933</td>
+<td>457</td>
+<td>381</td>
+<td>101</td>
+<td>108</td>
+<td>170</td>
+<td>127</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>1000000</td>
-<td>806</td>
-<td>944</td>
-<td>260</td>
-<td>256</td>
-<td>135</td>
-<td>122</td>
-<td>71</td>
-<td>60</td>
-<td>71</td>
-<td>54</td>
+<td>845</td>
+<td>821</td>
+<td>263</td>
+<td>280</td>
+<td>132</td>
+<td>105</td>
+<td>64</td>
+<td>51</td>
+<td>68</td>
+<td>55</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>10000000</td>
-<td>529</td>
-<td>525</td>
-<td>266</td>
-<td>261</td>
-<td>131</td>
-<td>84</td>
-<td>69</td>
-<td>30</td>
-<td>39</td>
-<td>30</td>
+<td>504</td>
+<td>534</td>
+<td>257</td>
+<td>248</td>
+<td>128</td>
+<td>102</td>
+<td>63</td>
+<td>50</td>
+<td>70</td>
+<td>54</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -9764,7 +8884,7 @@ reloads. This threshold will depend upon the particular hardware being used.</p>
 </div>
 </div>
 <div class="section" id="platform-effects">
-<h3><a class="toc-backref" href="#id161">Platform Effects</a><a class="headerlink" href="#platform-effects" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id162">Platform Effects</a><a class="headerlink" href="#platform-effects" title="Permalink to this headline">¶</a></h3>
 <p>The platform, including CPU, OS, compiler, and compiler version can
 affect performance, and this influence can change significantly for
 different functions.</p>
@@ -9775,83 +8895,102 @@ that you will be using.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="id12">
-<h2><a class="toc-backref" href="#id162">Platform support</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id163">Platform support</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p>Arrayfunc is written in ‘C’ and uses the standard C libraries to implement the
 underlying math functions. Arrayfunc has been tested on the following platforms.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="30%" />
-<col width="12%" />
-<col width="22%" />
-<col width="36%" />
+<col width="33%" />
+<col width="14%" />
+<col width="9%" />
+<col width="21%" />
+<col width="23%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">OS</th>
+<th class="head">Hardware</th>
 <th class="head">Bits</th>
 <th class="head">Compiler</th>
-<th class="head">Python Version Tested</th>
+<th class="head">Python Version</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Ubuntu 20.04 LTS</td>
-<td>64 bit</td>
+<td>x86_64</td>
+<td>64</td>
 <td>GCC</td>
 <td>3.8</td>
 </tr>
-<tr class="row-odd"><td>Ubuntu 21.04</td>
-<td>64 bit</td>
+<tr class="row-odd"><td>Ubuntu 21.10</td>
+<td>x86_64</td>
+<td>64</td>
 <td>GCC</td>
 <td>3.9</td>
 </tr>
-<tr class="row-even"><td>Debian 10</td>
-<td>32 bit</td>
+<tr class="row-even"><td>Debian 11</td>
+<td>i686</td>
+<td>32</td>
 <td>GCC</td>
-<td>3.7</td>
+<td>3.9</td>
 </tr>
-<tr class="row-odd"><td>Debian 10</td>
-<td>64 bit</td>
+<tr class="row-odd"><td>Debian 11</td>
+<td>x86_64</td>
+<td>64</td>
 <td>GCC</td>
-<td>3.7</td>
+<td>3.9</td>
 </tr>
 <tr class="row-even"><td>OpenSuse 15.3</td>
-<td>64 bit</td>
+<td>x86_64</td>
+<td>64</td>
 <td>GCC</td>
 <td>3.6</td>
 </tr>
-<tr class="row-odd"><td>Centos 8.4</td>
-<td>64 bit</td>
+<tr class="row-odd"><td>Alma 8.5</td>
+<td>x86_64</td>
+<td>64</td>
 <td>GCC</td>
 <td>3.6</td>
 </tr>
 <tr class="row-even"><td>FreeBSD 13</td>
-<td>64 bit</td>
+<td>x86_64</td>
+<td>64</td>
 <td>LLVM</td>
-<td>3.7</td>
+<td>3.8</td>
 </tr>
-<tr class="row-odd"><td>OpenBSD 6.9</td>
-<td>64 bit</td>
+<tr class="row-odd"><td>OpenBSD 7.0</td>
+<td>x86_64</td>
+<td>64</td>
 <td>LLVM</td>
 <td>3.8</td>
 </tr>
 <tr class="row-even"><td>MS Windows 10</td>
-<td>64 bit</td>
-<td>MS VS C 2015</td>
+<td>x86_64</td>
+<td>64</td>
+<td>MS VS C v.1929</td>
+<td>3.10</td>
+</tr>
+<tr class="row-odd"><td>MS Windows 11</td>
+<td>x86_64</td>
+<td>64</td>
+<td>MS VS C v.1929</td>
+<td>3.10</td>
+</tr>
+<tr class="row-even"><td>Raspberry Pi 2022-04-04</td>
+<td>RPi 3</td>
+<td>32</td>
+<td>GCC</td>
 <td>3.9</td>
 </tr>
-<tr class="row-odd"><td>Raspbian (RPi 3)</td>
-<td>32 bit</td>
-<td>GCC</td>
-<td>3.7</td>
-</tr>
-<tr class="row-even"><td>Ubuntu 20.04 (RPi 4)</td>
-<td>64 bit</td>
+<tr class="row-odd"><td>Ubuntu 20.04</td>
+<td>RPi 4</td>
+<td>64</td>
 <td>GCC</td>
 <td>3.8</td>
 </tr>
 </tbody>
 </table>
 <ul class="simple">
-<li>The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARM CPU running
+<li>The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
 in 32 bit mode.</li>
 <li>The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
 64 bit mode.</li>
@@ -9876,11 +9015,28 @@ in 32 bit mode.</li>
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ArrayFunc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#function-summary">Function Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#searching-and-summarising-arrays">Searching and Summarising Arrays.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mathematical-functions">Mathematical Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#option-flags-and-parameters">Option Flags and Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-types">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#platform-oddities">Platform Oddities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simd-support">SIMD Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">Platform support</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to ArrayFunc’s documentation!</a></li>
   </ul></li>
 </ul>
 </div>

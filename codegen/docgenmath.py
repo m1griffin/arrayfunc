@@ -121,6 +121,9 @@ def FindFuncDocs(filelist, funcnames):
 			# Some function names need the trailing '_' character escaped as this is a
 			# formatting character for ReST documents.
 			docsantizied = [sanitizer(x) for x in docdatastripped]
+			# Remove any trailing escape '\\' characters at the end of the block.
+			if docsantizied[-1] == '\\':
+				docsantizied[-1] = ''
 			# Add some formatting to the display of call formats. To do this we need to
 			# add another colon character.
 			callformats = [x.replace('Call formats:', 'Call formats::') for x in docsantizied]
