@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 8.1.1 for 2022-03-31
+:Version: 8.1.2 for 2022-03-31
 :Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.6 or later
