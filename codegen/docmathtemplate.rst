@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 8.1.2 for 2022-03-31
+:Version: 8.2.0 for 2022-04-23
 :Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.6 or later
@@ -736,19 +736,27 @@ SIMD instructions.
 SIMD Support Attributes
 -----------------------
 
-There is an attribute which can be tested to detect if ArrayFunc is compiled 
-with SIMD support and if the current hardware supports the required SIMD level.
+"Simdsupport" provides information on the SIMD level compiled into this 
+version of the library. There are two attributes, 'hassimd' and 'simdarch'.
 
-arrayfunc.simdsupport.hassimd
+* 'hassimd' is TRUE if the CPU supports the required SIMD features.
+* 'simdarch' contains a string indicating the CPU architecture the library
+   was compiled for.
 
-The attribute "hassimd" will be True if the module supports SIMD.
+Example::
 
-example::
+  >>> arrayfunc.simdsupport.hassimd
+  True
 
-	import arrayfunc
-	arrayfunc.simdsupport.hassimd
-	==> True
 
+Example::
+
+  >>> arrayfunc.simdsupport.simdarch
+  'x86_64'
+
+
+This was created primarily for unit testing and benchmarking and should
+not be considered to be a permanent or stable part of the library.
 
 ---------------------------------------------------------------------
 
@@ -867,22 +875,25 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                       Hardware   Bits   Compiler        Python Version
 ======================= ========== ====== =============== ================
 Ubuntu 20.04 LTS         x86_64     64     GCC               3.8
-Ubuntu 21.10             x86_64     64     GCC               3.9
+Ubuntu 22.04             x86_64     64     GCC               3.10
 Debian 11                i686       32     GCC               3.9
 Debian 11                x86_64     64     GCC               3.9
 OpenSuse 15.3            x86_64     64     GCC               3.6
 Alma 8.5                 x86_64     64     GCC               3.6
 FreeBSD 13               x86_64     64     LLVM              3.8
-OpenBSD 7.0              x86_64     64     LLVM              3.8
+OpenBSD 7.1              x86_64     64     LLVM              3.9
 MS Windows 10            x86_64     64     MS VS C v.1929    3.10
 MS Windows 11            x86_64     64     MS VS C v.1929    3.10
 Raspberry Pi 2022-04-04  RPi 3      32     GCC               3.9
-Ubuntu 20.04             RPi 4      64     GCC               3.8
+Ubuntu 22.04             RPi 4      64     GCC               3.10
+Alpine 3.15.4            VIA C3     32     GCC               3.9
 ======================= ========== ====== =============== ================
 
 * The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
   in 32 bit mode. 
 * The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
   64 bit mode.
+* The Alpine tests were conducted on a VIA C3 (x86 compatible) running in 
+  32 bit mode.
 * All others were conducted using VMs running on x86 hardware. 
 

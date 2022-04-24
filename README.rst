@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 8.1.2 for 2022-03-31
+:Version: 8.2.0 for 2022-04-23
 :Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -302,23 +302,26 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                       Hardware   Bits   Compiler        Python Version
 ======================= ========== ====== =============== ================
 Ubuntu 20.04 LTS         x86_64     64     GCC               3.8
-Ubuntu 21.10             x86_64     64     GCC               3.9
+Ubuntu 22.04             x86_64     64     GCC               3.10
 Debian 11                i686       32     GCC               3.9
 Debian 11                x86_64     64     GCC               3.9
 OpenSuse 15.3            x86_64     64     GCC               3.6
 Alma 8.5                 x86_64     64     GCC               3.6
 FreeBSD 13               x86_64     64     LLVM              3.8
-OpenBSD 7.0              x86_64     64     LLVM              3.8
+OpenBSD 7.1              x86_64     64     LLVM              3.9
 MS Windows 10            x86_64     64     MS VS C v.1929    3.10
 MS Windows 11            x86_64     64     MS VS C v.1929    3.10
 Raspberry Pi 2022-04-04  RPi 3      32     GCC               3.9
-Ubuntu 20.04             RPi 4      64     GCC               3.8
+Ubuntu 22.04             RPi 4      64     GCC               3.10
+Alpine 3.15.4            VIA C3     32     GCC               3.9
 ======================= ========== ====== =============== ================
 
 * The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
   in 32 bit mode. 
 * The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
   64 bit mode.
+* The Alpine tests were conducted on a VIA C3 (x86 compatible) running in 
+  32 bit mode.
 * All others were conducted using VMs running on x86 hardware. 
 
 ---------------------------------------------------------------------
@@ -337,6 +340,8 @@ example::
 
 	# Install from PyPI.
 	pip3 install arrayfunc
+	# Force install from PyPI source instead of using a binary wheel.
+	pip3 install --user --force-reinstall --no-binary=:all: arrayfunc
 	# Install from a local copy of the source package (Linux).
 	pip3 install --no-index --find-links=. arrayfunc
 	# Install a local package as a user package.
@@ -353,26 +358,33 @@ in order to provide a common testing method for all platforms. Testing using
 setup.py directly is no longer done.
 
 
-Installing on ARM using PIP from PyPI.
-======================================
-
 Recent versions of PyPI seem to be building their own binary wheels for some 
 platforms using their own infrastruction. This may result in an invalid ARM 
 binary on Raspberry Pi. 
 
-If you have difficulties, then download the tar.gz version and install it 
-locally (see the above instructions for a local install). There is also a
-bash script called "setupuser.sh" which will call setup.py directly with 
-the appropriate parameters. 
+If you have difficulties, then either download the tar.gz version and install 
+it locally (see the above instructions for a local install). Alternatively,
+see the above example for how to force a binary install instead of using a 
+wheel. There is also a bash script called "setupuser.sh" which will call setup.
+py directly with the appropriate parameters. 
 
 The setup.py file has platform detection code which it uses to pass the 
-correct flags to the C compiler. For ARM, this includes the CPU type. 
+correct flags to the C compiler. For ARM, this includes the CPU type. If you
+are using an ARM CPU type which is not recognized then setup.py may not
+compile in SIMD features. You can experiment with modifying setup.py to add
+new ARM models, but be sure that anything you try is compatible with the 
+existing ones.
 
 
 ---------------------------------------------------------------------
 
 Release History
 ===============
+* 8.2.0 - Update to testing and support. Tested with new releases of Ubuntu 
+          22.04 and OpenBSD 7.1. Changed "simdsupport" to also report the 
+          architecture the binary was compiled for. "Simdsupport" is only
+          used for testing and benchmarking and is not a stable part of
+          the release.
 * 8.1.2 - Bump to correct minor documentation error in README.rst. 
 * 8.1.1 - Update to testing and support. Raspberry Pi 32 bit OS updated to
           version 2022-04-04. Update to setup.py to improve ARM version 

@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 
 /*--------------------------------------------------------------------------- */
 
+#define PY_SSIZE_T_CLEAN
 #include "Python.h"
 
 #include "simddefs.h"
@@ -43,7 +44,19 @@ static PyMethodDef simdsupport_methods[] = {
 
 
 PyDoc_STRVAR(module_doc,
-"The attribute 'hassimd' will be TRUE if the CPU supports the required SIMD features.\n");
+"This provides information on the SIMD level compiled into this version \n\
+of the library. There are two attributes, 'hassimd' and 'simdarch'.\n\
+* 'hassimd' is TRUE if the CPU supports the required SIMD features.\n\
+* 'simdarch' contains a string indicating the CPU architecture the library\n\
+   was compiled for.\n\
+Examples:\n\
+>>> arrayfunc.simdsupport.hassimd\n\
+True\n\
+>>> arrayfunc.simdsupport.simdarch\n\
+'x86_64'\n\
+This was created primarily for unit testing and benchmarking and should\n\
+not be considered to be a permanent or stable part of the library.\n\
+");
 
 static struct PyModuleDef simdsupportmodule = {
 	PyModuleDef_HEAD_INIT,
@@ -59,11 +72,13 @@ static struct PyModuleDef simdsupportmodule = {
 
 /*--------------------------------------------------------------------------- */
 
-/* Return True if the SIMD level in the CPU is sufficient to support the library. */
-signed int hassimdlevel(void) {
+// Determines the SIMS support compiled into the library based on the macros 
+// defined elsewhere.
 
 // For x86-64.
 #ifdef AF_HASSIMD_X86
+
+signed int hassimdlevel(void) {
 
 	// Initialise the CPU test.
 	__builtin_cpu_init();
@@ -74,28 +89,36 @@ signed int hassimdlevel(void) {
 	} else {
 		return 0;
 	}
-#endif
+}
+
+#elif defined(AF_HASSIMD_ARMv7_32BIT)
 
 // For ARMv7 32 bit with NEON.
-#if defined(AF_HASSIMD_ARMv7_32BIT)
+signed int hassimdlevel(void) {
 	if (getauxval(AT_HWCAP) & HWCAP_NEON) {
-		return 1;
+		return 2;
 	} else {
 		return 0;
 	}
-#endif
+}
 
+#elif defined(AF_HASSIMD_ARM_AARCH64)
 
 // Apparently ARM aarch64 64 bit always has NEON.
-#if defined(AF_HASSIMD_ARM_AARCH64)
-	return 1;
+signed int hassimdlevel(void) {
+	return 3;
+}
+
 #else
 
+// If none of the above, assume false. This should cover 32 bit x86.
+signed int hassimdlevel(void) {
 	return 0;
+}
+
 #endif
 
 
-}
 
 /*--------------------------------------------------------------------------- */
 
@@ -103,15 +126,48 @@ signed int hassimdlevel(void) {
 PyMODINIT_FUNC PyInit_simdsupport(void) {
 	PyObject *m;
 
+	signed int simdcode;
+
 	m = PyModule_Create(&simdsupportmodule);
 	if (m == NULL) { goto iserror; }
 
-	if (hassimdlevel()) {
-		if (PyModule_AddObject(m, "hassimd", Py_True)) { goto iserror; }
-	} else {
-		if (PyModule_AddObject(m, "hassimd", Py_False)) { goto iserror; }
+	// There are alternative hassimdlevel functions, only one of which
+	// is defined at any one time.
+	simdcode = hassimdlevel();
+
+	switch (simdcode) {
+		// No SIMD.
+		case 0 : {
+			if (PyModule_AddObject(m, "hassimd", PyBool_FromLong(0)) < 0) { goto iserror; }
+			if (PyModule_AddObject(m, "simdarch", PyUnicode_FromString("none")) < 0) { goto iserror; }
+			break;
+		}
+		// x86_64, also known as amd64.
+		case 1 : {
+			if (PyModule_AddObject(m, "hassimd", PyBool_FromLong(1)) < 0) { goto iserror; }
+			if (PyModule_AddObject(m, "simdarch", PyUnicode_FromString("x86_64")) < 0) { goto iserror; }
+			break;
+		}
+		// ARMv7 with 32 bit NEON. Also known as armv7l.
+		case 2 : {
+			if (PyModule_AddObject(m, "hassimd", PyBool_FromLong(1)) < 0) { goto iserror; }
+			if (PyModule_AddObject(m, "simdarch", PyUnicode_FromString("armv7l")) < 0) { goto iserror; }
+			break;
+		}
+		// ARMv8 with 64 bit NEON.  Also known as aarch64.
+		case 3 : {
+			if (PyModule_AddObject(m, "hassimd", PyBool_FromLong(1)) < 0) { goto iserror; }
+			if (PyModule_AddObject(m, "simdarch", PyUnicode_FromString("aarch64")) < 0) { goto iserror; }
+			break;
+		}
+		// We don't know this code.
+		default: {
+			if (PyModule_AddObject(m, "hassimd", PyBool_FromLong(0)) < 0) { goto iserror; }
+			if (PyModule_AddObject(m, "simdarch", PyUnicode_FromString("none")) < 0) { goto iserror; }
+			break;
+		}
 	}
-		
+
 
 	// This is the normal exit point.
 	return m;

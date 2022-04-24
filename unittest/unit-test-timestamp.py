@@ -30,7 +30,7 @@ import sys
 ##############################################################################
 
 with open('af_unittest.txt', 'w') as f:
-	f.write(time.ctime() + '\n\n')
+	f.write(time.strftime('%Y-%m-%d %H:%M:%S') + '\n\n')
 	# Copy the command line parameters. This is intended to be used to record
 	# the type of test the unit test was conducted under.
 	if len(sys.argv) >= 5:
