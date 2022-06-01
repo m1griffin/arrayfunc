@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ asum_head = """//---------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -173,6 +173,30 @@ unsigned long long asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *dat
 
 # ==============================================================================
 
+fixfloatfinite = """
+/* This function is used to overcome what appears to be a compiler bug in 
+   x86 32 bit platforms. When two maximum float (32 bit floating point numbers) 
+   values were added together they would result in a value which should have 
+   been infinity, but instead were twice the maximum value (6.805646932770577e+38).
+   Passing the result into and out of this function seems to force the correct 
+   result of "inf" to be produced. A variety of different fixes and tweaks were 
+   tried, but this was the simpliest that worked.
+*/
+#ifdef AF_FIXFLOAT_i386
+float fixfloatfinite(float inval) {
+	return inval;
+}
+#endif
+"""
+# This is the function call for the above, to be inserted where required.
+fixfloatfinitecall = """#ifdef AF_FIXFLOAT_i386
+			partialsum = fixfloatfinite(partialsum);
+#endif
+"""
+
+
+# ==============================================================================
+
 # This is used for floating point versions only.
 floattemplate = """
 /*--------------------------------------------------------------------------- */
@@ -184,7 +208,7 @@ floattemplate = """
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
-double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
+%(arraytype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
@@ -197,7 +221,7 @@ double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed in
 	if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		// Math error checking disabled.
 		if (ignoreerrors) {
-			return asum_%(funcmodifier)s_simd(arraylen, data);
+			partialsum = asum_%(funcmodifier)s_simd(arraylen, data);
 		} else {
 			partialsum = asum_%(funcmodifier)s_simd_ovfl(arraylen, data, errflag);
 		}
@@ -210,6 +234,7 @@ double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed in
 			for (x = 0; x < arraylen; x++) {
 				partialsum = partialsum + data[x];
 			}
+%(fixfloatfinitecall)s
 		} else {
 			// Overflow checking enabled.
 			for (x = 0; x < arraylen; x++) {
@@ -224,7 +249,7 @@ double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed in
 	}
 #endif
 
-	return %(returnmodifier)spartialsum;
+	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
 """
@@ -242,7 +267,7 @@ simdsupport = """
 */
 // Version without error checking.
 #ifdef AF_HASSIMD_X86
-double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) { 
+%(arraytype)s asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -278,13 +303,13 @@ double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) {
 	}
 
 
-	return %(returnmodifier)spartialsum;
+	return partialsum;
 }
 
 /*--------------------------------------------------------------------------- */
 
 // Version with error checking.
-double asum_%(funcmodifier)s_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag) { 
+%(arraytype)s asum_%(funcmodifier)s_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -330,7 +355,7 @@ double asum_%(funcmodifier)s_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data,
 	}
 
 
-	return %(returnmodifier)spartialsum;
+	return partialsum;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -447,7 +472,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		}
 		// float
 		case 'f' : {
-			resultd = asum_float(arraydata.arraylength, arraydata.array1.f, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
+			resultd = (double) asum_float(arraydata.arraylength, arraydata.array1.f, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyFloat_FromDouble(resultd);
 			break;
 		}
@@ -559,6 +584,8 @@ ops_calls = {'b' : template_basic, 'B' : template_basic_u,
 	'q' : template_basic, 'Q' : template_basic_u, 
 	'f' : floattemplate, 'd' : floattemplate}
 
+# This is a 'fix" for what appears to be a compiler bug.
+fixfloatfinite_ops = {'f' : fixfloatfinitecall}
 
 simdattr_x86 = {
 	'f' : 'v4sf',
@@ -592,7 +619,7 @@ simdop_x86 = {
 	'd' : '__builtin_ia32_addpd',
 }
 
-
+# TODO: Remove if not required.
 # The cast to use for floating point array types.
 returnmodifier = {'b' : '', 'B' : '', 
 	'h' : '', 'H' : '', 
@@ -631,12 +658,18 @@ with open(filename, 'w') as f:
 		# Select the implementation template for the current data type.
 		optemplate = ops_calls[arraycode]
 
+		# This is to address what appears to be a compiler bug.
+		if arraycode == 'f':
+			f.write(fixfloatfinite)
+
 		# Write out the calculation source code. 
 		f.write(optemplate % {'arraycode' : arraycode, 
 					'arraytype' : arraytype, 
 					'funcmodifier' : funcmodifier, 
 					'returnmodifier' : returnmodifier[arraycode],
-					'simdwidth' : simdwidth})
+					'simdwidth' : simdwidth,
+					'fixfloatfinitecall' : fixfloatfinite_ops.get(arraycode, ''),
+					})
 
 	# Write out the boilerplate at the end.
 	f.write(asum_params % {'funclabel' : funcname})

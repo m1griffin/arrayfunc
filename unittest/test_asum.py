@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      14-Oct-2021.
+# Ver:      30-May-2022.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -7918,7 +7918,6 @@ class asum_overflow_MaxVal_0_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -7927,7 +7926,6 @@ class asum_overflow_MaxVal_0_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -8003,7 +8001,6 @@ class asum_overflow_MaxVal_1_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -8012,7 +8009,6 @@ class asum_overflow_MaxVal_1_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -8088,7 +8084,6 @@ class asum_overflow_MaxVal_2_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -8097,7 +8092,6 @@ class asum_overflow_MaxVal_2_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -8173,7 +8167,6 @@ class asum_overflow_MaxVal_3_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -8182,7 +8175,6 @@ class asum_overflow_MaxVal_3_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -8258,7 +8250,6 @@ class asum_overflow_MaxVal_4_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -8267,7 +8258,6 @@ class asum_overflow_MaxVal_4_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -8343,7 +8333,6 @@ class asum_overflow_MaxVal_0_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -8352,7 +8341,6 @@ class asum_overflow_MaxVal_0_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -8428,7 +8416,6 @@ class asum_overflow_MaxVal_1_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -8437,7 +8424,6 @@ class asum_overflow_MaxVal_1_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -8513,7 +8499,6 @@ class asum_overflow_MaxVal_2_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -8522,7 +8507,6 @@ class asum_overflow_MaxVal_2_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -8598,7 +8582,6 @@ class asum_overflow_MaxVal_3_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -8607,7 +8590,6 @@ class asum_overflow_MaxVal_3_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -8683,7 +8665,6 @@ class asum_overflow_MaxVal_4_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -8692,7 +8673,6 @@ class asum_overflow_MaxVal_4_L(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -8766,7 +8746,6 @@ class asum_overflow_MaxVal_0_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -8775,7 +8754,6 @@ class asum_overflow_MaxVal_0_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -8849,7 +8827,6 @@ class asum_overflow_MaxVal_1_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -8858,7 +8835,6 @@ class asum_overflow_MaxVal_1_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -8932,7 +8908,6 @@ class asum_overflow_MaxVal_2_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -8941,7 +8916,6 @@ class asum_overflow_MaxVal_2_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -9015,7 +8989,6 @@ class asum_overflow_MaxVal_3_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -9024,7 +8997,6 @@ class asum_overflow_MaxVal_3_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -9098,7 +9070,6 @@ class asum_overflow_MaxVal_4_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -9107,7 +9078,6 @@ class asum_overflow_MaxVal_4_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -9181,7 +9151,6 @@ class asum_overflow_MaxVal_0_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -9190,7 +9159,6 @@ class asum_overflow_MaxVal_0_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -9264,7 +9232,6 @@ class asum_overflow_MaxVal_1_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -9273,7 +9240,6 @@ class asum_overflow_MaxVal_1_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -9347,7 +9313,6 @@ class asum_overflow_MaxVal_2_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -9356,7 +9321,6 @@ class asum_overflow_MaxVal_2_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -9430,7 +9394,6 @@ class asum_overflow_MaxVal_3_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -9439,7 +9402,6 @@ class asum_overflow_MaxVal_3_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -9513,7 +9475,6 @@ class asum_overflow_MaxVal_4_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -9522,7 +9483,6 @@ class asum_overflow_MaxVal_4_Q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -9596,12 +9556,6 @@ class asum_overflow_MaxVal_0_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -9610,12 +9564,6 @@ class asum_overflow_MaxVal_0_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -9689,12 +9637,6 @@ class asum_overflow_MaxVal_1_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -9703,12 +9645,6 @@ class asum_overflow_MaxVal_1_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -9782,12 +9718,6 @@ class asum_overflow_MaxVal_2_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -9796,12 +9726,6 @@ class asum_overflow_MaxVal_2_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -9875,12 +9799,6 @@ class asum_overflow_MaxVal_3_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -9889,12 +9807,6 @@ class asum_overflow_MaxVal_3_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -9968,12 +9880,6 @@ class asum_overflow_MaxVal_4_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -9982,12 +9888,6 @@ class asum_overflow_MaxVal_4_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -10061,7 +9961,6 @@ class asum_overflow_MaxVal_0_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -10070,7 +9969,6 @@ class asum_overflow_MaxVal_0_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -10144,7 +10042,6 @@ class asum_overflow_MaxVal_1_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -10153,7 +10050,6 @@ class asum_overflow_MaxVal_1_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -10227,7 +10123,6 @@ class asum_overflow_MaxVal_2_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -10236,7 +10131,6 @@ class asum_overflow_MaxVal_2_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -10310,7 +10204,6 @@ class asum_overflow_MaxVal_3_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -10319,7 +10212,6 @@ class asum_overflow_MaxVal_3_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -10393,7 +10285,6 @@ class asum_overflow_MaxVal_4_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -10402,7 +10293,6 @@ class asum_overflow_MaxVal_4_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -10478,7 +10368,6 @@ class asum_overflow_MinVal_0_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -10487,7 +10376,6 @@ class asum_overflow_MinVal_0_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -10563,7 +10451,6 @@ class asum_overflow_MinVal_1_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -10572,7 +10459,6 @@ class asum_overflow_MinVal_1_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -10648,7 +10534,6 @@ class asum_overflow_MinVal_2_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -10657,7 +10542,6 @@ class asum_overflow_MinVal_2_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -10733,7 +10617,6 @@ class asum_overflow_MinVal_3_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -10742,7 +10625,6 @@ class asum_overflow_MinVal_3_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -10818,7 +10700,6 @@ class asum_overflow_MinVal_4_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -10827,7 +10708,6 @@ class asum_overflow_MinVal_4_l(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -10901,7 +10781,6 @@ class asum_overflow_MinVal_0_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -10910,7 +10789,6 @@ class asum_overflow_MinVal_0_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -10984,7 +10862,6 @@ class asum_overflow_MinVal_1_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -10993,7 +10870,6 @@ class asum_overflow_MinVal_1_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -11067,7 +10943,6 @@ class asum_overflow_MinVal_2_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -11076,7 +10951,6 @@ class asum_overflow_MinVal_2_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -11150,7 +11024,6 @@ class asum_overflow_MinVal_3_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -11159,7 +11032,6 @@ class asum_overflow_MinVal_3_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -11233,7 +11105,6 @@ class asum_overflow_MinVal_4_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -11242,7 +11113,6 @@ class asum_overflow_MinVal_4_q(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -11316,12 +11186,6 @@ class asum_overflow_MinVal_0_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -11330,12 +11194,6 @@ class asum_overflow_MinVal_0_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -11409,12 +11267,6 @@ class asum_overflow_MinVal_1_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -11423,12 +11275,6 @@ class asum_overflow_MinVal_1_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -11502,12 +11348,6 @@ class asum_overflow_MinVal_2_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -11516,12 +11356,6 @@ class asum_overflow_MinVal_2_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -11595,12 +11429,6 @@ class asum_overflow_MinVal_3_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -11609,12 +11437,6 @@ class asum_overflow_MinVal_3_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -11688,12 +11510,6 @@ class asum_overflow_MinVal_4_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -11702,12 +11518,6 @@ class asum_overflow_MinVal_4_f(unittest.TestCase):
 
 
 	########################################################
-	# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""
@@ -11781,7 +11591,6 @@ class asum_overflow_MinVal_0_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
@@ -11790,7 +11599,6 @@ class asum_overflow_MinVal_0_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
 		"""
@@ -11864,7 +11672,6 @@ class asum_overflow_MinVal_1_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
@@ -11873,7 +11680,6 @@ class asum_overflow_MinVal_1_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
@@ -11947,7 +11753,6 @@ class asum_overflow_MinVal_2_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
@@ -11956,7 +11761,6 @@ class asum_overflow_MinVal_2_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
@@ -12030,7 +11834,6 @@ class asum_overflow_MinVal_3_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
@@ -12039,7 +11842,6 @@ class asum_overflow_MinVal_3_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
 		"""
@@ -12113,7 +11915,6 @@ class asum_overflow_MinVal_4_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
 		"""
@@ -12122,7 +11923,6 @@ class asum_overflow_MinVal_4_d(unittest.TestCase):
 
 
 	########################################################
-	
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
 		"""

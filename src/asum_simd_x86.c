@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      14-Oct-2021.
+// Ver:      30-May-2022.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@
 */
 // Version without error checking.
 #ifdef AF_HASSIMD_X86
-double asum_float_simd(Py_ssize_t arraylen, float *data) { 
+float asum_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -87,13 +87,13 @@ double asum_float_simd(Py_ssize_t arraylen, float *data) {
 	}
 
 
-	return (double) partialsum;
+	return partialsum;
 }
 
 /*--------------------------------------------------------------------------- */
 
 // Version with error checking.
-double asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag) { 
+float asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -139,7 +139,7 @@ double asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errfla
 	}
 
 
-	return (double) partialsum;
+	return partialsum;
 }
 #endif
 /*--------------------------------------------------------------------------- */

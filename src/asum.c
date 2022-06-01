@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -417,6 +417,20 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 /*--------------------------------------------------------------------------- */
 
 
+/* This function is used to overcome what appears to be a compiler bug in 
+   x86 32 bit platforms. When two maximum float (32 bit floating point numbers) 
+   values were added together they would result in a value which should have 
+   been infinity, but instead were twice the maximum value (6.805646932770577e+38).
+   Passing the result into and out of this function seems to force the correct 
+   result of "inf" to be produced. A variety of different fixes and tweaks were 
+   tried, but this was the simpliest that worked.
+*/
+#ifdef AF_FIXFLOAT_i386
+float fixfloatfinite(float inval) {
+	return inval;
+}
+#endif
+
 /*--------------------------------------------------------------------------- */
 /* For array code: f
    arraylen = The length of the data array.
@@ -426,7 +440,7 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
-double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
+float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
@@ -439,7 +453,7 @@ double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed 
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		// Math error checking disabled.
 		if (ignoreerrors) {
-			return asum_float_simd(arraylen, data);
+			partialsum = asum_float_simd(arraylen, data);
 		} else {
 			partialsum = asum_float_simd_ovfl(arraylen, data, errflag);
 		}
@@ -452,6 +466,10 @@ double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed 
 			for (x = 0; x < arraylen; x++) {
 				partialsum = partialsum + data[x];
 			}
+#ifdef AF_FIXFLOAT_i386
+			partialsum = fixfloatfinite(partialsum);
+#endif
+
 		} else {
 			// Overflow checking enabled.
 			for (x = 0; x < arraylen; x++) {
@@ -466,7 +484,7 @@ double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed 
 	}
 #endif
 
-	return (double) partialsum;
+	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
 
@@ -492,7 +510,7 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		// Math error checking disabled.
 		if (ignoreerrors) {
-			return asum_double_simd(arraylen, data);
+			partialsum = asum_double_simd(arraylen, data);
 		} else {
 			partialsum = asum_double_simd_ovfl(arraylen, data, errflag);
 		}
@@ -505,6 +523,7 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 			for (x = 0; x < arraylen; x++) {
 				partialsum = partialsum + data[x];
 			}
+
 		} else {
 			// Overflow checking enabled.
 			for (x = 0; x < arraylen; x++) {
@@ -630,7 +649,7 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds) {
 		}
 		// float
 		case 'f' : {
-			resultd = asum_float(arraydata.arraylength, arraydata.array1.f, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
+			resultd = (double) asum_float(arraydata.arraylength, arraydata.array1.f, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyFloat_FromDouble(resultd);
 			break;
 		}

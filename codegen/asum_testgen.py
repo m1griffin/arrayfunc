@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -333,7 +333,6 @@ class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
 
 
 	########################################################
-	%(ovfltestskip)s
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted %(rotplaces)s.
 		"""
@@ -342,7 +341,6 @@ class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
 
 
 	########################################################
-	%(ovfltestskip)s
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted %(rotplaces)s.
 		"""
@@ -563,17 +561,6 @@ OvflClassSkip = """# Whether this test can be peformed depends on the integer wo
 		'Skip test if L integer is not equal to Q.')"""
 
 
-
-# Overflow tests for array type 'f'. With 32 bit x86 Debian array type 'f', there
-# is an apparent bug which allows float values to exceed the maximum float value
-# without overflowing to infinity.
-OvflTestSkip = """# There seems to be a problem with 32 bit Debian with array type 'f'.
-	# Intermediate values can exceed the maximum array type value without
-	# the value overflowing to infinity. This does not happen on x86_64, or
-	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
-			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')"""
-
 # ==============================================================================
 
 # This is used to generate test template data for non-finite tests.
@@ -629,12 +616,6 @@ def genoverflowtestdata(arraystested, maxormin):
 			x['ovflclassskip'] = OvflClassSkip
 		else:
 			x['ovflclassskip'] = ''
-
-		# On 32 bit x86 float arrays, float numbers do not behave correctly.
-		if x['typecode'] == 'f':
-			x['ovfltestskip'] = OvflTestSkip
-		else:
-			x['ovfltestskip'] = ''
 
 
 	return testdata

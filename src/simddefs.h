@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -54,6 +54,18 @@
 #endif
 
 /*--------------------------------------------------------------------------- */
+
+// On x86 32 bit platforms there is an apparent compiler bug which can cause 
+// float (32 bit floating point) to exceed the valid range when two floats
+// of the maximum value are added together instead of the result being 
+// infinity. This has been observed with Debian 32 bit in a VM and Alpine 
+// 32 bit on a Via C3. A fix has been implemented which triggers infinity.
+#if defined(__i386__)
+#define AF_FIXFLOAT_i386
+#endif
+
+/*--------------------------------------------------------------------------- */
+
 
 // This is for x86-64 only with 128 bit SIMD registers.
 #ifdef AF_HASSIMD_X86
