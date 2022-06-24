@@ -47,7 +47,9 @@ class asum_general_%(arrayevenodd)s_%(typecode)s(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -70,7 +72,7 @@ class asum_general_%(arrayevenodd)s_%(typecode)s(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if '%(typecode)s' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -156,7 +158,7 @@ class asum_parameter_%(typecode)s(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.%(typecode)s_max
 		MinVal = arrayfunc.arraylimits.%(typecode)s_min
@@ -283,7 +285,7 @@ class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.%(typecode)s_max
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
@@ -392,7 +394,7 @@ class asum_nonfinite_%(rotplaces)s_%(arrayevenodd)s_arraysize_%(typecode)s(unitt
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of

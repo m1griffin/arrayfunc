@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      30-May-2022.
+# Ver:      23-Jun-2022.
 #
 ###############################################################################
 #
@@ -62,7 +62,9 @@ class asum_general_even_b(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -85,7 +87,7 @@ class asum_general_even_b(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'b' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -166,7 +168,9 @@ class asum_general_odd_b(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -189,7 +193,7 @@ class asum_general_odd_b(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'b' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -270,7 +274,9 @@ class asum_general_even_B(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -293,7 +299,7 @@ class asum_general_even_B(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'B' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -374,7 +380,9 @@ class asum_general_odd_B(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -397,7 +405,7 @@ class asum_general_odd_B(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'B' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -478,7 +486,9 @@ class asum_general_even_h(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -501,7 +511,7 @@ class asum_general_even_h(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'h' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -582,7 +592,9 @@ class asum_general_odd_h(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -605,7 +617,7 @@ class asum_general_odd_h(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'h' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -686,7 +698,9 @@ class asum_general_even_H(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -709,7 +723,7 @@ class asum_general_even_H(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'H' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -790,7 +804,9 @@ class asum_general_odd_H(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -813,7 +829,7 @@ class asum_general_odd_H(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'H' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -894,7 +910,9 @@ class asum_general_even_i(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -917,7 +935,7 @@ class asum_general_even_i(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'i' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -998,7 +1016,9 @@ class asum_general_odd_i(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1021,7 +1041,7 @@ class asum_general_odd_i(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'i' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1102,7 +1122,9 @@ class asum_general_even_I(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1125,7 +1147,7 @@ class asum_general_even_I(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'I' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1206,7 +1228,9 @@ class asum_general_odd_I(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1229,7 +1253,7 @@ class asum_general_odd_I(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'I' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1310,7 +1334,9 @@ class asum_general_even_l(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1333,7 +1359,7 @@ class asum_general_even_l(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'l' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1414,7 +1440,9 @@ class asum_general_odd_l(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1437,7 +1465,7 @@ class asum_general_odd_l(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'l' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1518,7 +1546,9 @@ class asum_general_even_L(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1541,7 +1571,7 @@ class asum_general_even_L(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'L' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1622,7 +1652,9 @@ class asum_general_odd_L(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1645,7 +1677,7 @@ class asum_general_odd_L(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'L' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1726,7 +1758,9 @@ class asum_general_even_q(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1749,7 +1783,7 @@ class asum_general_even_q(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'q' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1830,7 +1864,9 @@ class asum_general_odd_q(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1853,7 +1889,7 @@ class asum_general_odd_q(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'q' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -1934,7 +1970,9 @@ class asum_general_even_Q(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -1957,7 +1995,7 @@ class asum_general_even_Q(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'Q' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -2038,7 +2076,9 @@ class asum_general_odd_Q(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -2061,7 +2101,7 @@ class asum_general_odd_Q(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'Q' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -2142,7 +2182,9 @@ class asum_general_even_f(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -2165,7 +2207,7 @@ class asum_general_even_f(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'f' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -2246,7 +2288,9 @@ class asum_general_odd_f(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -2269,7 +2313,7 @@ class asum_general_odd_f(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'f' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -2350,7 +2394,9 @@ class asum_general_even_d(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -2373,7 +2419,7 @@ class asum_general_even_d(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'd' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -2454,7 +2500,9 @@ class asum_general_odd_d(unittest.TestCase):
 		"""
 		# The size of the test arrays. The default length is an even
 		# number so that if fits entirely within SIMD registers.
-		arraylength = 96
+		# It is also big enough that SIMD code that operates on "chunks"
+		# of arrays can fit several chunks evenly within the array.
+		arraylength = 1024
 
 		# We use a template to generate this code, so the following
 		# compare is inserted into the template to generate code which
@@ -2477,7 +2525,7 @@ class asum_general_odd_d(unittest.TestCase):
 		# The test values for the largest integer array types need to be
 		# scaled down more to prevent integer overflow.
 		if 'd' in ('L', 'Q'):
-			testscale = 100
+			testscale = 1000
 		else:
 			testscale = 10
 
@@ -2557,7 +2605,7 @@ class asum_parameter_b(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.b_max
 		MinVal = arrayfunc.arraylimits.b_min
@@ -2676,7 +2724,7 @@ class asum_parameter_B(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.B_max
 		MinVal = arrayfunc.arraylimits.B_min
@@ -2795,7 +2843,7 @@ class asum_parameter_h(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.h_max
 		MinVal = arrayfunc.arraylimits.h_min
@@ -2914,7 +2962,7 @@ class asum_parameter_H(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.H_max
 		MinVal = arrayfunc.arraylimits.H_min
@@ -3033,7 +3081,7 @@ class asum_parameter_i(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.i_max
 		MinVal = arrayfunc.arraylimits.i_min
@@ -3152,7 +3200,7 @@ class asum_parameter_I(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.I_max
 		MinVal = arrayfunc.arraylimits.I_min
@@ -3271,7 +3319,7 @@ class asum_parameter_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.l_max
 		MinVal = arrayfunc.arraylimits.l_min
@@ -3390,7 +3438,7 @@ class asum_parameter_L(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.L_max
 		MinVal = arrayfunc.arraylimits.L_min
@@ -3509,7 +3557,7 @@ class asum_parameter_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.q_max
 		MinVal = arrayfunc.arraylimits.q_min
@@ -3628,7 +3676,7 @@ class asum_parameter_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.Q_max
 		MinVal = arrayfunc.arraylimits.Q_min
@@ -3747,7 +3795,7 @@ class asum_parameter_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.f_max
 		MinVal = arrayfunc.arraylimits.f_min
@@ -3866,7 +3914,7 @@ class asum_parameter_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		MaxVal = arrayfunc.arraylimits.d_max
 		MinVal = arrayfunc.arraylimits.d_min
@@ -4009,7 +4057,7 @@ class asum_nonfinite_0_even_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -4203,7 +4251,7 @@ class asum_nonfinite_1_even_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -4397,7 +4445,7 @@ class asum_nonfinite_2_even_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -4591,7 +4639,7 @@ class asum_nonfinite_3_even_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -4785,7 +4833,7 @@ class asum_nonfinite_4_even_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -4979,7 +5027,7 @@ class asum_nonfinite_0_odd_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -5173,7 +5221,7 @@ class asum_nonfinite_1_odd_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -5367,7 +5415,7 @@ class asum_nonfinite_2_odd_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -5561,7 +5609,7 @@ class asum_nonfinite_3_odd_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -5755,7 +5803,7 @@ class asum_nonfinite_4_odd_arraysize_f(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -5949,7 +5997,7 @@ class asum_nonfinite_0_even_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -6143,7 +6191,7 @@ class asum_nonfinite_1_even_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -6337,7 +6385,7 @@ class asum_nonfinite_2_even_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -6531,7 +6579,7 @@ class asum_nonfinite_3_even_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -6725,7 +6773,7 @@ class asum_nonfinite_4_even_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -6919,7 +6967,7 @@ class asum_nonfinite_0_odd_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -7113,7 +7161,7 @@ class asum_nonfinite_1_odd_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -7307,7 +7355,7 @@ class asum_nonfinite_2_odd_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -7501,7 +7549,7 @@ class asum_nonfinite_3_odd_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -7695,7 +7743,7 @@ class asum_nonfinite_4_odd_arraysize_d(unittest.TestCase):
 		else:
 			arrayextension = 0
 
-		arraylength = 96 + arrayextension
+		arraylength = 1024 + arrayextension
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -7868,7 +7916,7 @@ class asum_overflow_MaxVal_0_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -7951,7 +7999,7 @@ class asum_overflow_MaxVal_1_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -8034,7 +8082,7 @@ class asum_overflow_MaxVal_2_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -8117,7 +8165,7 @@ class asum_overflow_MaxVal_3_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -8200,7 +8248,7 @@ class asum_overflow_MaxVal_4_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -8283,7 +8331,7 @@ class asum_overflow_MaxVal_0_L(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.L_max
 		self.MinVal = arrayfunc.arraylimits.L_min
@@ -8366,7 +8414,7 @@ class asum_overflow_MaxVal_1_L(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.L_max
 		self.MinVal = arrayfunc.arraylimits.L_min
@@ -8449,7 +8497,7 @@ class asum_overflow_MaxVal_2_L(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.L_max
 		self.MinVal = arrayfunc.arraylimits.L_min
@@ -8532,7 +8580,7 @@ class asum_overflow_MaxVal_3_L(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.L_max
 		self.MinVal = arrayfunc.arraylimits.L_min
@@ -8615,7 +8663,7 @@ class asum_overflow_MaxVal_4_L(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.L_max
 		self.MinVal = arrayfunc.arraylimits.L_min
@@ -8696,7 +8744,7 @@ class asum_overflow_MaxVal_0_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -8777,7 +8825,7 @@ class asum_overflow_MaxVal_1_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -8858,7 +8906,7 @@ class asum_overflow_MaxVal_2_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -8939,7 +8987,7 @@ class asum_overflow_MaxVal_3_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -9020,7 +9068,7 @@ class asum_overflow_MaxVal_4_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -9101,7 +9149,7 @@ class asum_overflow_MaxVal_0_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.Q_max
 		self.MinVal = arrayfunc.arraylimits.Q_min
@@ -9182,7 +9230,7 @@ class asum_overflow_MaxVal_1_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.Q_max
 		self.MinVal = arrayfunc.arraylimits.Q_min
@@ -9263,7 +9311,7 @@ class asum_overflow_MaxVal_2_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.Q_max
 		self.MinVal = arrayfunc.arraylimits.Q_min
@@ -9344,7 +9392,7 @@ class asum_overflow_MaxVal_3_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.Q_max
 		self.MinVal = arrayfunc.arraylimits.Q_min
@@ -9425,7 +9473,7 @@ class asum_overflow_MaxVal_4_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.Q_max
 		self.MinVal = arrayfunc.arraylimits.Q_min
@@ -9506,7 +9554,7 @@ class asum_overflow_MaxVal_0_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -9587,7 +9635,7 @@ class asum_overflow_MaxVal_1_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -9668,7 +9716,7 @@ class asum_overflow_MaxVal_2_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -9749,7 +9797,7 @@ class asum_overflow_MaxVal_3_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -9830,7 +9878,7 @@ class asum_overflow_MaxVal_4_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -9911,7 +9959,7 @@ class asum_overflow_MaxVal_0_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -9992,7 +10040,7 @@ class asum_overflow_MaxVal_1_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -10073,7 +10121,7 @@ class asum_overflow_MaxVal_2_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -10154,7 +10202,7 @@ class asum_overflow_MaxVal_3_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -10235,7 +10283,7 @@ class asum_overflow_MaxVal_4_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -10318,7 +10366,7 @@ class asum_overflow_MinVal_0_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -10401,7 +10449,7 @@ class asum_overflow_MinVal_1_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -10484,7 +10532,7 @@ class asum_overflow_MinVal_2_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -10567,7 +10615,7 @@ class asum_overflow_MinVal_3_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -10650,7 +10698,7 @@ class asum_overflow_MinVal_4_l(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
@@ -10731,7 +10779,7 @@ class asum_overflow_MinVal_0_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -10812,7 +10860,7 @@ class asum_overflow_MinVal_1_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -10893,7 +10941,7 @@ class asum_overflow_MinVal_2_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -10974,7 +11022,7 @@ class asum_overflow_MinVal_3_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -11055,7 +11103,7 @@ class asum_overflow_MinVal_4_q(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
@@ -11136,7 +11184,7 @@ class asum_overflow_MinVal_0_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -11217,7 +11265,7 @@ class asum_overflow_MinVal_1_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -11298,7 +11346,7 @@ class asum_overflow_MinVal_2_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -11379,7 +11427,7 @@ class asum_overflow_MinVal_3_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -11460,7 +11508,7 @@ class asum_overflow_MinVal_4_f(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
@@ -11541,7 +11589,7 @@ class asum_overflow_MinVal_0_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -11622,7 +11670,7 @@ class asum_overflow_MinVal_1_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -11703,7 +11751,7 @@ class asum_overflow_MinVal_2_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -11784,7 +11832,7 @@ class asum_overflow_MinVal_3_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
@@ -11865,7 +11913,7 @@ class asum_overflow_MinVal_4_d(unittest.TestCase):
 		"""Initialise.
 		"""
 
-		arraylength = 96
+		arraylength = 1024
 
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min

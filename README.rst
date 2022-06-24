@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 8.3.0 for 2022-05-30
+:Version: 8.4.0 for 2022-06-23
 :Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -378,6 +378,8 @@ existing ones.
 
 Release History
 ===============
+* 8.4.0 - Major performance improvements for asum through the use of SIMD and
+          other optimizations. 
 * 8.3.0 - Fixed the effects of an apparent compiler bug affecting 32 bit 
           x86 only for function asum. Tested and verified on 32 bit Debian 
           and 32 bit Alpine. This would in a few very specific circumstances 

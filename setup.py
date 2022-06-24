@@ -25,7 +25,7 @@ extensions = [
 	('amax', ['src/amax.c', 'src/amax_simd_x86.c', 'src/amax_simd_armv7.c', 'src/amax_simd_armv8.c', 'src/arrayparams_booloutsimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('amin', ['src/amin.c', 'src/amin_simd_x86.c', 'src/amin_simd_armv7.c', 'src/amin_simd_armv8.c', 'src/arrayparams_booloutsimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('asum', ['src/asum.c', 'src/asum_simd_x86.c', 'src/arrayparams_asum.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('asum', ['src/asum.c', 'src/asum_simd_x86.c', 'src/asum_simd_armv7.c', 'src/asum_simd_armv8.c', 'src/arrayparams_asum.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
 	('compress', ['src/compress.c', 'src/arrayparams_compress.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('convert', ['src/convert.c', 'src/arrayparams_convert.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -199,7 +199,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '8.3.0',
+	version = '8.4.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	long_description_content_type='text/x-rst',

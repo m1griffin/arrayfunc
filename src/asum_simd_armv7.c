@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
-// Module:   asum_simd_x86.c
+// Module:   asum_simd_armv7.c
 // Purpose:  Calculate the asum of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
@@ -33,6 +33,9 @@
 #include "Python.h"
 
 #include "simddefs.h"
+#ifdef AF_HASSIMD_ARMv7_32BIT
+#include "arm_neon.h"
+#endif
 
 #include "arrayerrs.h"
 
@@ -59,15 +62,15 @@
 /*--------------------------------------------------------------------------- */
 
 
-
 /*--------------------------------------------------------------------------- */
+
 /* For array code: b
    arraylen = The length of the data array.
    data = The input data array.
    Returns: The sum of the array.
 */
 // This inner loop is used to sum small chunks of the array.
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 long long innerloop_asum_signed_char(Py_ssize_t arraylen, signed char *data) { 
 
 	// array index counter. 
@@ -76,54 +79,30 @@ long long innerloop_asum_signed_char(Py_ssize_t arraylen, signed char *data) {
 	long long partialsum = 0;
 
 	signed short sumvals[CHARSIMDSIZE / 2];
-	v16qi loadslice1, loadslice2;
-	v8hi sumslice1, sumslice2, sumslicetotal, dataslice1, dataslice2;
-	v16qi shufflebytes;
+	int8x8_t dataslice;
+	int16x4_t resultslice;
 
-	signed char initvals[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	signed char shufflemask[16] = {8, 9, 10, 11, 12, 13, 14, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
+	// Initialise the accumulator.
+	resultslice = vdup_n_s16(0);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
-	// Initialise the sum values.
-	sumslice1 = (v8hi) __builtin_ia32_lddqu((char *)  initvals);
-	sumslice2 = (v8hi) __builtin_ia32_lddqu((char *)  initvals);
-
-	// This is used with alternate means of moving high bytes to low bytes.
-	shufflebytes = (v16qi) __builtin_ia32_lddqu((char *)  shufflemask);
-
-
 	// Use SIMD.
 	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		loadslice1 = (v16qi) __builtin_ia32_lddqu((char *)  &data[x]);
 
-		// Shuffle the high bytes into the low bytes for the second vector.
-		loadslice2 = (v16qi) __builtin_ia32_pshufb128( (v16qi) loadslice1, shufflebytes);
+		// Load the data into the vector register.
+		dataslice = vld1_s8( &data[x]);
 
-
-		// Split the vector into two smaller ones.
-		dataslice1 = __builtin_ia32_pmovsxbw128(loadslice1);
-		dataslice2 = __builtin_ia32_pmovsxbw128(loadslice2);
-
-
-		// Add each half vector.
-		sumslice1 = __builtin_ia32_paddw128(sumslice1, dataslice1);
-		sumslice2 = __builtin_ia32_paddw128(sumslice2, dataslice2);
+		// The actual SIMD operation. 
+		resultslice = vpadal_s8(resultslice, dataslice);
 
 	}
 
-
-	// Add the two half vectors together.
-	sumslicetotal = (v8hi) __builtin_ia32_paddw128(sumslice1, sumslice2);
-
-
 	// Add up the values within the slice.
-	__builtin_ia32_storedqu((char *) sumvals, (v16qi) sumslicetotal);
-
-
+	vst1_s16(sumvals, resultslice);
 	for (y = 0; y < (CHARSIMDSIZE / 2); y++) {
 		partialsum = partialsum + sumvals[y];
 	}
@@ -133,8 +112,8 @@ long long innerloop_asum_signed_char(Py_ssize_t arraylen, signed char *data) {
 		partialsum = partialsum + data[x];
 	}
 
-
 	return partialsum;
+
 }
 #endif
 
@@ -147,7 +126,7 @@ long long innerloop_asum_signed_char(Py_ssize_t arraylen, signed char *data) {
    Returns: The sum of the array.
 */
 // Version without error checking.
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 long long asum_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
 
 	Py_ssize_t x, loopremaining, loopchunk;
@@ -176,7 +155,7 @@ long long asum_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
    errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 long long asum_signed_char_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed int *errflag) { 
 
 	long long partialsum = 0;
@@ -210,15 +189,142 @@ long long asum_signed_char_simd_ovfl(Py_ssize_t arraylen, signed char *data, sig
 /*--------------------------------------------------------------------------- */
 
 
+/*--------------------------------------------------------------------------- */
+
+/* For array code: B
+   arraylen = The length of the data array.
+   data = The input data array.
+   Returns: The sum of the array.
+*/
+// This inner loop is used to sum small chunks of the array.
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+unsigned long long innerloop_asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data) { 
+
+	// array index counter. 
+	Py_ssize_t x, alignedlength; 
+	unsigned int y;
+	unsigned long long partialsum = 0;
+
+	unsigned short sumvals[CHARSIMDSIZE / 2];
+	uint8x8_t dataslice;
+	uint16x4_t resultslice;
+
+
+	// Initialise the accumulator.
+	resultslice = vdup_n_u16(0);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
+
+	// Use SIMD.
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+
+		// Load the data into the vector register.
+		dataslice = vld1_u8( &data[x]);
+
+		// The actual SIMD operation. 
+		resultslice = vpadal_u8(resultslice, dataslice);
+
+	}
+
+	// Add up the values within the slice.
+	vst1_u16(sumvals, resultslice);
+	for (y = 0; y < (CHARSIMDSIZE / 2); y++) {
+		partialsum = partialsum + sumvals[y];
+	}
+
+	// Add the values within the left over elements at the end of the array.
+	for (x = alignedlength; x < arraylen; x++) {
+		partialsum = partialsum + data[x];
+	}
+
+	return partialsum;
+
+}
+#endif
+
+
 
 /*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data array.
+   data = The input data array.
+   Returns: The sum of the array.
+*/
+// Version without error checking.
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+unsigned long long asum_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
+
+	Py_ssize_t x, loopremaining, loopchunk;
+	unsigned long long partialsum = 0;
+
+	for(x=0; x < arraylen; x += LOOPCHUNKSIZE) {
+		// The array is summed in "chunks" using SIMD and then each
+		// chunk added to the total.
+		loopremaining = arraylen - x;
+		loopchunk = (loopremaining >  LOOPCHUNKSIZE) ? LOOPCHUNKSIZE : loopremaining;
+
+		// Add the chunk to the grand total.
+		partialsum = partialsum + innerloop_asum_unsigned_char(loopchunk, &data[x]);
+	}
+
+	return partialsum;
+
+}
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+/* For array code: B
+   arraylen = The length of the data array.
+   data = The input data array.
+   errflag = Set to true if an error occured.
+   Returns: The sum of the array.
+*/
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+long long asum_unsigned_char_simd_ovfl(Py_ssize_t arraylen, unsigned char *data, signed int *errflag) { 
+
+	long long partialsum = 0;
+	long long chunksum;
+	Py_ssize_t x, loopremaining, loopchunk;
+
+	for(x=0; x < arraylen; x += LOOPCHUNKSIZE) {
+		// The array is summed in "chunks" using SIMD and then each
+		// chunk added to the total.
+		loopremaining = arraylen - x;
+		loopchunk = (loopremaining >  LOOPCHUNKSIZE) ? LOOPCHUNKSIZE : loopremaining;
+
+		// Add up one "chunk" of the array.
+		chunksum = innerloop_asum_unsigned_char(loopchunk, &data[x]);
+
+		// Check for overflow.
+		if (loop_willoverflow_signed(chunksum, partialsum)) {
+			*errflag = ARR_ERR_OVFL;
+			return partialsum; 
+		}
+
+		// Add the chunk to the grand total.
+		partialsum = partialsum + chunksum;
+	}
+
+	return partialsum;
+
+}
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+
 /* For array code: h
    arraylen = The length of the data array.
    data = The input data array.
    Returns: The sum of the array.
 */
 // This inner loop is used to sum small chunks of the array.
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 long long innerloop_asum_signed_short(Py_ssize_t arraylen, signed short *data) { 
 
 	// array index counter. 
@@ -227,54 +333,30 @@ long long innerloop_asum_signed_short(Py_ssize_t arraylen, signed short *data) {
 	long long partialsum = 0;
 
 	signed int sumvals[SHORTSIMDSIZE / 2];
-	v8hi loadslice1, loadslice2;
-	v4si sumslice1, sumslice2, sumslicetotal, dataslice1, dataslice2;
-	v16qi shufflebytes;
+	int16x4_t dataslice;
+	int32x2_t resultslice;
 
-	signed char initvals[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	signed char shufflemask[16] = {8, 9, 10, 11, 12, 13, 14, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
+	// Initialise the accumulator.
+	resultslice = vdup_n_s32(0);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
-	// Initialise the sum values.
-	sumslice1 = (v4si) __builtin_ia32_lddqu((char *)  initvals);
-	sumslice2 = (v4si) __builtin_ia32_lddqu((char *)  initvals);
-
-	// This is used with alternate means of moving high bytes to low bytes.
-	shufflebytes = (v16qi) __builtin_ia32_lddqu((char *)  shufflemask);
-
-
 	// Use SIMD.
 	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		loadslice1 = (v8hi) __builtin_ia32_lddqu((char *)  &data[x]);
 
-		// Shuffle the high bytes into the low bytes for the second vector.
-		loadslice2 = (v8hi) __builtin_ia32_pshufb128( (v16qi) loadslice1, shufflebytes);
+		// Load the data into the vector register.
+		dataslice = vld1_s16( &data[x]);
 
-
-		// Split the vector into two smaller ones.
-		dataslice1 = __builtin_ia32_pmovsxwd128(loadslice1);
-		dataslice2 = __builtin_ia32_pmovsxwd128(loadslice2);
-
-
-		// Add each half vector.
-		sumslice1 = __builtin_ia32_paddd128(sumslice1, dataslice1);
-		sumslice2 = __builtin_ia32_paddd128(sumslice2, dataslice2);
+		// The actual SIMD operation. 
+		resultslice = vpadal_s16(resultslice, dataslice);
 
 	}
 
-
-	// Add the two half vectors together.
-	sumslicetotal = (v4si) __builtin_ia32_paddd128(sumslice1, sumslice2);
-
-
 	// Add up the values within the slice.
-	__builtin_ia32_storedqu((char *) sumvals, (v16qi) sumslicetotal);
-
-
+	vst1_s32(sumvals, resultslice);
 	for (y = 0; y < (SHORTSIMDSIZE / 2); y++) {
 		partialsum = partialsum + sumvals[y];
 	}
@@ -284,8 +366,8 @@ long long innerloop_asum_signed_short(Py_ssize_t arraylen, signed short *data) {
 		partialsum = partialsum + data[x];
 	}
 
-
 	return partialsum;
+
 }
 #endif
 
@@ -298,7 +380,7 @@ long long innerloop_asum_signed_short(Py_ssize_t arraylen, signed short *data) {
    Returns: The sum of the array.
 */
 // Version without error checking.
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 long long asum_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
 
 	Py_ssize_t x, loopremaining, loopchunk;
@@ -327,7 +409,7 @@ long long asum_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
    errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 long long asum_signed_short_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed int *errflag) { 
 
 	long long partialsum = 0;
@@ -361,72 +443,48 @@ long long asum_signed_short_simd_ovfl(Py_ssize_t arraylen, signed short *data, s
 /*--------------------------------------------------------------------------- */
 
 
-
 /*--------------------------------------------------------------------------- */
-/* For array code: i
+
+/* For array code: H
    arraylen = The length of the data array.
    data = The input data array.
    Returns: The sum of the array.
 */
 // This inner loop is used to sum small chunks of the array.
-#if defined(AF_HASSIMD_X86)
-long long innerloop_asum_signed_int(Py_ssize_t arraylen, signed int *data) { 
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+unsigned long long innerloop_asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
 	unsigned int y;
-	long long partialsum = 0;
+	unsigned long long partialsum = 0;
 
-	signed long sumvals[INTSIMDSIZE / 2];
-	v4si loadslice1, loadslice2;
-	v2di sumslice1, sumslice2, sumslicetotal, dataslice1, dataslice2;
-	v16qi shufflebytes;
+	unsigned int sumvals[SHORTSIMDSIZE / 2];
+	uint16x4_t dataslice;
+	uint32x2_t resultslice;
 
-	signed char initvals[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	signed char shufflemask[16] = {8, 9, 10, 11, 12, 13, 14, 15, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
+	// Initialise the accumulator.
+	resultslice = vdup_n_u32(0);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
-
-	// Initialise the sum values.
-	sumslice1 = (v2di) __builtin_ia32_lddqu((char *)  initvals);
-	sumslice2 = (v2di) __builtin_ia32_lddqu((char *)  initvals);
-
-	// This is used with alternate means of moving high bytes to low bytes.
-	shufflebytes = (v16qi) __builtin_ia32_lddqu((char *)  shufflemask);
-
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Use SIMD.
-	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		loadslice1 = (v4si) __builtin_ia32_lddqu((char *)  &data[x]);
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 
-		// Shuffle the high bytes into the low bytes for the second vector.
-		loadslice2 = (v4si) __builtin_ia32_pshufb128( (v16qi) loadslice1, shufflebytes);
+		// Load the data into the vector register.
+		dataslice = vld1_u16( &data[x]);
 
-
-		// Split the vector into two smaller ones.
-		dataslice1 = __builtin_ia32_pmovsxdq128(loadslice1);
-		dataslice2 = __builtin_ia32_pmovsxdq128(loadslice2);
-
-
-		// Add each half vector.
-		sumslice1 = __builtin_ia32_paddq128(sumslice1, dataslice1);
-		sumslice2 = __builtin_ia32_paddq128(sumslice2, dataslice2);
+		// The actual SIMD operation. 
+		resultslice = vpadal_u16(resultslice, dataslice);
 
 	}
 
-
-	// Add the two half vectors together.
-	sumslicetotal = (v2di) __builtin_ia32_paddq128(sumslice1, sumslice2);
-
-
 	// Add up the values within the slice.
-	__builtin_ia32_storedqu((char *) sumvals, (v16qi) sumslicetotal);
-
-
-	for (y = 0; y < (INTSIMDSIZE / 2); y++) {
+	vst1_u32(sumvals, resultslice);
+	for (y = 0; y < (SHORTSIMDSIZE / 2); y++) {
 		partialsum = partialsum + sumvals[y];
 	}
 
@@ -435,25 +493,25 @@ long long innerloop_asum_signed_int(Py_ssize_t arraylen, signed int *data) {
 		partialsum = partialsum + data[x];
 	}
 
-
 	return partialsum;
+
 }
 #endif
 
 
 
 /*--------------------------------------------------------------------------- */
-/* For array code: i
+/* For array code: H
    arraylen = The length of the data array.
    data = The input data array.
    Returns: The sum of the array.
 */
 // Version without error checking.
-#if defined(AF_HASSIMD_X86)
-long long asum_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+unsigned long long asum_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
 
 	Py_ssize_t x, loopremaining, loopchunk;
-	long long partialsum = 0;
+	unsigned long long partialsum = 0;
 
 	for(x=0; x < arraylen; x += LOOPCHUNKSIZE) {
 		// The array is summed in "chunks" using SIMD and then each
@@ -462,7 +520,7 @@ long long asum_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 		loopchunk = (loopremaining >  LOOPCHUNKSIZE) ? LOOPCHUNKSIZE : loopremaining;
 
 		// Add the chunk to the grand total.
-		partialsum = partialsum + innerloop_asum_signed_int(loopchunk, &data[x]);
+		partialsum = partialsum + innerloop_asum_unsigned_short(loopchunk, &data[x]);
 	}
 
 	return partialsum;
@@ -472,14 +530,14 @@ long long asum_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 
 /*--------------------------------------------------------------------------- */
 
-/* For array code: i
+/* For array code: H
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
-#if defined(AF_HASSIMD_X86)
-long long asum_signed_int_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed int *errflag) { 
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+long long asum_unsigned_short_simd_ovfl(Py_ssize_t arraylen, unsigned short *data, signed int *errflag) { 
 
 	long long partialsum = 0;
 	long long chunksum;
@@ -492,7 +550,7 @@ long long asum_signed_int_simd_ovfl(Py_ssize_t arraylen, signed int *data, signe
 		loopchunk = (loopremaining >  LOOPCHUNKSIZE) ? LOOPCHUNKSIZE : loopremaining;
 
 		// Add up one "chunk" of the array.
-		chunksum = innerloop_asum_signed_int(loopchunk, &data[x]);
+		chunksum = innerloop_asum_unsigned_short(loopchunk, &data[x]);
 
 		// Check for overflow.
 		if (loop_willoverflow_signed(chunksum, partialsum)) {
@@ -516,11 +574,10 @@ long long asum_signed_int_simd_ovfl(Py_ssize_t arraylen, signed int *data, signe
 /* For array code: f
    arraylen = The length of the data array.
    data = The input data array.
-   errflag = Set to true if an error occured.
    Returns: The sum of the array.
 */
-// Version without error checking.
-#if defined(AF_HASSIMD_X86)
+// This inner loop is used to sum small chunks of the array.
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 float asum_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
@@ -529,25 +586,30 @@ float asum_float_simd(Py_ssize_t arraylen, float *data) {
 	float partialsum = 0.0;
 
 	float sumvals[FLOATSIMDSIZE];
-	v4sf sumslice, dataslice;
+	float32x2_t dataslice, resultslice;
 
+
+	// Initialise the accumulator.
+	resultslice = vdup_n_f32(0.0);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
-
-	// Initialise the sum values.
-	sumslice = (v4sf) __builtin_ia32_loadups(data);
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
 
 	// Use SIMD.
-	for (x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
-		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
-		sumslice = __builtin_ia32_addps(sumslice, dataslice);
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+
+		// Load the data into the vector register.
+		dataslice = vld1_f32( &data[x]);
+
+		// The actual SIMD operation. 
+		resultslice = vadd_f32(resultslice, dataslice);
+
 	}
 
 	// Add up the values within the slice.
-	__builtin_ia32_storeups(sumvals, (v4sf) sumslice);
-	for (y = 0; y < FLOATSIMDSIZE; y++) {
+	vst1_f32(sumvals, resultslice);
+	for (y = 0; y < (FLOATSIMDSIZE); y++) {
 		partialsum = partialsum + sumvals[y];
 	}
 
@@ -556,13 +618,19 @@ float asum_float_simd(Py_ssize_t arraylen, float *data) {
 		partialsum = partialsum + data[x];
 	}
 
-
 	return partialsum;
+
 }
+#endif
 
 /*--------------------------------------------------------------------------- */
-
-// Version with error checking.
+/* For array code: f
+   arraylen = The length of the data array.
+   data = The input data array.
+   Returns: The sum of the array.
+*/
+// This inner loop is used to sum small chunks of the array.
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 float asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag) { 
 
 	// array index counter. 
@@ -571,35 +639,40 @@ float asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag
 	float partialsum = 0.0;
 
 	float sumvals[FLOATSIMDSIZE];
-	v4sf sumslice, dataslice;
+	float32x2_t dataslice, resultslice;
 
 
 	*errflag = 0;
 
+	// Initialise the accumulator.
+	resultslice = vdup_n_f32(0.0);
+
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
-
-	// Initialise the sum values.
-	sumslice = (v4sf) __builtin_ia32_loadups(data);
+	alignedlength = calcalignedlength(arraylen, FLOATSIMDSIZE);
 
 	// Use SIMD.
-	for (x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
-		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
-		sumslice = __builtin_ia32_addps(sumslice, dataslice);
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+
+		// Load the data into the vector register.
+		dataslice = vld1_f32( &data[x]);
+
+		// The actual SIMD operation. 
+		resultslice = vadd_f32(resultslice, dataslice);
+
 	}
 
 	// Add up the values within the slice.
-	__builtin_ia32_storeups(sumvals, (v4sf) sumslice);
-	for (y = 0; y < FLOATSIMDSIZE; y++) {
+	vst1_f32(sumvals, resultslice);
+	for (y = 0; y < (FLOATSIMDSIZE); y++) {
 		partialsum = partialsum + sumvals[y];
 	}
-
 
 	// Add the values within the left over elements at the end of the array.
 	for (x = alignedlength; x < arraylen; x++) {
 		partialsum = partialsum + data[x];
 	}
+
 
 	// If an error occured resulting in NaN or INF anywhere in the course of
 	// the calculation it should have propagated through to the end and we will
@@ -610,108 +683,7 @@ float asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag
 
 
 	return partialsum;
+
 }
 #endif
-/*--------------------------------------------------------------------------- */
 
-/*--------------------------------------------------------------------------- */
-/* For array code: d
-   arraylen = The length of the data array.
-   data = The input data array.
-   errflag = Set to true if an error occured.
-   Returns: The sum of the array.
-*/
-// Version without error checking.
-#if defined(AF_HASSIMD_X86)
-double asum_double_simd(Py_ssize_t arraylen, double *data) { 
-
-	// array index counter. 
-	Py_ssize_t x, alignedlength; 
-	unsigned int y;
-	double partialsum = 0.0;
-
-	double sumvals[DOUBLESIMDSIZE];
-	v2df sumslice, dataslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
-
-	// Initialise the sum values.
-	sumslice = (v2df) __builtin_ia32_loadupd(data);
-
-	// Use SIMD.
-	for (x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
-		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
-		sumslice = __builtin_ia32_addpd(sumslice, dataslice);
-	}
-
-	// Add up the values within the slice.
-	__builtin_ia32_storeupd(sumvals, (v2df) sumslice);
-	for (y = 0; y < DOUBLESIMDSIZE; y++) {
-		partialsum = partialsum + sumvals[y];
-	}
-
-	// Add the values within the left over elements at the end of the array.
-	for (x = alignedlength; x < arraylen; x++) {
-		partialsum = partialsum + data[x];
-	}
-
-
-	return partialsum;
-}
-
-/*--------------------------------------------------------------------------- */
-
-// Version with error checking.
-double asum_double_simd_ovfl(Py_ssize_t arraylen, double *data, signed int *errflag) { 
-
-	// array index counter. 
-	Py_ssize_t x, alignedlength; 
-	unsigned int y;
-	double partialsum = 0.0;
-
-	double sumvals[DOUBLESIMDSIZE];
-	v2df sumslice, dataslice;
-
-
-	*errflag = 0;
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
-
-	// Initialise the sum values.
-	sumslice = (v2df) __builtin_ia32_loadupd(data);
-
-	// Use SIMD.
-	for (x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
-		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
-		sumslice = __builtin_ia32_addpd(sumslice, dataslice);
-	}
-
-	// Add up the values within the slice.
-	__builtin_ia32_storeupd(sumvals, (v2df) sumslice);
-	for (y = 0; y < DOUBLESIMDSIZE; y++) {
-		partialsum = partialsum + sumvals[y];
-	}
-
-
-	// Add the values within the left over elements at the end of the array.
-	for (x = alignedlength; x < arraylen; x++) {
-		partialsum = partialsum + data[x];
-	}
-
-	// If an error occured resulting in NaN or INF anywhere in the course of
-	// the calculation it should have propagated through to the end and we will
-	// find it here at the end.
-	if (!isfinite(partialsum)) {
-		*errflag = ARR_ERR_OVFL;
-	}
-
-
-	return partialsum;
-}
-#endif
-/*--------------------------------------------------------------------------- */

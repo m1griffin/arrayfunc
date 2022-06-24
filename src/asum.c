@@ -41,9 +41,89 @@
 
 #include "simddefs.h"
 
+#include "asum_defs.h"
+
 #ifdef AF_HASSIMD_X86
 #include "asum_simd_x86.h"
 #endif
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+#include "arm_neon.h"
+#endif
+
+#ifdef AF_HASSIMD_ARMv7_32BIT
+#include "asum_simd_armv7.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM_AARCH64
+#include "asum_simd_armv8.h"
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+
+/* These are for use with the integer versions of asum to optimize overflow
+   checking performance by determining if an array is short enough that there
+   is no risk that the accumulated sum may overflow when summing that data type. 
+   Each value represents the maximum number of array elements for which it is 
+   safe to skip overflow checks without risk of integer overflow even if the 
+   array is full of the largest values for that type. 
+   These are defined for known architectures as there seems to be no platform
+   independent means of determining whether it is being compiled for 32 or 64
+   bits. Array indexes are limited to a value related to Py_ssize_t. However
+   Py_ssize_t will vary depending on whether Python is compiled for 32 or 64 
+   bits. There is currently no means of determining the size of Py_ssize_t
+   at compile time due to the way it is defined.
+*/
+
+#if defined( __x86_64__ ) ||  defined( __i386__ ) ||  defined( __ARM_64BIT_STATE ) ||  defined( __ARM_32BIT_STATE )
+
+// 64 bit architectures.
+#if defined( __x86_64__ ) ||  defined( __ARM_64BIT_STATE )
+
+// Array codes B, b
+#define CHARSKIPOVFLCHECK 72057594037927936LL
+// Array codes H, h
+#define SHORTSKIPOVFLCHECK 281474976710656LL
+// Array codes I, i
+#define INTSKIPOVFLCHECK 4294967296
+
+#endif
+
+
+// 32 bit architectures.
+#if defined( __i386__ ) ||  defined( __ARM_32BIT_STATE )
+
+// Array codes B, b
+#define CHARSKIPOVFLCHECK 2147483648
+// Array codes H, h
+#define SHORTSKIPOVFLCHECK 2147483648
+// Array codes I, i
+#define INTSKIPOVFLCHECK 2147483648
+
+#endif
+
+
+#else
+// Default values for unknown architectures which don't trigger the optimization. 
+
+// Array codes B, b
+#define CHARSKIPOVFLCHECK 0
+// Array codes H, h
+#define SHORTSKIPOVFLCHECK 0
+// Array codes I, i
+#define INTSKIPOVFLCHECK 0
+
+#endif
+
+// Skip overflow checks for b and B arrays.
+#define charskipovflcheck(arraylen) (arraylen <= CHARSKIPOVFLCHECK)
+// Skip overflow checks for h and H arrays.
+#define shortskipovflcheck(arraylen) (arraylen <= SHORTSKIPOVFLCHECK)
+// Skip overflow checks for i and I arrays.
+#define intskipovflcheck(arraylen) (arraylen <= INTSKIPOVFLCHECK)
+
 
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
@@ -54,32 +134,47 @@
    ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-long long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *errflag, signed int ignoreerrors) { 
+long long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	long long partialsum = 0;
 
 	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			partialsum = asum_signed_char_simd(arraylen, data);
+		} else {
+			partialsum = asum_signed_char_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Overflow checking disabled.
+		if (ignoreerrors || charskipovflcheck(arraylen)) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
 			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				if (loop_willoverflow_signed(data[x], partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				} else {
+					partialsum = partialsum + data[x];
+				}
 			}
-			partialsum = partialsum + data[x];
 		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
 
 	return partialsum;
 }
@@ -93,28 +188,47 @@ long long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *e
    ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-unsigned long long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signed int *errflag, signed int ignoreerrors) { 
+unsigned long long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	unsigned long long partialsum = 0;
 
 	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			partialsum = asum_unsigned_char_simd(arraylen, data);
+		} else {
+			partialsum = asum_unsigned_char_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if (data[x] > (ULLONG_MAX - partialsum)) { 
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Overflow checking disabled.
+		if (ignoreerrors || charskipovflcheck(arraylen)) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
 			}
-			partialsum = partialsum + data[x];
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				if (loop_willoverflow_unsigned(data[x], partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				} else {
+					partialsum = partialsum + data[x];
+				}
+			}
 		}
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
 
 	return partialsum;
 }
@@ -128,32 +242,47 @@ unsigned long long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
    ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-long long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int *errflag, signed int ignoreerrors) { 
+long long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	long long partialsum = 0;
 
 	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			partialsum = asum_signed_short_simd(arraylen, data);
+		} else {
+			partialsum = asum_signed_short_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Overflow checking disabled.
+		if (ignoreerrors || shortskipovflcheck(arraylen)) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
 			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				if (loop_willoverflow_signed(data[x], partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				} else {
+					partialsum = partialsum + data[x];
+				}
 			}
-			partialsum = partialsum + data[x];
 		}
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
 
 	return partialsum;
 }
@@ -167,28 +296,47 @@ long long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int 
    ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-unsigned long long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, signed int *errflag, signed int ignoreerrors) { 
+unsigned long long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	unsigned long long partialsum = 0;
 
 	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			partialsum = asum_unsigned_short_simd(arraylen, data);
+		} else {
+			partialsum = asum_unsigned_short_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if (data[x] > (ULLONG_MAX - partialsum)) { 
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Overflow checking disabled.
+		if (ignoreerrors || shortskipovflcheck(arraylen)) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
 			}
-			partialsum = partialsum + data[x];
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				if (loop_willoverflow_unsigned(data[x], partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				} else {
+					partialsum = partialsum + data[x];
+				}
+			}
 		}
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
 
 	return partialsum;
 }
@@ -202,32 +350,47 @@ unsigned long long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data
    ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-long long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *errflag, signed int ignoreerrors) { 
+long long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	long long partialsum = 0;
 
 	*errflag = 0;
-	// Overflow checking disabled.
-	if (ignoreerrors) {
-		for (x = 0; x < arraylen; x++) {
-			partialsum = partialsum + data[x];
+
+#if defined(AF_HASSIMD_X86)
+
+	// SIMD version. 
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			partialsum = asum_signed_int_simd(arraylen, data);
+		} else {
+			partialsum = asum_signed_int_simd_ovfl(arraylen, data, errflag);
 		}
 	} else {
-		// Overflow checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+#endif
+
+		// Overflow checking disabled.
+		if (ignoreerrors || intskipovflcheck(arraylen)) {
+			for (x = 0; x < arraylen; x++) {
+				partialsum = partialsum + data[x];
 			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
+		} else {
+			// Overflow checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				if (loop_willoverflow_signed(data[x], partialsum)) {
+					*errflag = ARR_ERR_OVFL;
+					return partialsum; 
+				} else {
+					partialsum = partialsum + data[x];
+				}
 			}
-			partialsum = partialsum + data[x];
 		}
+
+#if defined(AF_HASSIMD_X86)
 	}
+#endif
 
 	return partialsum;
 }
@@ -249,18 +412,19 @@ unsigned long long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, si
 
 	*errflag = 0;
 	// Overflow checking disabled.
-	if (ignoreerrors) {
+	if (ignoreerrors || intskipovflcheck(arraylen)) {
 		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if (data[x] > (ULLONG_MAX - partialsum)) { 
+			if (loop_willoverflow_unsigned(data[x], partialsum)) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
+			} else {
+				partialsum = partialsum + data[x];
 			}
-			partialsum = partialsum + data[x];
 		}
 	}
 
@@ -291,15 +455,12 @@ long long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int *e
 	} else {
 		// Overflow checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
+			if (loop_willoverflow_signed(data[x], partialsum)) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
+			} else {
+				partialsum = partialsum + data[x];
 			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
-			}
-			partialsum = partialsum + data[x];
 		}
 	}
 
@@ -330,11 +491,12 @@ unsigned long long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	} else {
 		// Overflow checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if (data[x] > (ULLONG_MAX - partialsum)) { 
+			if (loop_willoverflow_unsigned(data[x], partialsum)) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
+			} else {
+				partialsum = partialsum + data[x];
 			}
-			partialsum = partialsum + data[x];
 		}
 	}
 
@@ -365,15 +527,12 @@ long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *data, sig
 	} else {
 		// Overflow checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
+			if (loop_willoverflow_signed(data[x], partialsum)) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
+			} else {
+				partialsum = partialsum + data[x];
 			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
-			}
-			partialsum = partialsum + data[x];
 		}
 	}
 
@@ -404,11 +563,12 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	} else {
 		// Overflow checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if (data[x] > (ULLONG_MAX - partialsum)) { 
+			if (loop_willoverflow_unsigned(data[x], partialsum)) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
+			} else {
+				partialsum = partialsum + data[x];
 			}
-			partialsum = partialsum + data[x];
 		}
 	}
 
@@ -448,9 +608,9 @@ float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed i
 
 	*errflag = 0;
 
-#ifdef AF_HASSIMD_X86
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version. 
-	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 		// Math error checking disabled.
 		if (ignoreerrors) {
 			partialsum = asum_float_simd(arraylen, data);
@@ -474,13 +634,15 @@ float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed i
 			// Overflow checking enabled.
 			for (x = 0; x < arraylen; x++) {
 				partialsum = partialsum + data[x];
-				if (!isfinite(partialsum)) {
-					*errflag = ARR_ERR_OVFL;
-					return partialsum; 
-				}
+			}
+			// Non-finite data will propagate through the sum, so we
+			// only have to check it when we are all done.
+			if (!isfinite(partialsum)) {
+				*errflag = ARR_ERR_OVFL;
+				return partialsum; 
 			}
 		}
-#ifdef AF_HASSIMD_X86
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 #endif
 
@@ -505,9 +667,9 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 
 	*errflag = 0;
 
-#ifdef AF_HASSIMD_X86
+#if defined(AF_HASSIMD_X86)
 	// SIMD version. 
-	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 		// Math error checking disabled.
 		if (ignoreerrors) {
 			partialsum = asum_double_simd(arraylen, data);
@@ -528,13 +690,15 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 			// Overflow checking enabled.
 			for (x = 0; x < arraylen; x++) {
 				partialsum = partialsum + data[x];
-				if (!isfinite(partialsum)) {
-					*errflag = ARR_ERR_OVFL;
-					return partialsum; 
-				}
+			}
+			// Non-finite data will propagate through the sum, so we
+			// only have to check it when we are all done.
+			if (!isfinite(partialsum)) {
+				*errflag = ARR_ERR_OVFL;
+				return partialsum; 
 			}
 		}
-#ifdef AF_HASSIMD_X86
+#if defined(AF_HASSIMD_X86)
 	}
 #endif
 
@@ -589,31 +753,31 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(arraydata.arraytype) {
 		// signed char
 		case 'b' : {
-			resultll = asum_signed_char(arraydata.arraylength, arraydata.array1.b, &errflag, arraydata.ignoreerrors);
+			resultll = asum_signed_char(arraydata.arraylength, arraydata.array1.b, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyLong_FromLongLong(resultll);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultull = asum_unsigned_char(arraydata.arraylength, arraydata.array1.B, &errflag, arraydata.ignoreerrors);
+			resultull = asum_unsigned_char(arraydata.arraylength, arraydata.array1.B, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultll = asum_signed_short(arraydata.arraylength, arraydata.array1.h, &errflag, arraydata.ignoreerrors);
+			resultll = asum_signed_short(arraydata.arraylength, arraydata.array1.h, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyLong_FromLongLong(resultll);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultull = asum_unsigned_short(arraydata.arraylength, arraydata.array1.H, &errflag, arraydata.ignoreerrors);
+			resultull = asum_unsigned_short(arraydata.arraylength, arraydata.array1.H, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultll = asum_signed_int(arraydata.arraylength, arraydata.array1.i, &errflag, arraydata.ignoreerrors);
+			resultll = asum_signed_int(arraydata.arraylength, arraydata.array1.i, &errflag, arraydata.ignoreerrors, arraydata.nosimd);
 			sumreturn = PyLong_FromLongLong(resultll);
 			break;
 		}

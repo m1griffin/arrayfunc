@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
-// Module:   asum_simd_x86.h
+// Module:   asum_simd_armv7.h
 // Purpose:  Calculate the asum of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
@@ -28,13 +28,13 @@
 
 long long asum_signed_char_simd(Py_ssize_t arraylen, signed char *data);
 long long asum_signed_char_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed int *errflag);
+unsigned long long asum_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data);
+long long asum_unsigned_char_simd_ovfl(Py_ssize_t arraylen, unsigned char *data, signed int *errflag);
 long long asum_signed_short_simd(Py_ssize_t arraylen, signed short *data);
 long long asum_signed_short_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed int *errflag);
-long long asum_signed_int_simd(Py_ssize_t arraylen, signed int *data);
-long long asum_signed_int_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed int *errflag);
+unsigned long long asum_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data);
+long long asum_unsigned_short_simd_ovfl(Py_ssize_t arraylen, unsigned short *data, signed int *errflag);
 float asum_float_simd(Py_ssize_t arraylen, float *data);
 float asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag);
-double asum_double_simd(Py_ssize_t arraylen, double *data);
-double asum_double_simd_ovfl(Py_ssize_t arraylen, double *data, signed int *errflag);
 
 

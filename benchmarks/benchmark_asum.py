@@ -5,11 +5,11 @@
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
-# Ver:      14-Oct-2021.
+# Ver:      23-Jun-2022.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -467,9 +467,9 @@ def platformdetect():
 	# These values were derived from the platform data reported by the benchmark.
 	signatures = {
 		'i686' : '',
-		'x86_64' : 'fd',
-		'armv7l' : '',
-		'aarch64' : '',
+		'x86_64' : 'bhifd',
+		'armv7l' : 'bBhHf',
+		'aarch64' : 'bBhHf',
 	}
 
 	return signatures.get(platform.machine(), '')
