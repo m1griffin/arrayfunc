@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      23-Jun-2022.
+// Ver:      04-Jul-2022.
 //
 //------------------------------------------------------------------------------
 //
@@ -283,10 +283,10 @@ unsigned long long asum_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
    Returns: The sum of the array.
 */
 #if defined(AF_HASSIMD_ARM_AARCH64)
-long long asum_unsigned_char_simd_ovfl(Py_ssize_t arraylen, unsigned char *data, signed int *errflag) { 
+unsigned long long asum_unsigned_char_simd_ovfl(Py_ssize_t arraylen, unsigned char *data, signed int *errflag) { 
 
-	long long partialsum = 0;
-	long long chunksum;
+	unsigned long long partialsum = 0;
+	unsigned long long chunksum;
 	Py_ssize_t x, loopremaining, loopchunk;
 
 	for(x=0; x < arraylen; x += LOOPCHUNKSIZE) {
@@ -537,10 +537,10 @@ unsigned long long asum_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
    Returns: The sum of the array.
 */
 #if defined(AF_HASSIMD_ARM_AARCH64)
-long long asum_unsigned_short_simd_ovfl(Py_ssize_t arraylen, unsigned short *data, signed int *errflag) { 
+unsigned long long asum_unsigned_short_simd_ovfl(Py_ssize_t arraylen, unsigned short *data, signed int *errflag) { 
 
-	long long partialsum = 0;
-	long long chunksum;
+	unsigned long long partialsum = 0;
+	unsigned long long chunksum;
 	Py_ssize_t x, loopremaining, loopchunk;
 
 	for(x=0; x < arraylen; x += LOOPCHUNKSIZE) {

@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 8.4.0 for 2022-06-23
+:Version: 8.4.1 for 2022-07-04
 :Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -378,6 +378,10 @@ existing ones.
 
 Release History
 ===============
+* 8.4.1 - Minor bug fix for asum for unsigned integer SIMD on ARM. This 
+          corrects the function return type for SIMD operations on ARM.
+          No incorrect behaviour was found in the original, but this change
+          was made to ensure correctness. 
 * 8.4.0 - Major performance improvements for asum through the use of SIMD and
           other optimizations. 
 * 8.3.0 - Fixed the effects of an apparent compiler bug affecting 32 bit 

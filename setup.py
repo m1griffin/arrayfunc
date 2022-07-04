@@ -199,7 +199,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '8.4.0',
+	version = '8.4.1',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	long_description_content_type='text/x-rst',

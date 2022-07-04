@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      23-Jun-2022.
+// Ver:      04-Jul-2022.
 //
 //------------------------------------------------------------------------------
 //
@@ -29,11 +29,11 @@
 long long asum_signed_char_simd(Py_ssize_t arraylen, signed char *data);
 long long asum_signed_char_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed int *errflag);
 unsigned long long asum_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data);
-long long asum_unsigned_char_simd_ovfl(Py_ssize_t arraylen, unsigned char *data, signed int *errflag);
+unsigned long long asum_unsigned_char_simd_ovfl(Py_ssize_t arraylen, unsigned char *data, signed int *errflag);
 long long asum_signed_short_simd(Py_ssize_t arraylen, signed short *data);
 long long asum_signed_short_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed int *errflag);
 unsigned long long asum_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data);
-long long asum_unsigned_short_simd_ovfl(Py_ssize_t arraylen, unsigned short *data, signed int *errflag);
+unsigned long long asum_unsigned_short_simd_ovfl(Py_ssize_t arraylen, unsigned short *data, signed int *errflag);
 float asum_float_simd(Py_ssize_t arraylen, float *data);
 float asum_float_simd_ovfl(Py_ssize_t arraylen, float *data, signed int *errflag);
 

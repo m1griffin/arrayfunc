@@ -532,10 +532,10 @@ ops_simdsupport_int = """
    Returns: The sum of the array.
 */
 %(simdplatform)s
-long long asum_%(funcmodifier)s_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag) { 
+%(return_type)s asum_%(funcmodifier)s_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag) { 
 
-	long long partialsum = 0;
-	long long chunksum;
+	%(return_type)s partialsum = 0;
+	%(return_type)s chunksum;
 	Py_ssize_t x, loopremaining, loopchunk;
 
 	for(x=0; x < arraylen; x += LOOPCHUNKSIZE) {
