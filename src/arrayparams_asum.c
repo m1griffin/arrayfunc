@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2022    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -136,8 +136,6 @@ struct args_params_asum getparams_asum(PyObject *self, PyObject *args, PyObject 
 	// the different sizes of different data types.
 	typedarraylength = calcarraylength(arraytype, arraylength);
 
-
-	arraydata.nosimd = nosimd;
 
 	// Collect the parameter data for return to the calling function.
 	arraydata.error = 0;

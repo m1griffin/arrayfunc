@@ -28,6 +28,7 @@
 
 import glob
 import itertools
+import time
 
 import codegen_common
 
@@ -348,11 +349,68 @@ def GetArraySizeBenchData():
 
 arraysizebench = GetArraySizeBenchData()
 
+
+# ==============================================================================
+
+# The version number and date are used in the heading.
+
+# Get the version number data.
+def GetVersionData():
+	'''The version number is read from a file. The version number is expected
+	to be the only data in the file. 
+	'''
+	# We must be careful to strip any control characters which may be 
+	# read in at the end of the line.
+	with open('../VERSION.TXT') as f:
+		verdata = f.readline().strip('\r\n')
+
+	return verdata
+
+# Create a date stamp.
+def CreateDateStamp():
+	'''The date stamp is in the format YYYY-MM-DD.
+	'''
+	return time.strftime('%Y-%m-%d')
+
+def CreateCopyrightYear():
+	'''The current year for the copyright notice.
+	'''
+	return time.strftime('%Y')
+
+# Read in the OS support data.
+def GetOSSupportTable():
+	'''The table of OS support data is expected to be already formatted 
+	as a valid RST table, and checked and manually modified if necessary.
+	'''
+	with open('vmsummarytable.txt') as f:
+		ossuppdata = ''.join(f.readlines())
+
+	return ossuppdata
+
+# Read in the release history.
+def GetReleaseHistory():
+	'''The list of release history data is expected to be already formatted 
+	as a valid RST list and checked and manually modified if necessary.
+	'''
+	with open('../releasehistory.txt') as f:
+		releasedata = ''.join(f.readlines())
+
+	return releasedata
+	
+
+versionnumber = GetVersionData()
+versiondate = CreateDateStamp()
+ossupportdata = GetOSSupportTable()
+releasehistory = GetReleaseHistory()
+copyrightyear = CreateCopyrightYear()
+
+
 # ==============================================================================
 
 # Insert the data into the documentation template.
 def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simddata_armv8, 
-		pybench, simdbench, arraysizebench):
+		pybench, simdbench, arraysizebench, 
+		versionnumber, versiondate, copyrightyear, ossupportdata):
 	'''Write out the documentation based on the template.
 	'''
 	# Read in the entire template file.
@@ -361,12 +419,50 @@ def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simdda
 
 	# Write out the completed documentation file complete with data.
 	with open('ArrayFunc.rst', 'w') as f:
-		f.write(doctmpl.format(summarytable = summtable, opdocs = opdocs, extradocs = extradocs,
-			simddata_x86 = simddata_x86, simddata_armv7 = simddata_armv7, simddata_armv8 = simddata_armv8,
-			pybench = pybench, simdbench = simdbench, arraysizebench = arraysizebench))
+		f.write(doctmpl.format(summarytable = summtable, 
+				opdocs = opdocs, 
+				extradocs = extradocs,
+				simddata_x86 = simddata_x86, 
+				simddata_armv7 = simddata_armv7, 
+				simddata_armv8 = simddata_armv8,
+				pybench = pybench, 
+				simdbench = simdbench, 
+				arraysizebench = arraysizebench,
+				versionnumber = versionnumber,
+				versiondate = versiondate,
+				copyrightyear = copyrightyear,
+				bfuncdoc_ossupportdata = ossupportdata,
+				))
 
 # Write out the documentation file.
 WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simddata_armv8, 
-		pybench, simdbench, arraysizebench)
+		pybench, simdbench, arraysizebench,
+		versionnumber, versiondate, copyrightyear, ossupportdata)
+
+
+# ==============================================================================
+# Insert the data into the readme summary template.
+def WriteReadMe(versionnumber, versiondate, copyrightyear, ossupportdata, releasehistory):
+	'''Write out the documentation based on the template.
+	'''
+	# Read in the entire template file.
+	with open('afuncreadmetemplate.rst', 'r') as f:
+		doctmpl = f.read()
+
+	# Write out the completed documentation file complete with data.
+	docfilename = 'README.rst'
+	print('Creating %s' % docfilename)
+	with open(docfilename, 'w') as f:
+		f.write(doctmpl.format(
+			versionnumber = versionnumber,
+			versiondate = versiondate,
+			copyrightyear = copyrightyear,
+			bfuncdoc_ossupportdata = ossupportdata,
+			release_history = releasehistory,
+			))
+
+# Write out the readme summary file.
+WriteReadMe(versionnumber, versiondate, copyrightyear, ossupportdata, releasehistory)
+
 
 # ==============================================================================

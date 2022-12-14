@@ -197,9 +197,12 @@ else:
 with open('README.rst') as longdescdata:
     long_description = longdescdata.read()
 
+# The version number should be the only data in the text file.
+with open('VERSION.TXT') as versiondata:
+	__version__ = versiondata.read().strip('\n\r')
 
 setup(name = 'arrayfunc', 
-	version = '8.4.1',
+	version = __version__,
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	long_description_content_type='text/x-rst',

@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 8.4.0 for 2022-06-23
+:Version: 8.5.0 for 2022-12-12
 :Copyright: 2014 - 2022
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.6 or later
@@ -4036,20 +4036,25 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 ======================= ========== ====== =============== ================
 OS                       Hardware   Bits   Compiler        Python Version
 ======================= ========== ====== =============== ================
-Ubuntu 20.04 LTS         x86_64     64     GCC               3.8
-Ubuntu 22.04             x86_64     64     GCC               3.10
-Debian 11                i686       32     GCC               3.9
-Debian 11                x86_64     64     GCC               3.9
-OpenSuse 15.3            x86_64     64     GCC               3.6
-Alma 9                   x86_64     64     GCC               3.9
-Alpine 3.16.0            i686       32     GCC               3.10
-FreeBSD 13               x86_64     64     LLVM              3.8
-OpenBSD 7.1              x86_64     64     LLVM              3.9
-MS Windows 10            x86_64     64     MS VS C v.1929    3.10
-MS Windows 11            x86_64     64     MS VS C v.1929    3.10
-Raspberry Pi 2022-04-04  RPi 3      32     GCC               3.9
-Ubuntu 22.04             RPi 4      64     GCC               3.10
+Debian 11                i686         32     GCC               3.9.2
+Debian 11                x86_64       64     GCC               3.9.2
+Ubuntu 22.04             x86_64       64     GCC               3.10.6
+Ubuntu 22.10             x86_64       64     GCC               3.10.7
+opensuse-leap 15.4       x86_64       64     GCC               3.6.15
+almalinux 9.0            x86_64       64     GCC               3.9.10
+alpine 3.16.2            i686         32     GCC               3.10.5
+FreeBSD 13.1             amd64        64     Clang             3.9.15
+OpenBSD 7.2              amd64        64     Clang             3.9.15
+MS Windows 10            AMD64        64     MSC               3.11.0
+MS Windows 11            AMD64        64     MSC               3.11.0
+Raspbian 11              armv7l       32     GCC               3.9.2
+Ubuntu 22.04             aarch64      64     GCC               3.10.6
 ======================= ========== ====== =============== ================
+
+amd64 is another name for x86_64 and does not indicate the CPU brand.
+armv7l is 32 bit ARM. The test hardware is a Raspberry Pi 3.
+aarch64 is 64 bit ARM. The test hardware is a Raspberry Pi 4.
+
 
 * The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
   in 32 bit mode. 

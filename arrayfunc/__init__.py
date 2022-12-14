@@ -5,6 +5,9 @@ together with some additional ones import other sources.
 
 """
 
+# The version number should be updated automatically by the build script.
+__version__ = '8.5.0'
+
 from arrayfunc.count import count
 from arrayfunc.cycle import cycle
 from arrayfunc.repeat import repeat

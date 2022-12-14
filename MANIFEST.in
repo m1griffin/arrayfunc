@@ -1,3 +1,4 @@
 include COPYRIGHT LICENSE README.rst 
 include src/*.h
 include setupuser.sh setupuser.bat
+include VERSION.TXT
