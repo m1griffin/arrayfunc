@@ -8,7 +8,7 @@ REM ==============================================================
 REM This program resets the test log file and inserts a time stamp and
 REM information about the test platform in the top of the file.
 REM Pass all parameters through to the Python program (as many as possible). 
-unit-test-timestamp.py %1 %2 %3 %4 %5 %6 %7 %8 %9
+python unit-test-timestamp.py %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 
 SET failcount=0
@@ -26,7 +26,7 @@ EXIT /B
 REM Subroutine pytest =============================================
 :pytest
 echo "Testing: " %1
-%1 -l
+python %1 -l
 IF ERRORLEVEL 1 SET /A failcount += 1
 
 EXIT /B

@@ -1,3 +1,11 @@
+* 8.5.1 - Update to testing and support. There were no code. changes. 
+          Ubuntu version updated to 23.04. AlmaLinux updated to 9.1. 
+          Alpine Linux updated to 3.17.3. FreeBSD updated to 13.2. 
+          OpenBSD updated to 7.3. 
+          On Ubuntu 23.04, the installation method has changed due to how 
+          PEP-668 was implemented by Debian and how this affects "pip". 
+          Some other distros may experience the same problems if they made 
+          the same changes. See the README.TxT for details. 
 * 8.5.0 - Added pyproject.toml file to satisfy Python 3.11 requirements.
           Updated build scripts to use python3 -m build instead of calling
           setup.py directly. Test targets were updated, Ubuntu 20.04 was 

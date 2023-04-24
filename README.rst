@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.0 for 2022-12-12
-:Copyright: 2014 - 2022
+:Version:  8.5.1 for 2023-04-22
+:Copyright: 2014 - 2023
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
 
@@ -304,12 +304,12 @@ OS                       Hardware   Bits   Compiler        Python Version
 Debian 11                i686         32     GCC               3.9.2
 Debian 11                x86_64       64     GCC               3.9.2
 Ubuntu 22.04             x86_64       64     GCC               3.10.6
-Ubuntu 22.10             x86_64       64     GCC               3.10.7
+Ubuntu 23.04             x86_64       64     GCC               3.11.2
 opensuse-leap 15.4       x86_64       64     GCC               3.6.15
-almalinux 9.0            x86_64       64     GCC               3.9.10
-alpine 3.16.2            i686         32     GCC               3.10.5
-FreeBSD 13.1             amd64        64     Clang             3.9.15
-OpenBSD 7.2              amd64        64     Clang             3.9.15
+almalinux 9.1            x86_64       64     GCC               3.9.14
+alpine 3.17.3            i686         32     GCC               3.10.11
+FreeBSD 13.2             amd64        64     Clang             3.9.16
+OpenBSD 7.3              amd64        64     Clang             3.10.10
 MS Windows 10            AMD64        64     MSC               3.11.0
 MS Windows 11            AMD64        64     MSC               3.11.0
 Raspbian 11              armv7l       32     GCC               3.9.2
@@ -379,10 +379,46 @@ new ARM models, but be sure that anything you try is compatible with the
 existing ones.
 
 
+Installing on Linux with PIP and PEP-668
+----------------------------------------
+PEP-668 (PEPs describe changes to Python) introduced a new feature which can
+affect how packages are installed with PIP. If PIP is configured to be 
+EXTERNALLY-MANAGED it will refuse to install a package outside of a virtual
+environment.
+
+The intention of this is to prevent conflicts between packages which are 
+installed using the system package manager, and ones which are installed using
+PIP.
+
+Linux distros which are affeced by this include the latest versions of Debian
+and Ubuntu.
+
+As this package is a library which is intended to be used by other 
+applications, there is no one right way to install it, whether inside or 
+outside of a virtual environment. Review the options available with PIP to see
+what is suitable for your application.
+
+For testing purposes this package was installed by setting the environment
+variable PIP_BREAK_SYSTEM_PACKAGES to "1", which effectively disables this
+feature in PIP. 
+
+example::
+
+	export PIP_BREAK_SYSTEM_PACKAGES=1
+
+
 ---------------------------------------------------------------------
 
 Release History
 ===============
+* 8.5.1 - Update to testing and support. There were no code. changes. 
+          Ubuntu version updated to 23.04. AlmaLinux updated to 9.1. 
+          Alpine Linux updated to 3.17.3. FreeBSD updated to 13.2. 
+          OpenBSD updated to 7.3. 
+          On Ubuntu 23.04, the installation method has changed due to how 
+          PEP-668 was implemented by Debian and how this affects "pip". 
+          Some other distros may experience the same problems if they made 
+          the same changes. See the README.TxT for details. 
 * 8.5.0 - Added pyproject.toml file to satisfy Python 3.11 requirements.
           Updated build scripts to use python3 -m build instead of calling
           setup.py directly. Test targets were updated, Ubuntu 20.04 was 
