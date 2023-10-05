@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.1 for 2023-04-22
+:Version:  8.5.2 for 2023-10-05
 :Copyright: 2014 - 2023
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -301,19 +301,19 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 ======================= ========== ====== =============== ================
 OS                       Hardware   Bits   Compiler        Python Version
 ======================= ========== ====== =============== ================
-Debian 11                i686         32     GCC               3.9.2
-Debian 11                x86_64       64     GCC               3.9.2
-Ubuntu 22.04             x86_64       64     GCC               3.10.6
-Ubuntu 23.04             x86_64       64     GCC               3.11.2
+Debian 12                i686         32     GCC               3.11.2
+Debian 12                x86_64       64     GCC               3.11.2
+Ubuntu 22.04             x86_64       64     GCC               3.10.12
+Ubuntu 23.04             x86_64       64     GCC               3.11.4
 opensuse-leap 15.4       x86_64       64     GCC               3.6.15
-almalinux 9.1            x86_64       64     GCC               3.9.14
-alpine 3.17.3            i686         32     GCC               3.10.11
-FreeBSD 13.2             amd64        64     Clang             3.9.16
-OpenBSD 7.3              amd64        64     Clang             3.10.10
-MS Windows 10            AMD64        64     MSC               3.11.0
-MS Windows 11            AMD64        64     MSC               3.11.0
+almalinux 9.2            x86_64       64     GCC               3.9.16
+alpine 3.18.4            i686         32     GCC               3.11.6
+FreeBSD 13.2             amd64        64     Clang             3.9.18
+OpenBSD 7.3              amd64        64     Clang             3.10.13
+MS Windows 10            AMD64        64     MSC               3.12.0
+MS Windows 11            AMD64        64     MSC               3.12.0
 Raspbian 11              armv7l       32     GCC               3.9.2
-Ubuntu 22.04             aarch64      64     GCC               3.10.6
+Ubuntu 22.04             aarch64      64     GCC               3.10.12
 ======================= ========== ====== =============== ================
 
 amd64 is another name for x86_64 and does not indicate the CPU brand.
@@ -411,6 +411,8 @@ example::
 
 Release History
 ===============
+* 8.5.2 - Update to testing and support. There were no code changes. 
+          Python version on Windows 10 and 11 was updated to version 3.12.
 * 8.5.1 - Update to testing and support. There were no code. changes. 
           Ubuntu version updated to 23.04. AlmaLinux updated to 9.1. 
           Alpine Linux updated to 3.17.3. FreeBSD updated to 13.2. 
