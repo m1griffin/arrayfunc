@@ -1,3 +1,7 @@
+* 8.5.3 - Update to testing and support. There were no code changes.
+          Changes were made to unit testing and benchmark support
+          scripts to support a new testing environment.
+          Python support was updated to 3.13 on Windows OS.
 * 8.5.2 - Update to testing and support. There were no code changes. 
           Python version on Windows 10 and 11 was updated to version 3.12.
 * 8.5.1 - Update to testing and support. There were no code. changes. 

@@ -1,27 +1,27 @@
 echo off
 
-REM Run all the tests associated with arrayfunc.
+REM Run all the tests associated with arrayfunc or bytesfunc.
 
+SET testname=%1
+SET packsource=%2
+SET fileprefix=%3
+
+REM Set some default values if none were passed as arguments.
+if [%testname%]==[]  SET testname=arrayfunc
+if [%packsource%]==[]  SET packsource=unspecified
+if [%fileprefix%]==[]  SET fileprefix=unspecified
+
+REM Delete any previous report to avoid appending to it.
+del af_unittest.txt
 
 REM ==============================================================
-
-REM This program resets the test log file and inserts a time stamp and
-REM information about the test platform in the top of the file.
-REM Pass all parameters through to the Python program (as many as possible). 
-python unit-test-timestamp.py %1 %2 %3 %4 %5 %6 %7 %8 %9
-
 
 SET failcount=0
 
 FOR /R %%A IN (test_*.py) DO CALL :pytest %%A
 
-IF %failcount% EQU 0 GOTO :DONE
-ECHO Testing failed with %failcount% errors.
-GOTO:EOF
-
-:DONE
-ECHO Done - OK
-EXIT /B
+ECHO Testing completed with %failcount% errors.
+GOTO :DONE
 
 REM Subroutine pytest =============================================
 :pytest
@@ -30,4 +30,16 @@ python %1 -l
 IF ERRORLEVEL 1 SET /A failcount += 1
 
 EXIT /B
+
+REM ==============================================================
+
+:DONE
+
+REM This will collect information about the test environment and then
+REM summarize the pass / fail criteria.
+python reportunittest.py %testname% %packsource% %fileprefix% af_unittest.txt > reportunittestresult.txt
+
+type af_unittest.txt >> reportunittestresult.txt
+del af_unittest.txt
+rename reportunittestresult.txt af_unittest.txt
 

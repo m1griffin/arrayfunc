@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.2 for 2023-10-05
-:Copyright: 2014 - 2023
+:Version:  8.5.3 for 2025-01-13
+:Copyright: 2014 - 2025
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
 
@@ -298,27 +298,29 @@ Platform support
 Arrayfunc is written in 'C' and uses the standard C libraries to implement the 
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
-======================= ========== ====== =============== ================
-OS                       Hardware   Bits   Compiler        Python Version
-======================= ========== ====== =============== ================
-Debian 12                i686         32     GCC               3.11.2
-Debian 12                x86_64       64     GCC               3.11.2
-Ubuntu 22.04             x86_64       64     GCC               3.10.12
-Ubuntu 23.04             x86_64       64     GCC               3.11.4
-opensuse-leap 15.4       x86_64       64     GCC               3.6.15
-almalinux 9.2            x86_64       64     GCC               3.9.16
-alpine 3.18.4            i686         32     GCC               3.11.6
-FreeBSD 13.2             amd64        64     Clang             3.9.18
-OpenBSD 7.3              amd64        64     Clang             3.10.13
-MS Windows 10            AMD64        64     MSC               3.12.0
-MS Windows 11            AMD64        64     MSC               3.12.0
-Raspbian 11              armv7l       32     GCC               3.9.2
-Ubuntu 22.04             aarch64      64     GCC               3.10.12
-======================= ========== ====== =============== ================
+======================= ======= ==== ======== =======
+OS                       Arch   Bits Compiler Python 
+======================= ======= ==== ======== =======
+almalinux 9.5           x86_64   64  GCC      3.9.19   
+alpine 3.20.3           i686     32  GCC      3.12.7  
+Debian 12               i686     32  GCC      3.11.2   
+Debian 12               x86_64   64  GCC      3.11.2   
+FreeBSD 14.1            amd64    64  Clang    3.11.10
+OpenBSD 7.6             amd64    64  Clang    3.11.10
+Raspbian 12             armv7l   32  GCC      3.11.2 
+Ubuntu 24.04            aarch64  64  GCC      3.12.3 
+Debian 12               aarch64  64  GCC      3.11.2 
+opensuse-leap 15.6      x86_64   64  GCC      3.6.15    
+Ubuntu 24.04            x86_64   64  GCC      3.12.3 
+Ubuntu 24.10            x86_64   64  GCC      3.12.7 
+MS Windows 11           AMD64    64  MSC      3.13.1 
+======================= ======= ==== ======== =======
 
-amd64 is another name for x86_64 and does not indicate the CPU brand.
-armv7l is 32 bit ARM. The test hardware is a Raspberry Pi 3.
-aarch64 is 64 bit ARM. The test hardware is a Raspberry Pi 4.
+amd64 and x86_64 are two names for the same thing.
+armv7l is 32 bit ARM. aarch64 is 64 bit ARM.
+The ARM test hardware consists of Raspberry PI
+models 3, 4, and 5.
+
 
 
 * The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
@@ -411,6 +413,10 @@ example::
 
 Release History
 ===============
+* 8.5.3 - Update to testing and support. There were no code changes.
+          Changes were made to unit testing and benchmark support
+          scripts to support a new testing environment.
+          Python support was updated to 3.13 on Windows OS.
 * 8.5.2 - Update to testing and support. There were no code changes. 
           Python version on Windows 10 and 11 was updated to version 3.12.
 * 8.5.1 - Update to testing and support. There were no code. changes. 

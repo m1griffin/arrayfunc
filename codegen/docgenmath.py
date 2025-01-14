@@ -89,11 +89,11 @@ def sanitizer(x):
 		return x
 
 	if 'and_' in x:
-		return x.replace('and_', 'and\_')
+		return x.replace('and_', 'and\\_')
 	elif 'or_' in x:
-		return x.replace('or_', 'or\_')
+		return x.replace('or_', 'or\\_')
 	elif 'abs_' in x:
-		return x.replace('abs_', 'abs\_')
+		return x.replace('abs_', 'abs\\_')
 	else:
 		return x
 
@@ -167,7 +167,7 @@ def GetSIMDTable(filepath):
 		# We need to escape any function names ending with an underscore to 
 		# prevent it being interpreted as a formatting character. 
 		if func.endswith('_'):
-			arrformat['func'] = func.rstrip('_') + '\_'
+			arrformat['func'] = func.rstrip('_') + '\\_'
 		else:
 			arrformat['func'] = func
 		

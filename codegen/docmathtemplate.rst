@@ -879,6 +879,8 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
   in 32 bit mode. 
 * The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
   64 bit mode.
+* The Rasberry Pi 5 tests were conducted on a Raspberry Pi 5 ARM CPU running
+  in 64 bit mode. 
 * All others were conducted using VMs running on x86 hardware. 
 
 
