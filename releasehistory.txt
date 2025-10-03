@@ -1,3 +1,11 @@
+* 8.5.4 - Update to testing and support. There were no code changes.
+          Numerous testing targets have been updated to their latest
+          version. Support for 32 bits on x86 is now deprecated as
+          Debian have dropped mainstream support for it and there are
+          no longer any major Linux distros offering it in current versions.
+          Support for Python versions older than 3.11 is now deprecated.
+          No code changes have been made yet to remove support for these
+          features, but they may be removed in a future release.
 * 8.5.3 - Update to testing and support. There were no code changes.
           Changes were made to unit testing and benchmark support
           scripts to support a new testing environment.

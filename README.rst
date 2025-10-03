@@ -5,10 +5,10 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.3 for 2025-01-13
+:Version:  8.5.4 for 2025-10-02
 :Copyright: 2014 - 2025
 :License: This document may be distributed under the Apache 2.0 License.
-:Language: Python 3.6 or later
+:Language: Python 3.11 or later
 
 ---------------------------------------------------------------------
 
@@ -298,29 +298,25 @@ Platform support
 Arrayfunc is written in 'C' and uses the standard C libraries to implement the 
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
-======================= ======= ==== ======== =======
-OS                       Arch   Bits Compiler Python 
-======================= ======= ==== ======== =======
-almalinux 9.5           x86_64   64  GCC      3.9.19   
-alpine 3.20.3           i686     32  GCC      3.12.7  
-Debian 12               i686     32  GCC      3.11.2   
-Debian 12               x86_64   64  GCC      3.11.2   
-FreeBSD 14.1            amd64    64  Clang    3.11.10
-OpenBSD 7.6             amd64    64  Clang    3.11.10
-Raspbian 12             armv7l   32  GCC      3.11.2 
-Ubuntu 24.04            aarch64  64  GCC      3.12.3 
-Debian 12               aarch64  64  GCC      3.11.2 
-opensuse-leap 15.6      x86_64   64  GCC      3.6.15    
-Ubuntu 24.04            x86_64   64  GCC      3.12.3 
-Ubuntu 24.10            x86_64   64  GCC      3.12.7 
-MS Windows 11           AMD64    64  MSC      3.13.1 
-======================= ======= ==== ======== =======
+=================== ======= ==== ====== =======
+OS                   Arch   Bits  CC   Python  
+=================== ======= ==== ====== =======
+almalinux 10.0      x86_64   64  GCC    3.12.9    
+alpine 3.22.0       x86_64   64  GCC    3.12.11 
+Debian 13           x86_64   64  GCC    3.13.5   
+FreeBSD 14.3        amd64    64  Clang  3.11.12
+OpenBSD 7.7         amd64    64  Clang  3.12.9 
+Raspbian 13         armv7l   32  GCC    3.13.5 
+Ubuntu 24.04        aarch64  64  GCC    3.12.3 
+Debian 13           aarch64  64  GCC    3.13.5 
+opensuse-leap 16.0  x86_64   64  GCC    3.13.5    
+Ubuntu 24.04        x86_64   64  GCC    3.12.3 
+Ubuntu 25.04        x86_64   64  GCC    3.13.3 
+MS Windows 11       AMD64    64  MSC    3.13.3 
+=================== ======= ==== ====== =======
 
 amd64 and x86_64 are two names for the same thing.
 armv7l is 32 bit ARM. aarch64 is 64 bit ARM.
-The ARM test hardware consists of Raspberry PI
-models 3, 4, and 5.
-
 
 
 * The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
