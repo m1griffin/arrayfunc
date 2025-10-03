@@ -1,3 +1,4 @@
+* 8.5.5 - Bump version number to correct error in README.rst
 * 8.5.4 - Update to testing and support. There were no code changes.
           Numerous testing targets have been updated to their latest
           version. Support for 32 bits on x86 is now deprecated as

@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.4 for 2025-10-02
+:Version:  8.5.5 for 2025-10-03
 :Copyright: 2014 - 2025
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.11 or later
@@ -299,7 +299,7 @@ Arrayfunc is written in 'C' and uses the standard C libraries to implement the
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
 =================== ======= ==== ====== =======
-OS                   Arch   Bits  CC   Python  
+OS                   Arch   Bits  CC    Python  
 =================== ======= ==== ====== =======
 almalinux 10.0      x86_64   64  GCC    3.12.9    
 alpine 3.22.0       x86_64   64  GCC    3.12.11 
@@ -409,6 +409,15 @@ example::
 
 Release History
 ===============
+* 8.5.5 - Bump version number to correct error in README.rst
+* 8.5.4 - Update to testing and support. There were no code changes.
+          Numerous testing targets have been updated to their latest
+          version. Support for 32 bits on x86 is now deprecated as
+          Debian have dropped mainstream support for it and there are
+          no longer any major Linux distros offering it in current versions.
+          Support for Python versions older than 3.11 is now deprecated.
+          No code changes have been made yet to remove support for these
+          features, but they may be removed in a future release.
 * 8.5.3 - Update to testing and support. There were no code changes.
           Changes were made to unit testing and benchmark support
           scripts to support a new testing environment.
