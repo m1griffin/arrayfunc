@@ -1596,12 +1596,12 @@ endobj
 endobj
 311 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 376 0 R /XYZ 57.02362 247.6772 0 ] /Rect [ 77.02362 363.0236 231.5196 373.2236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 376 0 R /XYZ 57.02362 265.6772 0 ] /Rect [ 77.02362 363.0236 231.5196 373.2236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 312 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 376 0 R /XYZ 57.02362 247.6772 0 ] /Rect [ 528.8 363.6611 538.252 373.8611 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 376 0 R /XYZ 57.02362 265.6772 0 ] /Rect [ 528.8 363.6611 538.252 373.8611 ] /Subtype /Link /Type /Annot
 >>
 endobj
 313 0 obj
@@ -2255,7 +2255,7 @@ endobj
 endobj
 379 0 obj
 <<
-/Author (Michael Griffin) /CreationDate (D:20250113210032+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20250113210032+00'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (Michael Griffin) /CreationDate (D:20251009210455+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20251009210455+00'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (ArrayFunc) /Trapped /False
 >>
 endobj
@@ -3045,7 +3045,7 @@ endobj
 endobj
 532 0 obj
 <<
-/Dest [ 376 0 R /XYZ 57.02362 247.6772 0 ] /Parent 530 0 R /Prev 531 0 R /Title (Installing on Linux with PIP and PEP-668)
+/Dest [ 376 0 R /XYZ 57.02362 265.6772 0 ] /Parent 530 0 R /Prev 531 0 R /Title (Installing on Linux with PIP and PEP-668)
 >>
 endobj
 533 0 obj
@@ -3061,7 +3061,7 @@ endobj
 endobj
 534 0 obj
 <<
-/Length 1681
+/Length 1682
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -3111,7 +3111,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (8.5.3 for 2025-01-13) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (8.5.6 for 2025-10-09) Tj T* ET
 Q
 Q
 q
@@ -3179,7 +3179,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Python 3.6 or later) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Python 3.11 or later) Tj T* ET
 Q
 Q
 q
@@ -43549,7 +43549,7 @@ endstream
 endobj
 599 0 obj
 <<
-/Length 12342
+/Length 11906
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -43588,318 +43588,281 @@ q
 1 0 0 1 57.02362 613.6772 cm
 Q
 q
-1 0 0 1 57.02362 361.6772 cm
+1 0 0 1 57.02362 379.6772 cm
 q
 1 1 1 rg
-n 0 252 481.2283 -18 re f*
-.878431 .878431 .878431 rg
 n 0 234 481.2283 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 216 481.2283 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 198 481.2283 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 180 481.2283 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 162 481.2283 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 144 481.2283 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 126 481.2283 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 108 481.2283 -18 re f*
-.878431 .878431 .878431 rg
+1 1 1 rg
 n 0 90 481.2283 -18 re f*
-1 1 1 rg
+.878431 .878431 .878431 rg
 n 0 72 481.2283 -18 re f*
-.878431 .878431 .878431 rg
-n 0 54 481.2283 -18 re f*
 1 1 1 rg
-n 0 36 481.2283 -18 re f*
+n 0 54 481.2283 -18 re f*
 .878431 .878431 .878431 rg
+n 0 36 481.2283 -18 re f*
+1 1 1 rg
 n 0 18 481.2283 -18 re f*
 0 0 0 rg
 BT /F3 10 Tf 12 TL ET
 q
-1 0 0 1 6 237 cm
+1 0 0 1 6 219 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 99.71635 0 Td (OS) Tj T* -99.71635 0 Td ET
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 93.09289 0 Td (OS) Tj T* -93.09289 0 Td ET
 Q
 Q
 q
-1 0 0 1 231.8827 237 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 16.98345 0 Td (Arch) Tj T* -16.98345 0 Td ET
-Q
-Q
-q
-1 0 0 1 300.6296 237 cm
+1 0 0 1 218.6358 219 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 4.196973 0 Td (Bits) Tj T* -4.196973 0 Td ET
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 21.77975 0 Td (Arch) Tj T* -21.77975 0 Td ET
 Q
 Q
 q
-1 0 0 1 339.9135 237 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 11.61395 0 Td (Compiler) Tj T* -11.61395 0 Td ET
-Q
-Q
-q
-1 0 0 1 418.4814 237 cm
+1 0 0 1 296.9753 219 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 11.42845 0 Td (Python) Tj T* -11.42845 0 Td ET
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 6.937714 0 Td (Bits) Tj T* -6.937714 0 Td ET
+Q
+Q
+q
+1 0 0 1 341.7407 219 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 20.35407 0 Td (CC) Tj T* -20.35407 0 Td ET
+Q
+Q
+q
+1 0 0 1 408.8888 219 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F3 10 Tf 12 TL 16.22475 0 Td (Python) Tj T* -16.22475 0 Td ET
 Q
 Q
 0 0 0 rg
 BT /F1 10 Tf 12 TL ET
 q
-1 0 0 1 6 219 cm
+1 0 0 1 6 201 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (almalinux 9.5) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (almalinux 10.0) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 219 cm
+1 0 0 1 218.6358 201 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 219 cm
+1 0 0 1 296.9753 201 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 219 cm
+1 0 0 1 341.7407 201 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 219 cm
+1 0 0 1 408.8888 201 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.9.19) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 201 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (alpine 3.20.3) Tj T* ET
-Q
-Q
-q
-1 0 0 1 231.8827 201 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (i686) Tj T* ET
-Q
-Q
-q
-1 0 0 1 300.6296 201 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32) Tj T* ET
-Q
-Q
-q
-1 0 0 1 339.9135 201 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 418.4814 201 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.7) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.9) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 183 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 12) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (alpine 3.22.0) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 183 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (i686) Tj T* ET
-Q
-Q
-q
-1 0 0 1 300.6296 183 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32) Tj T* ET
-Q
-Q
-q
-1 0 0 1 339.9135 183 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 418.4814 183 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.2) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 165 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 12) Tj T* ET
-Q
-Q
-q
-1 0 0 1 231.8827 165 cm
+1 0 0 1 218.6358 183 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 165 cm
+1 0 0 1 296.9753 183 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 165 cm
+1 0 0 1 341.7407 183 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 165 cm
+1 0 0 1 408.8888 183 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.2) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.11) Tj T* ET
+Q
+Q
+q
+1 0 0 1 6 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 13) Tj T* ET
+Q
+Q
+q
+1 0 0 1 218.6358 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 296.9753 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
+Q
+Q
+q
+1 0 0 1 341.7407 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
+Q
+Q
+q
+1 0 0 1 408.8888 165 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.13.5) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 147 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (FreeBSD 14.1) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (FreeBSD 14.3) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 147 cm
+1 0 0 1 218.6358 147 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (amd64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 147 cm
+1 0 0 1 296.9753 147 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 147 cm
+1 0 0 1 341.7407 147 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Clang) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 147 cm
+1 0 0 1 408.8888 147 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.10) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.12) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 129 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (OpenBSD 7.6) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (OpenBSD 7.7) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 129 cm
+1 0 0 1 218.6358 129 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (amd64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 129 cm
+1 0 0 1 296.9753 129 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 129 cm
+1 0 0 1 341.7407 129 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Clang) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 129 cm
+1 0 0 1 408.8888 129 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.10) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.9) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 111 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Raspbian 12) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Raspbian 13) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 111 cm
+1 0 0 1 218.6358 111 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (armv7l) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 111 cm
+1 0 0 1 296.9753 111 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (32) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 111 cm
+1 0 0 1 341.7407 111 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 111 cm
+1 0 0 1 408.8888 111 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.2) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.13.5) Tj T* ET
 Q
 Q
 q
@@ -43910,28 +43873,28 @@ BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 24.04) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 93 cm
+1 0 0 1 218.6358 93 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (aarch64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 93 cm
+1 0 0 1 296.9753 93 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 93 cm
+1 0 0 1 341.7407 93 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 93 cm
+1 0 0 1 408.8888 93 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.3) Tj T* ET
@@ -43941,70 +43904,70 @@ q
 1 0 0 1 6 75 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 12) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 13) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 75 cm
+1 0 0 1 218.6358 75 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (aarch64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 75 cm
+1 0 0 1 296.9753 75 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 75 cm
+1 0 0 1 341.7407 75 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 75 cm
+1 0 0 1 408.8888 75 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.11.2) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.13.5) Tj T* ET
 Q
 Q
 q
 1 0 0 1 6 57 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (opensuse-leap 15.6) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (opensuse-leap 16.0) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 57 cm
+1 0 0 1 218.6358 57 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 57 cm
+1 0 0 1 296.9753 57 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 57 cm
+1 0 0 1 341.7407 57 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 57 cm
+1 0 0 1 408.8888 57 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.6.15) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.13.5) Tj T* ET
 Q
 Q
 q
@@ -44015,28 +43978,28 @@ BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 24.04) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 39 cm
+1 0 0 1 218.6358 39 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 39 cm
+1 0 0 1 296.9753 39 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 39 cm
+1 0 0 1 341.7407 39 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 39 cm
+1 0 0 1 408.8888 39 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.3) Tj T* ET
@@ -44046,35 +44009,35 @@ q
 1 0 0 1 6 21 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 24.10) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 25.10) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 21 cm
+1 0 0 1 218.6358 21 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (x86_64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 21 cm
+1 0 0 1 296.9753 21 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 21 cm
+1 0 0 1 341.7407 21 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 21 cm
+1 0 0 1 408.8888 21 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.12.7) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.13.7) Tj T* ET
 Q
 Q
 q
@@ -44085,31 +44048,31 @@ BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MS Windows 11) Tj T* ET
 Q
 Q
 q
-1 0 0 1 231.8827 3 cm
+1 0 0 1 218.6358 3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (AMD64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 300.6296 3 cm
+1 0 0 1 296.9753 3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (64) Tj T* ET
 Q
 Q
 q
-1 0 0 1 339.9135 3 cm
+1 0 0 1 341.7407 3 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (MSC) Tj T* ET
 Q
 Q
 q
-1 0 0 1 418.4814 3 cm
+1 0 0 1 408.8888 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.13.1) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.14.0) Tj T* ET
 Q
 Q
 q
@@ -44117,7 +44080,6 @@ q
 1 j
 0 0 0 RG
 .25 w
-n 0 234 m 481.2283 234 l S
 n 0 216 m 481.2283 216 l S
 n 0 198 m 481.2283 198 l S
 n 0 180 m 481.2283 180 l S
@@ -44130,29 +44092,55 @@ n 0 72 m 481.2283 72 l S
 n 0 54 m 481.2283 54 l S
 n 0 36 m 481.2283 36 l S
 n 0 18 m 481.2283 18 l S
-n 225.8827 0 m 225.8827 252 l S
-n 294.6296 0 m 294.6296 252 l S
-n 333.9135 0 m 333.9135 252 l S
-n 412.4814 0 m 412.4814 252 l S
-n 0 252 m 481.2283 252 l S
+n 212.6358 0 m 212.6358 234 l S
+n 290.9753 0 m 290.9753 234 l S
+n 335.7407 0 m 335.7407 234 l S
+n 402.8888 0 m 402.8888 234 l S
+n 0 234 m 481.2283 234 l S
 n 0 0 m 481.2283 0 l S
-n 0 0 m 0 252 l S
-n 481.2283 0 m 481.2283 252 l S
+n 0 0 m 0 234 l S
+n 481.2283 0 m 481.2283 234 l S
 Q
 Q
 Q
 q
-1 0 0 1 57.02362 361.6772 cm
+1 0 0 1 57.02362 379.6772 cm
 Q
 q
-1 0 0 1 57.02362 331.6772 cm
+1 0 0 1 57.02362 349.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL .995917 Tw (amd64 and x86_64 are two names for the same thing. armv7l is 32 bit ARM. aarch64 is 64 bit ARM. The) Tj T* 0 Tw (ARM test hardware consists of Raspberry PI models 3, 4, and 5.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 325.6772 cm
+1 0 0 1 57.02362 343.6772 cm
+Q
+q
+1 0 0 1 57.02362 343.6772 cm
+Q
+q
+1 0 0 1 57.02362 331.6772 cm
+q
+0 0 0 rg
+BT /F1 10 Tf 12 TL ET
+q
+1 0 0 1 6 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F4 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
+Q
+Q
+q
+1 0 0 1 23 -3 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running in 32 bit mode.) Tj T* ET
+Q
+Q
+q
+Q
+Q
 Q
 q
 1 0 0 1 57.02362 325.6772 cm
@@ -44173,7 +44161,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running in 32 bit mode.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in 64 bit mode.) Tj T* ET
 Q
 Q
 q
@@ -44199,7 +44187,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in 64 bit mode.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Rasberry Pi 5 tests were conducted on a Raspberry Pi 5 ARM CPU running in 64 bit mode.) Tj T* ET
 Q
 Q
 q
@@ -44225,32 +44213,6 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (The Rasberry Pi 5 tests were conducted on a Raspberry Pi 5 ARM CPU running in 64 bit mode.) Tj T* ET
-Q
-Q
-q
-Q
-Q
-Q
-q
-1 0 0 1 57.02362 271.6772 cm
-Q
-q
-1 0 0 1 57.02362 259.6772 cm
-q
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F4 10 Tf 12 TL 8 0 Td (\177) Tj T* -8 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-q
-0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (All others were conducted using VMs running on x86 hardware.) Tj T* ET
 Q
 Q
@@ -44259,47 +44221,54 @@ Q
 Q
 Q
 q
-1 0 0 1 57.02362 259.6772 cm
+1 0 0 1 57.02362 277.6772 cm
 Q
 q
-1 0 0 1 57.02362 229.6772 cm
+1 0 0 1 57.02362 247.6772 cm
 q
 BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf .133333 .133333 .133333 rg (Installing on Linux with PIP and PEP-668) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 187.6772 cm
+1 0 0 1 57.02362 205.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL .62189 Tw (PEP-668 \(PEPs describe changes to Python\) introduced a new feature which can affect how packages are) Tj T* 0 Tw 1.593647 Tw (installed with PIP. If PIP is configured to be EXTERNALLY-MANAGED it will refuse to install a package) Tj T* 0 Tw (outside of a virtual environment.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 157.6772 cm
+1 0 0 1 57.02362 175.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL .514272 Tw (The intention of this is to prevent conflicts between packages which are installed using the system package) Tj T* 0 Tw (manager, and ones which are installed using PIP.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 139.6772 cm
+1 0 0 1 57.02362 157.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Linux distros which are affeced by this include the latest versions of Debian and Ubuntu.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 97.67717 cm
+1 0 0 1 57.02362 115.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL .629921 Tw (As this package is a library which is intended to be used by other applications, there is no one right way to) Tj T* 0 Tw -0.066759 Tw (install it, whether inside or outside of a virtual environment. Review the options available with PIP to see what) Tj T* 0 Tw (is suitable for your application.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 57.02362 67.67717 cm
+1 0 0 1 57.02362 85.67717 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL 10.29894 Tw (For testing purposes this package was installed by setting the environment variable) Tj T* 0 Tw (PIP_BREAK_SYSTEM_PACKAGES to "1", which effectively disables this feature in PIP.) Tj T* ET
+Q
+Q
+q
+1 0 0 1 57.02362 67.67717 cm
+q
+0 0 0 rg
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (example:) Tj T* ET
 Q
 Q
  
@@ -44307,19 +44276,12 @@ endstream
 endobj
 600 0 obj
 <<
-/Length 397
+/Length 297
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
-1 0 0 1 57.02362 753.0236 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (example:) Tj T* ET
-Q
-Q
-q
-1 0 0 1 57.02362 719.8236 cm
+1 0 0 1 57.02362 739.8236 cm
 q
 q
 1 0 0 1 0 0 cm
@@ -45232,144 +45194,144 @@ xref
 0000089398 00000 n 
 0000089544 00000 n 
 0000090151 00000 n 
-0000091885 00000 n 
-0000101499 00000 n 
-0000111153 00000 n 
-0000120888 00000 n 
-0000129092 00000 n 
-0000138842 00000 n 
-0000148813 00000 n 
-0000158753 00000 n 
-0000166465 00000 n 
-0000175409 00000 n 
-0000184019 00000 n 
-0000192324 00000 n 
-0000201343 00000 n 
-0000210657 00000 n 
-0000219667 00000 n 
-0000228845 00000 n 
-0000233814 00000 n 
-0000241330 00000 n 
-0000249287 00000 n 
-0000257878 00000 n 
-0000265937 00000 n 
-0000274789 00000 n 
-0000282926 00000 n 
-0000290960 00000 n 
-0000299771 00000 n 
-0000308300 00000 n 
-0000316839 00000 n 
-0000325986 00000 n 
-0000333448 00000 n 
-0000341694 00000 n 
-0000350878 00000 n 
-0000358756 00000 n 
-0000366958 00000 n 
-0000375111 00000 n 
-0000383105 00000 n 
-0000391006 00000 n 
-0000398931 00000 n 
-0000407316 00000 n 
-0000415330 00000 n 
-0000423655 00000 n 
-0000431614 00000 n 
-0000439645 00000 n 
-0000447784 00000 n 
-0000455590 00000 n 
-0000464098 00000 n 
-0000472070 00000 n 
-0000480128 00000 n 
-0000488262 00000 n 
-0000496419 00000 n 
-0000504020 00000 n 
-0000512661 00000 n 
-0000518370 00000 n 
-0000526072 00000 n 
-0000534822 00000 n 
-0000544712 00000 n 
-0000551045 00000 n 
-0000575143 00000 n 
-0000599055 00000 n 
-0000613255 00000 n 
-0000633171 00000 n 
-0000658295 00000 n 
-0000681502 00000 n 
-0000691249 00000 n 
-0000699392 00000 n 
-0000724226 00000 n 
-0000736622 00000 n 
-0000737071 00000 n 
-0000737870 00000 n 
-0000737905 00000 n 
-0000737940 00000 n 
-0000737975 00000 n 
+0000091886 00000 n 
+0000101500 00000 n 
+0000111154 00000 n 
+0000120889 00000 n 
+0000129093 00000 n 
+0000138843 00000 n 
+0000148814 00000 n 
+0000158754 00000 n 
+0000166466 00000 n 
+0000175410 00000 n 
+0000184020 00000 n 
+0000192325 00000 n 
+0000201344 00000 n 
+0000210658 00000 n 
+0000219668 00000 n 
+0000228846 00000 n 
+0000233815 00000 n 
+0000241331 00000 n 
+0000249288 00000 n 
+0000257879 00000 n 
+0000265938 00000 n 
+0000274790 00000 n 
+0000282927 00000 n 
+0000290961 00000 n 
+0000299772 00000 n 
+0000308301 00000 n 
+0000316840 00000 n 
+0000325987 00000 n 
+0000333449 00000 n 
+0000341695 00000 n 
+0000350879 00000 n 
+0000358757 00000 n 
+0000366959 00000 n 
+0000375112 00000 n 
+0000383106 00000 n 
+0000391007 00000 n 
+0000398932 00000 n 
+0000407317 00000 n 
+0000415331 00000 n 
+0000423656 00000 n 
+0000431615 00000 n 
+0000439646 00000 n 
+0000447785 00000 n 
+0000455591 00000 n 
+0000464099 00000 n 
+0000472071 00000 n 
+0000480129 00000 n 
+0000488263 00000 n 
+0000496420 00000 n 
+0000504021 00000 n 
+0000512662 00000 n 
+0000518371 00000 n 
+0000526073 00000 n 
+0000534823 00000 n 
+0000544713 00000 n 
+0000551046 00000 n 
+0000575144 00000 n 
+0000599056 00000 n 
+0000613256 00000 n 
+0000633172 00000 n 
+0000658296 00000 n 
+0000681503 00000 n 
+0000691250 00000 n 
+0000699393 00000 n 
+0000724227 00000 n 
+0000736187 00000 n 
+0000736536 00000 n 
+0000737335 00000 n 
+0000737370 00000 n 
+0000737405 00000 n 
+0000737440 00000 n 
+0000737475 00000 n 
+0000737510 00000 n 
+0000737545 00000 n 
+0000737580 00000 n 
+0000737615 00000 n 
+0000737650 00000 n 
+0000737686 00000 n 
+0000737722 00000 n 
+0000737758 00000 n 
+0000737794 00000 n 
+0000737830 00000 n 
+0000737866 00000 n 
+0000737902 00000 n 
+0000737938 00000 n 
+0000737974 00000 n 
 0000738010 00000 n 
-0000738045 00000 n 
-0000738080 00000 n 
-0000738115 00000 n 
-0000738150 00000 n 
-0000738185 00000 n 
-0000738221 00000 n 
-0000738257 00000 n 
-0000738293 00000 n 
-0000738329 00000 n 
-0000738365 00000 n 
-0000738401 00000 n 
-0000738437 00000 n 
-0000738473 00000 n 
-0000738509 00000 n 
-0000738545 00000 n 
-0000738581 00000 n 
-0000738617 00000 n 
-0000738653 00000 n 
-0000738689 00000 n 
-0000738725 00000 n 
-0000738761 00000 n 
-0000738797 00000 n 
-0000738833 00000 n 
-0000738869 00000 n 
-0000738905 00000 n 
-0000738941 00000 n 
-0000738977 00000 n 
-0000739013 00000 n 
-0000739049 00000 n 
-0000739085 00000 n 
-0000739121 00000 n 
-0000739157 00000 n 
-0000739193 00000 n 
-0000739229 00000 n 
-0000739265 00000 n 
-0000739301 00000 n 
-0000739337 00000 n 
-0000739373 00000 n 
-0000739409 00000 n 
-0000739445 00000 n 
-0000739481 00000 n 
-0000739517 00000 n 
-0000739553 00000 n 
-0000739589 00000 n 
-0000739625 00000 n 
-0000739661 00000 n 
-0000739697 00000 n 
-0000739733 00000 n 
-0000739769 00000 n 
-0000739805 00000 n 
-0000739841 00000 n 
-0000739877 00000 n 
-0000739913 00000 n 
-0000739949 00000 n 
-0000739985 00000 n 
-0000740021 00000 n 
-0000740057 00000 n 
-0000740093 00000 n 
-0000740129 00000 n 
-0000740165 00000 n 
-0000740201 00000 n 
-0000740237 00000 n 
+0000738046 00000 n 
+0000738082 00000 n 
+0000738118 00000 n 
+0000738154 00000 n 
+0000738190 00000 n 
+0000738226 00000 n 
+0000738262 00000 n 
+0000738298 00000 n 
+0000738334 00000 n 
+0000738370 00000 n 
+0000738406 00000 n 
+0000738442 00000 n 
+0000738478 00000 n 
+0000738514 00000 n 
+0000738550 00000 n 
+0000738586 00000 n 
+0000738622 00000 n 
+0000738658 00000 n 
+0000738694 00000 n 
+0000738730 00000 n 
+0000738766 00000 n 
+0000738802 00000 n 
+0000738838 00000 n 
+0000738874 00000 n 
+0000738910 00000 n 
+0000738946 00000 n 
+0000738982 00000 n 
+0000739018 00000 n 
+0000739054 00000 n 
+0000739090 00000 n 
+0000739126 00000 n 
+0000739162 00000 n 
+0000739198 00000 n 
+0000739234 00000 n 
+0000739270 00000 n 
+0000739306 00000 n 
+0000739342 00000 n 
+0000739378 00000 n 
+0000739414 00000 n 
+0000739450 00000 n 
+0000739486 00000 n 
+0000739522 00000 n 
+0000739558 00000 n 
+0000739594 00000 n 
+0000739630 00000 n 
+0000739666 00000 n 
+0000739702 00000 n 
 trailer
 <<
 /ID 
-[<b90e1a308e33ed7cbab3d5825b7e32f7><b90e1a308e33ed7cbab3d5825b7e32f7>]
+[<da9b8e7d577decba86dad1e53d1451d5><da9b8e7d577decba86dad1e53d1451d5>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 379 0 R
@@ -45377,5 +45339,5 @@ trailer
 /Size 669
 >>
 startxref
-740273
+739738
 %%EOF

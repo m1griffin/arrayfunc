@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.5 for 2025-10-03
+:Version:  8.5.6 for 2025-10-09
 :Copyright: 2014 - 2025
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.11 or later
@@ -299,7 +299,7 @@ Arrayfunc is written in 'C' and uses the standard C libraries to implement the
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
 =================== ======= ==== ====== =======
-OS                   Arch   Bits  CC    Python  
+OS                   Arch   Bits  CC    Python 
 =================== ======= ==== ====== =======
 almalinux 10.0      x86_64   64  GCC    3.12.9    
 alpine 3.22.0       x86_64   64  GCC    3.12.11 
@@ -311,12 +311,15 @@ Ubuntu 24.04        aarch64  64  GCC    3.12.3
 Debian 13           aarch64  64  GCC    3.13.5 
 opensuse-leap 16.0  x86_64   64  GCC    3.13.5    
 Ubuntu 24.04        x86_64   64  GCC    3.12.3 
-Ubuntu 25.04        x86_64   64  GCC    3.13.3 
-MS Windows 11       AMD64    64  MSC    3.13.3 
+Ubuntu 25.10        x86_64   64  GCC    3.13.7 
+MS Windows 11       AMD64    64  MSC    3.14.0 
 =================== ======= ==== ====== =======
 
 amd64 and x86_64 are two names for the same thing.
 armv7l is 32 bit ARM. aarch64 is 64 bit ARM.
+The ARM test hardware consists of Raspberry PI
+models 3, 4, and 5.
+
 
 
 * The Rasberry Pi 3 tests were conducted on a Raspberry Pi 3 ARM CPU running
@@ -409,6 +412,8 @@ example::
 
 Release History
 ===============
+* 8.5.6 - Update to testing and support. There were no code changes.
+          Updated to add Ubuntu 25.10. 
 * 8.5.5 - Bump version number to correct error in README.rst
 * 8.5.4 - Update to testing and support. There were no code changes.
           Numerous testing targets have been updated to their latest

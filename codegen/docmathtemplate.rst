@@ -9,7 +9,7 @@ ArrayFunc
 :Version: {versionnumber} for {versiondate}
 :Copyright: 2014 - {copyrightyear}
 :License: This document may be distributed under the Apache License V2.0.
-:Language: Python 3.6 or later
+:Language: Python 3.11 or later
 
 
 .. contents:: Table of Contents

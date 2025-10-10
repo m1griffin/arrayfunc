@@ -37,7 +37,7 @@
 <dd class="field-odd"><p>Michael Griffin</p>
 </dd>
 <dt class="field-even">Version<span class="colon">:</span></dt>
-<dd class="field-even"><p>8.5.3 for 2025-01-13</p>
+<dd class="field-even"><p>8.5.6 for 2025-10-09</p>
 </dd>
 <dt class="field-odd">Copyright<span class="colon">:</span></dt>
 <dd class="field-odd"><p>2014 - 2025</p>
@@ -46,7 +46,7 @@
 <dd class="field-even"><p>This document may be distributed under the Apache License V2.0.</p>
 </dd>
 <dt class="field-odd">Language<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Python 3.6 or later</p>
+<dd class="field-odd"><p>Python 3.11 or later</p>
 </dd>
 </dl>
 <nav class="contents" id="table-of-contents">
@@ -8340,88 +8340,82 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 <tr class="row-odd"><th class="head"><p>OS</p></th>
 <th class="head"><p>Arch</p></th>
 <th class="head"><p>Bits</p></th>
-<th class="head"><p>Compiler</p></th>
+<th class="head"><p>CC</p></th>
 <th class="head"><p>Python</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>almalinux 9.5</p></td>
+<tr class="row-even"><td><p>almalinux 10.0</p></td>
 <td><p>x86_64</p></td>
 <td><p>64</p></td>
 <td><p>GCC</p></td>
-<td><p>3.9.19</p></td>
+<td><p>3.12.9</p></td>
 </tr>
-<tr class="row-odd"><td><p>alpine 3.20.3</p></td>
-<td><p>i686</p></td>
-<td><p>32</p></td>
-<td><p>GCC</p></td>
-<td><p>3.12.7</p></td>
-</tr>
-<tr class="row-even"><td><p>Debian 12</p></td>
-<td><p>i686</p></td>
-<td><p>32</p></td>
-<td><p>GCC</p></td>
-<td><p>3.11.2</p></td>
-</tr>
-<tr class="row-odd"><td><p>Debian 12</p></td>
+<tr class="row-odd"><td><p>alpine 3.22.0</p></td>
 <td><p>x86_64</p></td>
 <td><p>64</p></td>
 <td><p>GCC</p></td>
-<td><p>3.11.2</p></td>
+<td><p>3.12.11</p></td>
 </tr>
-<tr class="row-even"><td><p>FreeBSD 14.1</p></td>
+<tr class="row-even"><td><p>Debian 13</p></td>
+<td><p>x86_64</p></td>
+<td><p>64</p></td>
+<td><p>GCC</p></td>
+<td><p>3.13.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>FreeBSD 14.3</p></td>
 <td><p>amd64</p></td>
 <td><p>64</p></td>
 <td><p>Clang</p></td>
-<td><p>3.11.10</p></td>
+<td><p>3.11.12</p></td>
 </tr>
-<tr class="row-odd"><td><p>OpenBSD 7.6</p></td>
+<tr class="row-even"><td><p>OpenBSD 7.7</p></td>
 <td><p>amd64</p></td>
 <td><p>64</p></td>
 <td><p>Clang</p></td>
-<td><p>3.11.10</p></td>
+<td><p>3.12.9</p></td>
 </tr>
-<tr class="row-even"><td><p>Raspbian 12</p></td>
+<tr class="row-odd"><td><p>Raspbian 13</p></td>
 <td><p>armv7l</p></td>
 <td><p>32</p></td>
 <td><p>GCC</p></td>
-<td><p>3.11.2</p></td>
-</tr>
-<tr class="row-odd"><td><p>Ubuntu 24.04</p></td>
-<td><p>aarch64</p></td>
-<td><p>64</p></td>
-<td><p>GCC</p></td>
-<td><p>3.12.3</p></td>
-</tr>
-<tr class="row-even"><td><p>Debian 12</p></td>
-<td><p>aarch64</p></td>
-<td><p>64</p></td>
-<td><p>GCC</p></td>
-<td><p>3.11.2</p></td>
-</tr>
-<tr class="row-odd"><td><p>opensuse-leap 15.6</p></td>
-<td><p>x86_64</p></td>
-<td><p>64</p></td>
-<td><p>GCC</p></td>
-<td><p>3.6.15</p></td>
+<td><p>3.13.5</p></td>
 </tr>
 <tr class="row-even"><td><p>Ubuntu 24.04</p></td>
+<td><p>aarch64</p></td>
+<td><p>64</p></td>
+<td><p>GCC</p></td>
+<td><p>3.12.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Debian 13</p></td>
+<td><p>aarch64</p></td>
+<td><p>64</p></td>
+<td><p>GCC</p></td>
+<td><p>3.13.5</p></td>
+</tr>
+<tr class="row-even"><td><p>opensuse-leap 16.0</p></td>
+<td><p>x86_64</p></td>
+<td><p>64</p></td>
+<td><p>GCC</p></td>
+<td><p>3.13.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ubuntu 24.04</p></td>
 <td><p>x86_64</p></td>
 <td><p>64</p></td>
 <td><p>GCC</p></td>
 <td><p>3.12.3</p></td>
 </tr>
-<tr class="row-odd"><td><p>Ubuntu 24.10</p></td>
+<tr class="row-even"><td><p>Ubuntu 25.10</p></td>
 <td><p>x86_64</p></td>
 <td><p>64</p></td>
 <td><p>GCC</p></td>
-<td><p>3.12.7</p></td>
+<td><p>3.13.7</p></td>
 </tr>
-<tr class="row-even"><td><p>MS Windows 11</p></td>
+<tr class="row-odd"><td><p>MS Windows 11</p></td>
 <td><p>AMD64</p></td>
 <td><p>64</p></td>
 <td><p>MSC</p></td>
-<td><p>3.13.1</p></td>
+<td><p>3.14.0</p></td>
 </tr>
 </tbody>
 </table>
