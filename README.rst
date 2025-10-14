@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version:  8.5.6 for 2025-10-09
+:Version:  8.5.7 for 2025-10-10
 :Copyright: 2014 - 2025
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.11 or later
@@ -412,6 +412,7 @@ example::
 
 Release History
 ===============
+* 8.5.7 - Fixed issues with version number. 
 * 8.5.6 - Update to testing and support. There were no code changes.
           Updated to add Ubuntu 25.10. 
 * 8.5.5 - Bump version number to correct error in README.rst
